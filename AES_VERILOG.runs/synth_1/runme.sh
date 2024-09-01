@@ -25,7 +25,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.runs/synth_1'
+HD_PWD='C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log
@@ -41,4 +41,4 @@ EAStep()
      fi
 }
 
-EAStep vivado -log AddRoundKey.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source AddRoundKey.tcl
+EAStep vivado -log SubBytes.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source SubBytes.tcl

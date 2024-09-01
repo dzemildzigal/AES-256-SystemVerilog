@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1725052278" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/Top.dcp">
-  <File Type="PA-TCL" Name="AddRoundKey.tcl"/>
-  <File Type="RDS-PROPCONSTRS" Name="AddRoundKey_drc_synth.rpt"/>
-  <File Type="REPORTS-TCL" Name="AddRoundKey_reports.tcl"/>
-  <File Type="RDS-RDS" Name="AddRoundKey.vds"/>
-  <File Type="RDS-UTIL" Name="AddRoundKey_utilization_synth.rpt"/>
-  <File Type="RDS-UTIL-PB" Name="AddRoundKey_utilization_synth.pb"/>
-  <File Type="RDS-DCP" Name="AddRoundKey.dcp"/>
-  <File Type="VDS-TIMINGSUMMARY" Name="AddRoundKey_timing_summary_synth.rpt"/>
-  <File Type="VDS-TIMING-PB" Name="AddRoundKey_timing_summary_synth.pb"/>
+<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1725219016" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/Top.dcp">
+  <File Type="PA-TCL" Name="SubBytes.tcl"/>
+  <File Type="RDS-PROPCONSTRS" Name="SubBytes_drc_synth.rpt"/>
+  <File Type="REPORTS-TCL" Name="SubBytes_reports.tcl"/>
+  <File Type="RDS-RDS" Name="SubBytes.vds"/>
+  <File Type="RDS-UTIL" Name="SubBytes_utilization_synth.rpt"/>
+  <File Type="RDS-UTIL-PB" Name="SubBytes_utilization_synth.pb"/>
+  <File Type="RDS-DCP" Name="SubBytes.dcp"/>
+  <File Type="VDS-TIMINGSUMMARY" Name="SubBytes_timing_summary_synth.rpt"/>
+  <File Type="VDS-TIMING-PB" Name="SubBytes_timing_summary_synth.pb"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
-    <File Path="$PSRCDIR/sources_1/new/AddRoundKey.sv">
+    <File Path="$PSRCDIR/sources_1/new/SubBytes.sv">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
@@ -19,6 +19,14 @@
       </FileInfo>
     </File>
     <File Path="$PSRCDIR/sources_1/new/Top.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/AddRoundKey.sv">
       <FileInfo>
         <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
@@ -114,14 +122,6 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/new/SubBytes.sv">
-      <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
-        <Attr Name="UsedIn" Val="synthesis"/>
-        <Attr Name="UsedIn" Val="implementation"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
     <File Path="$PSRCDIR/sources_1/new/SubWord.sv">
       <FileInfo>
         <Attr Name="AutoDisabled" Val="1"/>
@@ -158,7 +158,7 @@
     </File>
     <Config>
       <Option Name="DesignMode" Val="RTL"/>
-      <Option Name="TopModule" Val="AddRoundKey"/>
+      <Option Name="TopModule" Val="SubBytes"/>
     </Config>
   </FileSet>
   <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">

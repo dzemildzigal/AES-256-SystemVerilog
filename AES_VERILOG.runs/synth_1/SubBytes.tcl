@@ -4,7 +4,7 @@
 
 set TIME_start [clock seconds] 
 namespace eval ::optrace {
-  variable script "C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.runs/synth_1/AddRoundKey.tcl"
+  variable script "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/SubBytes.tcl"
   variable category "vivado_synth"
 }
 
@@ -56,28 +56,32 @@ if {$::dispatch::connected} {
 }
 
 OPTRACE "synth_1" START { ROLLUP_AUTO }
+set_param checkpoint.writeSynthRtdsInDcp 1
+set_param synth.incrementalSynthesisCache C:/Users/dzemi/Desktop/AES-256-SystemVerilog/.Xil/Vivado-2612-DESKTOP-95HTTJA/incrSyn
+set_msg_config -id {Synth 8-256} -limit 10000
+set_msg_config -id {Synth 8-638} -limit 10000
 OPTRACE "Creating in-memory project" START { }
 create_project -in_memory -part xc7z020clg400-1
 
 set_param project.singleFileAddWarning.threshold 0
 set_param project.compositeFile.enableAutoGeneration 0
 set_param synth.vivado.isSynthRun true
-set_property webtalk.parent_dir C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.cache/wt [current_project]
-set_property parent.project_path C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.xpr [current_project]
+set_property webtalk.parent_dir C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.cache/wt [current_project]
+set_property parent.project_path C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.xpr [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language Verilog [current_project]
 set_property board_part_repo_paths {C:/Users/dzemi/AppData/Roaming/Xilinx/Vivado/2024.1/xhub/board_store/xilinx_board_store} [current_project]
 set_property board_part tul.com.tw:pynq-z2:part0:1.0 [current_project]
-set_property ip_output_repo c:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.cache/ip [current_project]
+set_property ip_output_repo c:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.cache/ip [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_mem {
-  C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.srcs/sources_1/new/r_con.mem
-  C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.srcs/sources_1/new/s_box.mem
-  C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.srcs/sources_1/new/inv_s_box.mem
+  C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/r_con.mem
+  C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/s_box.mem
+  C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/inv_s_box.mem
 }
-read_verilog -library xil_defaultlib -sv C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv
+read_verilog -library xil_defaultlib -sv C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv
 OPTRACE "Adding files" END { }
 # Mark all dcp files as not used in implementation to prevent them from being
 # stitched into the results of this synthesis run. Any black boxes in the
@@ -89,11 +93,11 @@ foreach dcp [get_files -quiet -all -filter file_type=="Design\ Checkpoint"] {
 }
 set_param ips.enableIPCacheLiteLoad 1
 
-read_checkpoint -auto_incremental -incremental C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp
+read_checkpoint -auto_incremental -incremental C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp
 close [open __synthesis_is_running__ w]
 
 OPTRACE "synth_design" START { }
-synth_design -top AddRoundKey -part xc7z020clg400-1
+synth_design -top SubBytes -part xc7z020clg400-1
 OPTRACE "synth_design" END { }
 if { [get_msg_config -count -severity {CRITICAL WARNING}] > 0 } {
  send_msg_id runtcl-6 info "Synthesis results are not added to the cache due to CRITICAL_WARNING"
@@ -103,10 +107,10 @@ if { [get_msg_config -count -severity {CRITICAL WARNING}] > 0 } {
 OPTRACE "write_checkpoint" START { CHECKPOINT }
 # disable binary constraint mode for synth run checkpoints
 set_param constraints.enableBinaryConstraints false
-write_checkpoint -force -noxdef AddRoundKey.dcp
+write_checkpoint -force -noxdef SubBytes.dcp
 OPTRACE "write_checkpoint" END { }
 OPTRACE "synth reports" START { REPORT }
-generate_parallel_reports -reports { "report_utilization -file AddRoundKey_utilization_synth.rpt -pb AddRoundKey_utilization_synth.pb"  } 
+generate_parallel_reports -reports { "report_utilization -file SubBytes_utilization_synth.rpt -pb SubBytes_utilization_synth.pb"  } 
 OPTRACE "synth reports" END { }
 file delete __synthesis_is_running__
 close [open __synthesis_is_complete__ w]

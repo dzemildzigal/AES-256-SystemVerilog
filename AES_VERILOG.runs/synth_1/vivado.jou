@@ -3,12 +3,12 @@
 # SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
 # IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
 # SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
-# Start of session at: Fri Aug 30 23:11:22 2024
-# Process ID: 11248
-# Current directory: C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.runs/synth_1
-# Command line: vivado.exe -log AddRoundKey.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source AddRoundKey.tcl
-# Log file: C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.runs/synth_1/AddRoundKey.vds
-# Journal file: C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG/AES_VERILOG.runs/synth_1\vivado.jou
+# Start of session at: Sun Sep  1 21:30:20 2024
+# Process ID: 3796
+# Current directory: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1
+# Command line: vivado.exe -log SubBytes.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source SubBytes.tcl
+# Log file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/SubBytes.vds
+# Journal file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1\vivado.jou
 # Running On        :DESKTOP-95HTTJA
 # Platform          :Windows Server 2016 or Windows 10
 # Operating System  :19045
@@ -19,6 +19,6 @@
 # Host memory       :68626 MB
 # Swap memory       :10200 MB
 # Total Virtual     :78827 MB
-# Available Virtual :70725 MB
+# Available Virtual :65268 MB
 #-----------------------------------------------------------
-source AddRoundKey.tcl -notrace
+source SubBytes.tcl -notrace

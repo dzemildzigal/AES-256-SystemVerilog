@@ -1,7 +1,7 @@
-Running: xsim.dir/AddRoundKey_behav/xsimk.exe -simmode gui -wdb AddRoundKey_behav.wdb -simrunnum 0 -socket 62618
+Running: xsim.dir/AddRoundKey_behav/xsimk.exe -simmode gui -wdb AddRoundKey_behav.wdb -simrunnum 0 -socket 64323
 Design successfully loaded
-Design Loading Memory Usage: 7596 KB (Peak: 7596 KB)
-Design Loading CPU Usage: 0 ms
+Design Loading Memory Usage: 8296 KB (Peak: 8296 KB)
+Design Loading CPU Usage: 62 ms
 Simulation completed
-Simulation Memory Usage: 8216 KB (Peak: 8216 KB)
-Simulation CPU Usage: 0 ms
+Simulation Memory Usage: 8816 KB (Peak: 8816 KB)
+Simulation CPU Usage: 62 ms

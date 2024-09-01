@@ -1,6 +1,6 @@
 # compile verilog/system verilog design source files
 sv xil_defaultlib  \
-"../../../../AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/SubBytes.sv" \
 
 # compile glbl module
 verilog xil_defaultlib "glbl.v"
