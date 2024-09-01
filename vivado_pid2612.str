@@ -149,3 +149,1980 @@ Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 // Tcl Message: INFO: [Project 1-313] Project file moved from 'C:/Users/dzemi/Desktop/VivadoProjects/AES_VERILOG' since last save. INFO: [filemgmt 56-1] Board Part Repository Path: Directory not found as 'C:/Users/AppData/Roaming/Xilinx/Vivado/2024.1/xhub/board_store/xilinx_board_store'; using path 'C:/Users/dzemi/AppData/Roaming/Xilinx/Vivado/2024.1/xhub/board_store/xilinx_board_store' instead. INFO: [filemgmt 56-3] Default IP Output Path : Could not find the directory 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.gen/sources_1'. 
 // Tcl Message: Scanning sources... Finished scanning sources 
 // Tcl Message: INFO: [IP_Flow 19-234] Refreshing IP repositories INFO: [IP_Flow 19-1704] No user IP repositories specified INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinx/Vivado/2024.1/data/ip'. 
+// Project name: AES_VERILOG; location: C:/Users/dzemi/Desktop/AES-256-SystemVerilog; part: xc7z020clg400-1
+// [Engine Memory]: 1,339 MB (+22495kb) [00:00:30]
+// Tcl Message: open_project: Time (s): cpu = 00:00:29 ; elapsed = 00:00:15 . Memory (MB): peak = 1674.805 ; gain = 479.801 
+dismissDialog("Open Project"); // bj (Open Project Progress)
+// Tcl Message: update_compile_order -fileset sources_1 
+// Elapsed time: 475 seconds
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Memory File]", 17, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Memory File]", 17, true, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Memory File, s_box.mem]", 20, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Memory File, s_box.mem]", 20, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+// Elapsed time: 100 seconds
+selectCodeEditor("s_box.mem", 196, 26); // ac (s_box.mem)
+typeControlKey((HResource) null, "s_box.mem", 'v'); // ac (s_box.mem)
+// Elapsed time: 15 seconds
+typeControlKey((HResource) null, "s_box.mem", 'v'); // ac (s_box.mem)
+// TclEventType: FILE_SET_CHANGE
+// Elapsed time: 621 seconds
+selectCodeEditor("s_box.mem", 161, 50); // ac (s_box.mem)
+selectButton(RDIResource.HCodeView_TOGGLE_COLUMN_SELECTION_MODE, (String) null); // v (RDIResource.HCodeView_TOGGLE_COLUMN_SELECTION_MODE): TRUE
+selectButton(RDIResource.HCodeView_TOGGLE_COLUMN_SELECTION_MODE, (String) null); // v (RDIResource.HCodeView_TOGGLE_COLUMN_SELECTION_MODE): FALSE
+selectCodeEditor("s_box.mem", 189, 54); // ac (s_box.mem)
+// Elapsed time: 128 seconds
+selectCodeEditor("s_box.mem", 112, 39); // ac (s_box.mem)
+typeControlKey((HResource) null, "s_box.mem", 'v'); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 42, 14); // ac (s_box.mem)
+// Elapsed time: 21 seconds
+selectCodeEditor("s_box.mem", 64, 213); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 68, 239); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 68, 258); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 68, 283); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 65, 309); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 64, 331); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 61, 362); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 55, 394); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 59, 371); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 71, 337); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 76, 310); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 76, 293); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 82, 266); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 90, 232); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 93, 220); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 102, 184); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 105, 142); // ac (s_box.mem)
+// Elapsed time: 57 seconds
+selectCodeEditor("s_box.mem", 47, 293); // ac (s_box.mem)
+// Elapsed time: 134 seconds
+selectCodeEditor("s_box.mem", 240, 163); // ac (s_box.mem)
+typeControlKey((HResource) null, "s_box.mem", 'v'); // ac (s_box.mem)
+// Elapsed time: 35 seconds
+selectCodeEditor("s_box.mem", 185, 439); // ac (s_box.mem)
+typeControlKey((HResource) null, "s_box.mem", 'v'); // ac (s_box.mem)
+// Elapsed time: 13 seconds
+selectCodeEditor("s_box.mem", 405, 300); // ac (s_box.mem)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Memory File, r_con.mem]", 19, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Memory File, r_con.mem]", 19, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectCodeEditor("r_con.mem", 402, 272); // ac (r_con.mem)
+// Elapsed time: 52 seconds
+selectCodeEditor("r_con.mem", 173, 40); // ac (r_con.mem)
+// HMemoryUtils.trashcanNow. Engine heap size: 1,351 MB. GUI used memory: 106 MB. Current time: 9/1/24, 8:48:13 PM CEST
+// TclEventType: FILE_SET_CHANGE
+// Elapsed time: 135 seconds
+selectCodeEditor("r_con.mem", 311, 126); // ac (r_con.mem)
+// HMemoryUtils.trashcanNow. Engine heap size: 1,352 MB. GUI used memory: 107 MB. Current time: 9/1/24, 8:48:48 PM CEST
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("s_box.mem", 156, 59); // ac (s_box.mem)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "Project Summary", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+closeView(PAResourceOtoP.PAViews_PROJECT_SUMMARY, "Project Summary"); // u (PAResourceOtoP.PAViews_PROJECT_SUMMARY, PlanAheadTabProject Summary)
+selectCodeEditor("s_box.mem", 264, 379); // ac (s_box.mem)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 14, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 14, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 14, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 256, 547); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 226, 576); // ac (SubBytes.sv)
+// Elapsed time: 26 seconds
+selectCodeEditor("SubBytes.sv", 141, 594); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, AddRoundKey (AddRoundKey.sv)]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, AddRoundKey (AddRoundKey.sv)]", 2, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectCodeEditor("AddRoundKey.sv", 121, 611); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 221, 492); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 79, 266); // ac (AddRoundKey.sv)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 106, 564); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+// Elapsed Time for: 'L.f': 31m:36s
+// Elapsed Time for: 'L.f': 31m:38s
+selectCodeEditor("AddRoundKey.sv", 63, 537); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 121, 459); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 60, 535); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 156, 359); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 65, 442); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 27, 560); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 59, 555); // ac (AddRoundKey.sv)
+typeControlKey((HResource) null, "AddRoundKey.sv", 'c'); // ac (AddRoundKey.sv)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 44, 528); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 41, 516); // ac (SubBytes.sv)
+typeControlKey((HResource) null, "SubBytes.sv", 'v'); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 52, 293); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 32m:00s
+// Elapsed Time for: 'L.f': 32m:02s
+selectCodeEditor("SubBytes.sv", 217, 160); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 212, 170); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 212, 170, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed time: 12 seconds
+selectCodeEditor("SubBytes.sv", 241, 190); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+selectCodeEditor("SubBytes.sv", 196, 157); // ac (SubBytes.sv)
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// Elapsed Time for: 'L.f': 32m:22s
+selectCodeEditor("SubBytes.sv", 204, 197); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 32m:24s
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 32m:27s
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+// Elapsed Time for: 'L.f': 32m:28s
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 210, 159); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 210, 159, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+// Elapsed Time for: 'L.f': 32m:38s
+// Elapsed Time for: 'L.f': 32m:40s
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "r_con.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 120, 192); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 125, 161); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 125, 161, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+selectCodeEditor("SubBytes.sv", 424, 182); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 32m:54s
+// Elapsed Time for: 'L.f': 32m:56s
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 33m:02s
+selectCodeEditor("SubBytes.sv", 120, 442); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 120, 442, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed Time for: 'L.f': 33m:04s
+selectCodeEditor("SubBytes.sv", 142, 411); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 142, 411, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 411, 415); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 411, 415, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 395, 407); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 395, 407, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 265, 408); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 474, 406); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 489, 408); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 34m:08s
+// Elapsed Time for: 'L.f': 34m:10s
+// Elapsed time: 86 seconds
+selectCodeEditor("SubBytes.sv", 155, 442); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 155, 442, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 155, 442); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 266, 359); // ac (SubBytes.sv)
+typeControlKey((HResource) null, "SubBytes.sv", 'v'); // ac (SubBytes.sv)
+// Elapsed time: 10 seconds
+selectCodeEditor("SubBytes.sv", 21, 560); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 35m:18s
+selectCodeEditor("SubBytes.sv", 211, 370); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 35m:20s
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 35m:22s
+// Elapsed Time for: 'L.f': 35m:24s
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 36m:06s
+// Elapsed Time for: 'L.f': 36m:08s
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 36m:13s
+// Elapsed time: 53 seconds
+selectCodeEditor("SubBytes.sv", 341, 368); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 36m:14s
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 36m:20s
+// Elapsed Time for: 'L.f': 36m:22s
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 36m:36s
+// Elapsed Time for: 'L.f': 36m:38s
+// Elapsed time: 28 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+// Elapsed time: 20 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("AddRoundKey.sv", 318, 369); // ac (AddRoundKey.sv)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 568, 369); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 172, 362); // ac (SubBytes.sv)
+typeControlKey((HResource) null, "SubBytes.sv", 'c'); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 571, 361); // ac (SubBytes.sv)
+typeControlKey((HResource) null, "SubBytes.sv", 'v'); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 37m:26s
+selectCodeEditor("SubBytes.sv", 479, 396); // ac (SubBytes.sv)
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// Elapsed Time for: 'L.f': 37m:29s
+selectButton(PAResourceEtoH.FileSetPanel_MESSAGES, "2"); // g (PAResourceEtoH.FileSetPanel_MESSAGES)
+selectCodeEditor("SubBytes.sv", 626, 91); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 15, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 15, false, false, false, false, true, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Popup Trigger
+selectMenu(PAResourceCommand.PACommandNames_OPEN_FILE_WITH, "Open With"); // am (PAResourceCommand.PACommandNames_OPEN_FILE_WITH, Open With)
+selectMenu(PAResourceCommand.PACommandNames_OPEN_FILE_WITH, "Open With"); // am (PAResourceCommand.PACommandNames_OPEN_FILE_WITH, Open With)
+selectMenu(PAResourceCommand.PACommandNames_AUTO_UPDATE_HIER, "Hierarchy Update"); // am (PAResourceCommand.PACommandNames_AUTO_UPDATE_HIER, Hierarchy Update)
+selectMenu(PAResourceQtoS.SrcMenu_IP_HIERARCHY, "IP Hierarchy"); // am (PAResourceQtoS.SrcMenu_IP_HIERARCHY, IP Hierarchy)
+selectMenuItem(PAResourceCommand.PACommandNames_SET_AS_TOP, "Set as Top"); // ap (PAResourceCommand.PACommandNames_SET_AS_TOP, set_as_top_menu)
+// Run Command: PAResourceCommand.PACommandNames_SET_AS_TOP
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: FILE_SET_OPTIONS_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// Tcl Message: set_property top SubBytes [current_fileset] 
+// TclEventType: DG_GRAPH_STALE
+// Elapsed Time for: 'L.f': 37m:44s
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 37m:47s
+// Tcl Message: update_compile_order -fileset sources_1 
+// Elapsed Time for: 'L.f': 37m:48s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// Elapsed Time for: 'L.f': 37m:51s
+// Elapsed time: 26 seconds
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 2, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectTab((HResource) null, (HResource) null, "Messages", 1); // aa
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 2, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. , [Common 17-180] Spawn failed: No error. ]", 4, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. , [Common 17-180] Spawn failed: No error. ]", 3, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. , [Common 17-180] Spawn failed: No error. ]", 3, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 2, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 2, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. , [Common 17-180] Spawn failed: No error. ]", 4, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 2, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 333, 255); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 326, 364, false, true, false, false, false); // ac (SubBytes.sv) - Control Key
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 2, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. , [Common 17-180] Spawn failed: No error. ]", 4, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. , [Common 17-180] Spawn failed: No error. ]", 4, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. , [Common 17-180] Spawn failed: No error. ]", 17, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. , [Common 17-180] Spawn failed: No error. ]", 17, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 2, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectCheckBox(PAResourceItoN.MsgView_ERROR_MESSAGES, (String) null, false); // f (PAResourceItoN.MsgView_ERROR_MESSAGES): FALSE
+selectCheckBox(PAResourceItoN.MsgView_ERROR_MESSAGES, (String) null, true); // f (PAResourceItoN.MsgView_ERROR_MESSAGES): TRUE
+selectTab((HResource) null, (HResource) null, "Log", 2); // aa
+selectTab((HResource) null, (HResource) null, "Reports", 3); // aa
+selectTab((HResource) null, (HResource) null, "Design Runs", 4); // aa
+selectTab((HResource) null, (HResource) null, "Messages", 1); // aa
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files]", 1); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 299, 360); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 277, 285); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 38m:51s
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+// Elapsed Time for: 'L.f': 38m:53s
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("AddRoundKey.sv", 34, 596); // ac (AddRoundKey.sv)
+selectCodeEditor("AddRoundKey.sv", 34, 596, false, false, false, false, true); // ac (AddRoundKey.sv) - Double Click
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 133, 137); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 133, 137, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 196, 166); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 196, 166, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 205, 165); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 39m:47s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// Elapsed Time for: 'L.f': 39m:49s
+selectCodeEditor("SubBytes.sv", 342, 415); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 332, 472); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false, false, false, false, true, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Popup Trigger
+selectCodeEditor("SubBytes.sv", 435, 34); // ac (SubBytes.sv)
+// Elapsed time: 12 seconds
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 3, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 3, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 4, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 4, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 167, 461); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 150, 464); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 149, 464, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 440, 412); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 440, 412, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 459, 412); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 460, 412, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed time: 33 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "r_con.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+// Elapsed time: 21 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "AddRoundKey.sv", 3); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+// Elapsed time: 50 seconds
+selectCodeEditor("SubBytes.sv", 810, 439); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 42m:17s
+// Elapsed Time for: 'L.f': 42m:19s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// Elapsed time: 17 seconds
+selectCodeEditor("SubBytes.sv", 800, 460); // ac (SubBytes.sv)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 3, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 3, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+expandTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 2); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+collapseTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Common 17-180] Spawn failed: No error. ]", 2); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+// Elapsed time: 47 seconds
+selectCodeEditor("SubBytes.sv", 648, 439); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 648, 438, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 43m:29s
+// Elapsed Time for: 'L.f': 43m:31s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+selectCodeEditor("SubBytes.sv", 629, 452); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 635, 439); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 635, 439, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed time: 53 seconds
+selectCodeEditor("SubBytes.sv", 467, 419); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 465, 419, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 465, 419); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 258, 461); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 257, 461, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 232, 440); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 230, 438, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 230, 438); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 314, 386); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// HMemoryUtils.trashcanNow. Engine heap size: 1,373 MB. GUI used memory: 112 MB. Current time: 9/1/24, 9:03:03 PM CEST
+// Elapsed Time for: 'L.f': 44m:41s
+// Elapsed Time for: 'L.f': 44m:43s
+selectCodeEditor("SubBytes.sv", 415, 407); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 44m:47s
+// Elapsed Time for: 'L.f': 44m:49s
+selectCodeEditor("SubBytes.sv", 716, 417); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 750, 413); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 44m:57s
+// Elapsed Time for: 'L.f': 44m:59s
+// Elapsed time: 12 seconds
+selectCodeEditor("SubBytes.sv", 632, 499); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 476, 266); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 112, 439); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 147, 456); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 129, 359); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 129, 359, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 425, 390); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 426, 390, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 126, 445); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 125, 444, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 140, 470); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 140, 470, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 126, 366); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 126, 366, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 75, 494); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 75, 494, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 167, 491); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 247, 413); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 247, 413, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Synthesis, Run Synthesis]", 15, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Run Command: PAResourceCommand.PACommandNames_RUN_SYNTHESIS
+// TclEventType: RUN_MODIFY
+// TclEventType: RUN_RESET
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_RESET
+// TclEventType: RUN_MODIFY
+// Tcl Message: reset_run synth_1 
+// Tcl Message: INFO: [Project 1-1161] Replacing file C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp with file C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/AddRoundKey.dcp 
+selectButton(RDIResource.BaseDialog_OK, "OK", "Launch Runs"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: FILE_SET_CHANGE
+dismissDialog("Launch Runs"); // f (dialog0)
+// TclEventType: RUN_LAUNCH
+// TclEventType: RUN_MODIFY
+// Tcl Message: launch_runs synth_1 -jobs 16 
+// Tcl Message: [Sun Sep  1 21:03:51 2024] Launched synth_1... Run output will be captured here: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/runme.log 
+dismissDialog("Starting Design Runs"); // bj (Starting Design Runs Progress)
+// TclEventType: RUN_STATUS_CHANGE
+selectButton(RDIResource.HFilterToolBar_SHOW_ALL, "Show All"); // a (RDIResource.HFilterToolBar_SHOW_ALL, RDIResource.HFilterToolBar_HIDE_ALL)
+// TclEventType: RUN_FAILED
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_STEP_COMPLETED
+// Elapsed time: 40 seconds
+selectButton(RDIResource.BaseDialog_OK, "OK", "Synthesis Failed"); // a (RDIResource.BaseDialog_OK)
+// Run Command: PAResourceCommand.PACommandNames_MESSAGE_WINDOW
+dismissDialog("Synthesis Failed"); // Q.a (dialog1)
+// Elapsed time: 12 seconds
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Synthesis, [Synth 8-2716] syntax error near 'end' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:41]. ]", 9, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Synthesis, [Synth 8-2716] syntax error near 'end' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:41]. ]", 9, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Synthesis, [Synth 8-10307] SystemVerilog keyword 'end' used in incorrect context [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:41]. ]", 10, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Synthesis, [Synth 8-10307] SystemVerilog keyword 'end' used in incorrect context [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:41]. ]", 10, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+// Elapsed time: 40 seconds
+selectCodeEditor("SubBytes.sv", 14, 214); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 26, 216); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+selectCodeEditor("SubBytes.sv", 552, 224); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 47m:19s
+// TclEventType: FILE_SET_CHANGE
+selectCodeEditor("SubBytes.sv", 171, 434); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 146, 442); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 146, 442, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// TclEventType: DG_GRAPH_STALE
+// Elapsed Time for: 'L.f': 47m:21s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+selectCodeEditor("SubBytes.sv", 162, 448); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 162, 448, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed Time for: 'L.f': 47m:23s
+selectCodeEditor("SubBytes.sv", 159, 448); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 159, 445, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 443, 434); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 47m:27s
+// Elapsed Time for: 'L.f': 47m:29s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Synthesis, Run Synthesis]", 15, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Run Command: PAResourceCommand.PACommandNames_RUN_SYNTHESIS
+// TclEventType: RUN_MODIFY
+// TclEventType: RUN_RESET
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_RESET
+// TclEventType: RUN_MODIFY
+// Tcl Message: reset_run synth_1 
+selectButton(RDIResource.BaseDialog_OK, "OK", "Launch Runs"); // a (RDIResource.BaseDialog_OK)
+dismissDialog("Launch Runs"); // f (dialog2)
+// TclEventType: RUN_LAUNCH
+// TclEventType: RUN_MODIFY
+// Tcl Message: launch_runs synth_1 -jobs 16 
+// Tcl Message: [Sun Sep  1 21:05:56 2024] Launched synth_1... Run output will be captured here: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/runme.log 
+dismissDialog("Starting Design Runs"); // bj (Starting Design Runs Progress)
+// TclEventType: RUN_STATUS_CHANGE
+// Elapsed time: 11 seconds
+selectCodeEditor("SubBytes.sv", 182, 437); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 809, 461); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 47m:49s
+selectCodeEditor("SubBytes.sv", 143, 436); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 47m:51s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+selectCodeEditor("SubBytes.sv", 426, 421); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 410, 349); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 411, 427); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 449, 497); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 421, 466); // ac (SubBytes.sv)
+// TclEventType: RUN_FAILED
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_STEP_COMPLETED
+selectButton(RDIResource.BaseDialog_OK, "OK", "Synthesis Failed"); // a (RDIResource.BaseDialog_OK)
+// Run Command: PAResourceCommand.PACommandNames_MESSAGE_WINDOW
+dismissDialog("Synthesis Failed"); // Q.a (dialog3)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Synthesis, [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40]. ]", 4, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Synthesis, [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40]. ]", 4, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 796, 470); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 501, 473); // ac (SubBytes.sv)
+// Elapsed time: 27 seconds
+selectCodeEditor("SubBytes.sv", 110, 412); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 110, 412, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 397, 445); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 397, 445, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 302, 286); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 302, 286, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 24, 565); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 24, 563, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 372, 427); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 373, 428, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 105, 481); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 105, 483, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 128, 415); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 128, 415, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 59, 543); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 59, 541, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 171, 319); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 171, 319, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 59, 385); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 59, 385, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 291, 291); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 291, 291, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 28, 563); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 416, 494); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 432, 471); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 567, 474); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 567, 474, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 473, 463); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 473, 463, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 638, 457); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 770, 457); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 186, 473); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 186, 473, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 320, 467); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 357, 465); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, RTL Analysis, Run Linter]", 12, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// TclEventType: MSGMGR_REFRESH_MSG
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes INFO: [Synth 8-7075] Helper process launched with PID 16764 
+// HMemoryUtils.trashcanNow. Engine heap size: 1,544 MB. GUI used memory: 112 MB. Current time: 9/1/24, 9:07:33 PM CEST
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2142.438 ; gain = 408.602 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// TclEventType: ELABORATE_FAIL
+// TclEventType: LINTER_RUN
+// Tcl Message: ERROR: [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40] 
+// Tcl Message: INFO: [Synth 8-10285] module 'SubBytes' is ignored due to previous errors [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:45] INFO: [Synth 8-9084] Verilog file 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv' ignored due to errors 
+// Tcl Message: ERROR: [Synth 8-439] module 'SubBytes' not found 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2252.141 ; gain = 518.305 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: synthesize failed 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 7 Infos, 0 Warnings, 0 Critical Warnings and 2 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2252.141 ; gain = 518.305 
+// Tcl Message: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors. 
+// CommandFailedException: ERROR: [Common 17-69] Command failed: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors.  
+// HOptionPane Error: 'Run Linter Failed. Check Messages for details. (Run Linter Failed)'
+// 'a' command handler elapsed time: 10 seconds
+// Elapsed time: 10 seconds
+selectButton("OptionPane.button", "OK", "Run Linter Failed"); // JButton (OptionPane.button)
+// [Engine Memory]: 1,915 MB (+533306kb) [00:49:48]
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40]. ]", 3, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40]. ]", 3, true, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40]. ]", 3, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40]. ]", 3, true, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-439] module 'SubBytes' not found. ]", 4, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-439] module 'SubBytes' not found. ]", 4, true, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-439] module 'SubBytes' not found. ]", 4, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-439] module 'SubBytes' not found. ]", 4, true, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click - Node
+selectCodeEditor("SubBytes.sv", 562, 472); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 620, 442); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 145, 450); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 145, 439); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 353, 459); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 285, 341); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 181, 203); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 329, 470); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 598, 498); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 369, 497); // ac (SubBytes.sv)
+// Elapsed time: 27 seconds
+selectCodeEditor("SubBytes.sv", 186, 280); // ac (SubBytes.sv)
+// Elapsed time: 72 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "r_con.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "r_con.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 170, 323); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 182, 319); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 51m:43s
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 51m:45s
+// Elapsed Time for: 'L.f': 51m:47s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// Elapsed time: 17 seconds
+selectCodeEditor("SubBytes.sv", 363, 289); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 181, 410); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 52m:23s
+// Elapsed time: 23 seconds
+selectCodeEditor("SubBytes.sv", 532, 436); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 52m:25s
+selectCodeEditor("SubBytes.sv", 643, 492); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 462, 528); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, RTL Analysis, Run Linter]", 12, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:06 . Memory (MB): peak = 2252.141 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// TclEventType: LINTER_RUN
+// Tcl Message: INFO: [Synth 8-6157] synthesizing module 'SubBytes' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:23] INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40] INFO: [Synth 8-6155] done synthesizing module 'SubBytes' (1#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:23] 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:09 ; elapsed = 00:00:08 . Memory (MB): peak = 2262.605 ; gain = 10.465 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: INFO: [Synth 37-85] Total of 0 linter message(s) generated. INFO: [Synth 37-45] Linter Run Finished! 
+// Tcl Message: Synthesis Optimization Runtime : Time (s): cpu = 00:00:09 ; elapsed = 00:00:08 . Memory (MB): peak = 2262.605 ; gain = 10.465 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 8 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2262.605 ; gain = 10.465 
+// 'a' command handler elapsed time: 8 seconds
+dismissDialog("Run Linter"); // bj (Run Linter Progress)
+selectTab((HResource) null, (HResource) null, "Messages", 1); // aa
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Synthesis, Run Synthesis]", 15, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Run Command: PAResourceCommand.PACommandNames_RUN_SYNTHESIS
+// TclEventType: RUN_MODIFY
+// TclEventType: RUN_RESET
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_RESET
+// TclEventType: RUN_MODIFY
+// Tcl Message: reset_run synth_1 
+selectButton(RDIResource.BaseDialog_OK, "OK", "Launch Runs"); // a (RDIResource.BaseDialog_OK)
+dismissDialog("Launch Runs"); // f (dialog4)
+// TclEventType: RUN_LAUNCH
+// TclEventType: RUN_MODIFY
+// Tcl Message: launch_runs synth_1 -jobs 16 
+// Tcl Message: [Sun Sep  1 21:11:11 2024] Launched synth_1... Run output will be captured here: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/runme.log 
+dismissDialog("Starting Design Runs"); // bj (Starting Design Runs Progress)
+// TclEventType: RUN_STATUS_CHANGE
+selectTab((HResource) null, (HResource) null, "Log", 2); // aa
+selectTab((HResource) null, (HResource) null, "Messages", 1); // aa
+selectTab((HResource) null, (HResource) null, "Tcl Console", 0); // aa
+selectTab((HResource) null, (HResource) null, "Messages", 1); // aa
+// TclEventType: RUN_COMPLETED
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_STEP_COMPLETED
+// Elapsed time: 56 seconds
+selectButton(RDIResource.BaseDialog_CANCEL, "Cancel", "Synthesis Completed"); // a (RDIResource.BaseDialog_CANCEL)
+dismissDialog("Synthesis Completed"); // Q.a (dialog5)
+collapseTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands]", 0); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+// Elapsed time: 10 seconds
+selectTab((HResource) null, (HResource) null, "Tcl Console", 0); // aa
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 1, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 1, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 504, 226); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 489, 258); // ac (SubBytes.sv)
+// Elapsed time: 10 seconds
+selectCodeEditor("SubBytes.sv", 436, 358); // ac (SubBytes.sv)
+// Elapsed time: 20 seconds
+selectButton(RDIResource.TclConsoleView_CLEAR_ALL_OUTPUT_IN_TCL_CONSOLE, "Tcl Console_remove"); // B (RDIResource.TclConsoleView_CLEAR_ALL_OUTPUT_IN_TCL_CONSOLE, Tcl Console_remove)
+selectButton("OptionPane.button", "Yes", "Tcl Console"); // JButton (OptionPane.button)
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Synthesis, Run Synthesis]", 15, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Run Command: PAResourceCommand.PACommandNames_RUN_SYNTHESIS
+selectButton("OptionPane.button", "OK", "Run Synthesis"); // JButton (OptionPane.button)
+// TclEventType: RUN_MODIFY
+// TclEventType: RUN_RESET
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_RESET
+// TclEventType: RUN_MODIFY
+// Tcl Message: reset_run synth_1 
+// Tcl Message: INFO: [Project 1-1161] Replacing file C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp with file C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/SubBytes.dcp 
+// TclEventType: FILE_SET_CHANGE
+selectButton(RDIResource.BaseDialog_OK, "OK", "Launch Runs"); // a (RDIResource.BaseDialog_OK)
+dismissDialog("Launch Runs"); // f (dialog6)
+// TclEventType: RUN_LAUNCH
+// TclEventType: RUN_MODIFY
+// Tcl Message: launch_runs synth_1 -jobs 16 
+// Tcl Message: [Sun Sep  1 21:13:20 2024] Launched synth_1... Run output will be captured here: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/runme.log 
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// TclEventType: RUN_STATUS_CHANGE
+selectButton(PAResourceAtoD.CmdMsgDialog_OPEN_MESSAGES_VIEW, "Open Messages View", "Launch Run Critical Messages"); // a (PAResourceAtoD.CmdMsgDialog_OPEN_MESSAGES_VIEW)
+// 'i' command handler elapsed time: 6 seconds
+// Run Command: PAResourceCommand.PACommandNames_MESSAGE_WINDOW
+dismissDialog("Launch Run Critical Messages"); // ba (dialog7)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40]. ]", 3, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-36] 's_box' is not declared [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:40]. ]", 3, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 316, 447); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 504, 415); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 127, 184); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 127, 184, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 137, 302); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 155, 357); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 117, 254); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 144, 264); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 132, 267); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 132, 267, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed time: 25 seconds
+selectCodeEditor("SubBytes.sv", 247, 492); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 247, 492, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 247, 492); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 313, 267); // ac (SubBytes.sv)
+typeControlKey((HResource) null, "SubBytes.sv", 'v'); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 55m:47s
+selectCodeEditor("SubBytes.sv", 483, 352); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 470, 394); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 55m:49s
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Synthesis, Run Synthesis]", 15, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Run Command: PAResourceCommand.PACommandNames_RUN_SYNTHESIS
+// TclEventType: RUN_COMPLETED
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_STEP_COMPLETED
+selectButton("OptionPane.button", "Cancel", "Run Synthesis"); // JButton (OptionPane.button)
+selectButton(PAResourceItoN.MsgView_CLEAR_MESSAGES_RESULTING_FROM_USER_EXECUTED, "Messages_cleanUpMessages"); // B (PAResourceItoN.MsgView_CLEAR_MESSAGES_RESULTING_FROM_USER_EXECUTED, Messages_cleanUpMessages)
+selectCodeEditor("SubBytes.sv", 304, 463); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 306, 247); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 304, 260); // ac (SubBytes.sv)
+// Elapsed time: 11 seconds
+selectCodeEditor("SubBytes.sv", 365, 263); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 387, 286); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, RTL Analysis, Run Linter]", 12, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// TclEventType: MSGMGR_REFRESH_MSG
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:06 . Memory (MB): peak = 2279.621 ; gain = 13.250 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// HMemoryUtils.trashcanNow. Engine heap size: 1,935 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:14:48 PM CEST
+// TclEventType: ELABORATE_FAIL
+// TclEventType: LINTER_RUN
+// Tcl Message: ERROR: [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:32] 
+// Tcl Message: INFO: [Synth 8-10285] module 'SubBytes' is ignored due to previous errors [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:47] INFO: [Synth 8-9084] Verilog file 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv' ignored due to errors 
+// Tcl Message: ERROR: [Synth 8-439] module 'SubBytes' not found 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2303.766 ; gain = 37.395 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: synthesize failed 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 5 Infos, 0 Warnings, 0 Critical Warnings and 2 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2303.766 ; gain = 37.395 
+// Tcl Message: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors. 
+// CommandFailedException: ERROR: [Common 17-69] Command failed: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors.  
+// HOptionPane Error: 'Run Linter Failed. Check Messages for details. (Run Linter Failed)'
+// 'a' command handler elapsed time: 10 seconds
+// Elapsed time: 10 seconds
+selectButton("OptionPane.button", "OK", "Run Linter Failed"); // JButton (OptionPane.button)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:32]. ]", 2, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:32]. ]", 2, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+// Elapsed time: 81 seconds
+selectCodeEditor("SubBytes.sv", 48, 289); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 156, 280); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 239, 280); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 282, 296); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 282, 296, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 71, 266); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 71, 266, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:32]. ]", 2, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:32]. ]", 2, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+// Elapsed time: 35 seconds
+selectCodeEditor("SubBytes.sv", 337, 257); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 350, 319); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+selectCodeEditor("SubBytes.sv", 345, 313); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 58m:41s
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// Elapsed Time for: 'L.f': 58m:43s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+selectCodeEditor("SubBytes.sv", 2, 312); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 58m:45s
+selectCodeEditor("SubBytes.sv", 174, 296); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 58m:47s
+selectCodeEditor("SubBytes.sv", 217, 233); // ac (SubBytes.sv)
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// Elapsed Time for: 'L.f': 58m:49s
+selectCodeEditor("SubBytes.sv", 183, 112); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+selectCodeEditor("SubBytes.sv", 287, 158); // ac (SubBytes.sv)
+// Elapsed Time for: 'L.f': 58m:57s
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, RTL Analysis, Run Linter]", 12, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// TclEventType: ELABORATE_FAIL
+// TclEventType: LINTER_RUN
+// Tcl Message: ERROR: [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34] 
+// Tcl Message: INFO: [Synth 8-10285] module 'SubBytes' is ignored due to previous errors [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:50] INFO: [Synth 8-9084] Verilog file 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv' ignored due to errors 
+// Tcl Message: ERROR: [Synth 8-439] module 'SubBytes' not found 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: synthesize failed 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 5 Infos, 2 Warnings, 1 Critical Warnings and 2 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors. 
+// CommandFailedException: ERROR: [Common 17-69] Command failed: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors.  
+// HOptionPane Error: 'Run Linter Failed. Check Messages for details. (Run Linter Failed)'
+// 'a' command handler elapsed time: 10 seconds
+// Elapsed time: 10 seconds
+selectButton("OptionPane.button", "OK", "Run Linter Failed"); // JButton (OptionPane.button)
+// Elapsed Time for: 'L.f': 59m:09s
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:32]. ]", 2, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:32]. ]", 2, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:32]. ]", 2, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+messagesViewCrossProbe(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "src;-;C:\Users\dzemi\Desktop\AES-256-SystemVerilog\AES_VERILOG.srcs\sources_1\new\SubBytes.sv;-;;-;16;-;line;-;32;-;;-;16;-;"); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectCodeEditor("SubBytes.sv", 67, 147); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 298, 162); // ac (SubBytes.sv)
+selectButton(PAResourceItoN.MsgView_CLEAR_MESSAGES_RESULTING_FROM_USER_EXECUTED, "Messages_cleanUpMessages"); // B (PAResourceItoN.MsgView_CLEAR_MESSAGES_RESULTING_FROM_USER_EXECUTED, Messages_cleanUpMessages)
+selectCodeEditor("SubBytes.sv", 444, 408); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 3, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 3, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 373, 386); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 323, 331); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 328, 312); // ac (SubBytes.sv)
+// Elapsed time: 18 seconds
+selectCodeEditor("SubBytes.sv", 439, 200); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 357, 474); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectCodeEditor("SubBytes.sv", 396, 545); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 3, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 3, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+// [GUI Memory]: 190 MB (+951kb) [01:00:17]
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Analysis Results, sim_1, [HDL 9-1206] Syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 2, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Analysis Results, sim_1, [HDL 9-1206] Syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 2, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 186, 336); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 206, 322); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 85, 310); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 85, 310, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+typeControlKey((HResource) null, "SubBytes.sv", 'v'); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 01h:00m:03s
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, RTL Analysis, Run Linter]", 12, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. 
+selectButton(RDIResource.ProgressDialog_BACKGROUND, "Background", "Run Linter"); // a (RDIResource.ProgressDialog_BACKGROUND)
+// 'a' command handler elapsed time: 3 seconds
+applyEnter(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, (String) null); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:06 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// TclEventType: ELABORATE_FAIL
+// TclEventType: LINTER_RUN
+// Tcl Message: ERROR: [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34] 
+// Tcl Message: INFO: [Synth 8-10285] module 'SubBytes' is ignored due to previous errors [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:50] INFO: [Synth 8-9084] Verilog file 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv' ignored due to errors 
+// Tcl Message: ERROR: [Synth 8-439] module 'SubBytes' not found 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:09 ; elapsed = 00:00:08 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: synthesize failed 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 5 Infos, 2 Warnings, 1 Critical Warnings and 2 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors. 
+// CommandFailedException: ERROR: [Common 17-69] Command failed: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors.  
+// HOptionPane Error: 'Run Linter Failed. Check Messages for details. (Run Linter Failed)'
+dismissDialog("Run Linter"); // bj (Run Linter Progress)
+selectButton("OptionPane.button", "OK", "Run Linter Failed"); // JButton (OptionPane.button)
+// Elapsed Time for: 'L.f': 01h:00m:15s
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, Syntax Error Files, SubBytes.sv]", 2, false, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click
+selectCodeEditor("SubBytes.sv", 197, 332); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 168, 314); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 01h:00m:23s
+// Elapsed Time for: 'L.f': 01h:00m:25s
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, RTL Analysis, Run Linter]", 12, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:06 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// TclEventType: ELABORATE_FAIL
+// TclEventType: LINTER_RUN
+// Tcl Message: ERROR: [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34] 
+// Tcl Message: INFO: [Synth 8-10285] module 'SubBytes' is ignored due to previous errors [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:50] INFO: [Synth 8-9084] Verilog file 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv' ignored due to errors 
+// Tcl Message: ERROR: [Synth 8-439] module 'SubBytes' not found 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:09 ; elapsed = 00:00:08 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: synthesize failed 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 5 Infos, 2 Warnings, 0 Critical Warnings and 2 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:09 ; elapsed = 00:00:08 . Memory (MB): peak = 2303.766 ; gain = 0.000 
+// Tcl Message: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors. 
+// CommandFailedException: ERROR: [Common 17-69] Command failed: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors.  
+// HOptionPane Error: 'Run Linter Failed. Check Messages for details. (Run Linter Failed)'
+// 'a' command handler elapsed time: 17 seconds
+// Elapsed time: 17 seconds
+selectButton("OptionPane.button", "OK", "Run Linter Failed"); // JButton (OptionPane.button)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 2, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 2, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 5, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 5, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Analysis Results, sim_1, [HDL 9-1206] Syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 9, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Analysis Results, sim_1, [HDL 9-1206] Syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 9, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Analysis Results, sim_1, [HDL 9-1206] Syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 9, false, false, false, false, true, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Popup Trigger
+openHTML ("http://www.xilinx.com/cgi-bin/search/errornav?E=&B=&T=HDL%3A9-1206");u (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+// HMemoryUtils.trashcanNow. Engine heap size: 1,959 MB. GUI used memory: 115 MB. Current time: 9/1/24, 9:19:23 PM CEST
+// Elapsed time: 316 seconds
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources]", 24, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Node
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources]", 24); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources, sim_1]", 25); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources, sim_1, Memory File]", 43); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+collapseTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources]", 24); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectCodeEditor("SubBytes.sv", 393, 141); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 393, 141, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "r_con.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 430, 176); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 179, 317); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 01h:06m:35s
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, RTL Analysis, Run Linter]", 12, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. 
+// Tcl Message: ERROR: [Common 17-180] Spawn failed: No error 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 2319.582 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// TclEventType: ELABORATE_FAIL
+// TclEventType: LINTER_RUN
+// Tcl Message: ERROR: [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34] 
+// Tcl Message: INFO: [Synth 8-10285] module 'SubBytes' is ignored due to previous errors [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:50] INFO: [Synth 8-9084] Verilog file 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv' ignored due to errors 
+// Tcl Message: ERROR: [Synth 8-439] module 'SubBytes' not found 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 2319.582 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: synthesize failed 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 5 Infos, 2 Warnings, 0 Critical Warnings and 3 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 2319.582 ; gain = 0.000 
+// Tcl Message: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors. 
+// CommandFailedException: ERROR: [Common 17-69] Command failed: ERROR: [Common 17-39] 'synth_design' failed due to earlier errors.  
+// HOptionPane Error: 'Run Linter Failed. Check Messages for details. (Run Linter Failed)'
+// 'a' command handler elapsed time: 17 seconds
+// Elapsed time: 17 seconds
+selectButton("OptionPane.button", "OK", "Run Linter Failed"); // JButton (OptionPane.button)
+// Elapsed Time for: 'L.f': 01h:06m:55s
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 3, false); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-2716] syntax error near '$readmemh' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:34]. ]", 3, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+// Elapsed time: 31 seconds
+selectCodeEditor("SubBytes.sv", 332, 322); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 332, 322, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed time: 54 seconds
+selectCodeEditor("SubBytes.sv", 606, 520); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 606, 520, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed time: 24 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "r_con.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("s_box.mem", 69, 24); // ac (s_box.mem)
+selectCodeEditor("s_box.mem", 93, 35); // ac (s_box.mem)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "r_con.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("r_con.mem", 90, 137); // ac (r_con.mem)
+selectCodeEditor("r_con.mem", 24, 599); // ac (r_con.mem)
+selectCodeEditor("r_con.mem", 32, 626); // ac (r_con.mem)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 453, 522); // ac (SubBytes.sv)
+// Elapsed time: 44 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "s_box.mem", 0); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "r_con.mem", 1); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "SubBytes.sv", 2); // o (PlanAheadTabBaseWorkspace_JideTabbedPane)
+selectCodeEditor("SubBytes.sv", 19, 194); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 19, 194, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 126, 177); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 126, 177, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+// Elapsed time: 39 seconds
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [filemgmt 56-199] Attempt to get parsing info during refresh. On-the-fly syntax checking information may be incorrect. [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv:]. ]", 2, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [filemgmt 56-199] Attempt to get parsing info during refresh. On-the-fly syntax checking information may be incorrect. [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv:]. , [filemgmt 56-199] Attempt to get parsing info during refresh. On-the-fly syntax checking information may be incorrect. [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv:]. ]", 4, false, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [filemgmt 56-199] Attempt to get parsing info during refresh. On-the-fly syntax checking information may be incorrect. [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv:]. ]", 2, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [filemgmt 56-199] Attempt to get parsing info during refresh. On-the-fly syntax checking information may be incorrect. [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv:]. ]", 2, true, false, false, false, false, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Double Click - Node
+selectTree(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "[, Vivado Commands, General Messages, [Synth 8-10643] design contains a SystemVerilog implicit generate region [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:35]. ]", 4, true); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE) - Node
+messagesViewCrossProbe(PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE, "src;-;C:\Users\dzemi\Desktop\AES-256-SystemVerilog\AES_VERILOG.srcs\sources_1\new\SubBytes.sv;-;;-;16;-;line;-;35;-;;-;16;-;"); // u.d (PAResourceItoN.MsgTreePanel_MESSAGE_VIEW_TREE)
+// Elapsed time: 11 seconds
+selectCodeEditor("SubBytes.sv", 26, 263); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 26, 263, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 326, 216); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 326, 216, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 326, 216); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 445, 413); // ac (SubBytes.sv)
+typeControlKey((HResource) null, "SubBytes.sv", 'v'); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 163, 434); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 185, 463); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 594, 460); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 465, 433); // ac (SubBytes.sv)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Elapsed Time for: 'L.f': 01h:11m:14s
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, RTL Analysis, Run Linter]", 12, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. 
+// HMemoryUtils.trashcanNow. Engine heap size: 1,981 MB. GUI used memory: 98 MB. Current time: 9/1/24, 9:29:43 PM CEST
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 2343.449 ; gain = 23.867 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// TclEventType: LINTER_RUN
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 2343.449 ; gain = 23.867 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: INFO: [Synth 37-85] Total of 0 linter message(s) generated. INFO: [Synth 37-45] Linter Run Finished! 
+// Tcl Message: Synthesis Optimization Runtime : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 2343.449 ; gain = 23.867 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 23 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 2343.449 ; gain = 23.867 
+// 'a' command handler elapsed time: 9 seconds
+dismissDialog("Run Linter"); // bj (Run Linter Progress)
+// Elapsed Time for: 'L.f': 01h:11m:26s
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Synthesis, Run Synthesis]", 15, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Run Command: PAResourceCommand.PACommandNames_RUN_SYNTHESIS
+// TclEventType: RUN_MODIFY
+// TclEventType: RUN_RESET
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_RESET
+// TclEventType: RUN_MODIFY
+// Tcl Message: reset_run synth_1 
+// Tcl Message: INFO: [Project 1-1161] Replacing file C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp with file C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/SubBytes.dcp 
+// TclEventType: FILE_SET_CHANGE
+selectButton(RDIResource.BaseDialog_CANCEL, "Cancel", "Launch Runs"); // a (RDIResource.BaseDialog_CANCEL)
+dismissDialog("Launch Runs"); // f (dialog8)
+selectButton((HResource) null, "Reload"); // g
+// TclEventType: MSGMGR_REFRESH_MSG
+// Tcl Message: synth_design -top SubBytes -part xc7z020clg400-1 -lint  
+// Tcl Message: Command: synth_design -top SubBytes -part xc7z020clg400-1 -lint Starting synth_design Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020' INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes. 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2343.449 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Clean up Linter database... 
+// TclEventType: LINTER_RUN
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Synthesize : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2343.449 ; gain = 0.000 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: INFO: [Synth 37-85] Total of 0 linter message(s) generated. INFO: [Synth 37-45] Linter Run Finished! 
+// Tcl Message: Synthesis Optimization Runtime : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2343.449 ; gain = 0.000 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 23 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2343.449 ; gain = 0.000 
+dismissDialog("Run Linter"); // bj (Run Linter Progress)
+selectCodeEditor("SubBytes.sv", 202, 436); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 202, 436, false, false, false, false, true); // ac (SubBytes.sv) - Double Click
+selectCodeEditor("SubBytes.sv", 202, 436); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Synthesis, Run Synthesis]", 15, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+// Run Command: PAResourceCommand.PACommandNames_RUN_SYNTHESIS
+selectButton(RDIResource.BaseDialog_OK, "OK", "Launch Runs"); // a (RDIResource.BaseDialog_OK)
+dismissDialog("Launch Runs"); // f (dialog9)
+// TclEventType: RUN_LAUNCH
+// TclEventType: RUN_MODIFY
+// Tcl Message: launch_runs synth_1 -jobs 16 
+// Tcl Message: [Sun Sep  1 21:30:16 2024] Launched synth_1... Run output will be captured here: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/runme.log 
+dismissDialog("Starting Design Runs"); // bj (Starting Design Runs Progress)
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_COMPLETED
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_STEP_COMPLETED
+// Elapsed time: 77 seconds
+selectButton(RDIResource.BaseDialog_CANCEL, "Cancel", "Synthesis Completed"); // a (RDIResource.BaseDialog_CANCEL)
+dismissDialog("Synthesis Completed"); // Q.a (dialog10)
+selectCodeEditor("SubBytes.sv", 347, 481); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Simulation, Run Simulation]", 10, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+selectMenuItem(PAResourceCommand.PACommandNames_SIMULATION_RUN_BEHAVIORAL, "Run Behavioral Simulation"); // ap (PAResourceCommand.PACommandNames_SIMULATION_RUN_BEHAVIORAL, simulation_run_behavioral_menu)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_RUN_BEHAVIORAL
+// TclEventType: LAUNCH_SIM
+// TclEventType: FILE_SET_OPTIONS_CHANGE
+// Tcl Message: launch_simulation 
+// Tcl Message: Command: launch_simulation  
+// Tcl Message: INFO: [Vivado 12-12493] Simulation top is 'AddRoundKey' 
+// Tcl Message: "xvlog --incr --relax -L uvm -prj AddRoundKey_vlog.prj" 
+// TclEventType: LAUNCH_SIM_LOG
+// Tcl Message: INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv" into library xil_defaultlib INFO: [VRFC 10-311] analyzing module AddRoundKey INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/sim_1/behav/xsim/glbl.v" into library xil_defaultlib INFO: [VRFC 10-311] analyzing module glbl 
+// Tcl Message: INFO: [USF-XSim-69] 'compile' step finished in '3' seconds INFO: [USF-XSim-3] XSim::Elaborate design INFO: [USF-XSim-61] Executing 'ELABORATE' step in 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/sim_1/behav/xsim' 
+// Tcl Message: "xelab --incr --debug typical --relax --mt 2 -L xil_defaultlib -L uvm -L unisims_ver -L unimacro_ver -L secureip --snapshot AddRoundKey_behav xil_defaultlib.AddRoundKey xil_defaultlib.glbl -log elaborate.log" 
+// TclEventType: LAUNCH_SIM
+// TclEventType: LOAD_FEATURE
+// Tcl Message: Built simulation snapshot AddRoundKey_behav 
+// Tcl Message: INFO: [USF-XSim-69] 'elaborate' step finished in '4' seconds INFO: [USF-XSim-4] XSim::Simulate design INFO: [USF-XSim-61] Executing 'SIMULATE' step in 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/sim_1/behav/xsim' INFO: [USF-XSim-98] *** Running xsim 
+// Tcl Message:    with args "AddRoundKey_behav -key {Behavioral:sim_1:Functional:AddRoundKey} -tclbatch {AddRoundKey.tcl} -log {simulate.log}" 
+// Tcl Message: INFO: [USF-XSim-8] Loading simulator feature 
+// TclEventType: SIMULATION_CREATE_SIMULATION_OBJECT
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// Tcl Message: Time resolution is 1 ps 
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: WAVEFORM_UPDATE_TITLE
+// TclEventType: WAVEFORM_OPEN_WCFG
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: WAVEFORM_OPEN_WCFG
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// Tcl Message: source AddRoundKey.tcl 
+// TclEventType: WAVEFORM_MODEL_EVENT
+// Tcl Message: # set curr_wave [current_wave_config] # if { [string length $curr_wave] == 0 } { #   if { [llength [get_objects]] > 0} { #     add_wave / #     set_property needs_save false [current_wave_config] #   } else { #      send_msg_id Add_Wave-1 WARNING "No top level signals found. Simulator will start without a wave window. If you want to open a wave window go to 'File->New Waveform Configuration' or type 'create_wave_config' in the TCL console." #   } # } 
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_UPDATE_TITLE
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,993 MB. GUI used memory: 104 MB. Current time: 9/1/24, 9:31:55 PM CEST
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_TITLE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: # run 1000ns 
+// Tcl Message: INFO: [USF-XSim-96] XSim completed. Design snapshot 'AddRoundKey_behav' loaded. INFO: [USF-XSim-97] XSim simulation ran for 1000ns 
+// Tcl Message: launch_simulation: Time (s): cpu = 00:00:06 ; elapsed = 00:00:10 . Memory (MB): peak = 2351.840 ; gain = 8.391 
+// 'd' command handler elapsed time: 10 seconds
+// Elapsed time: 10 seconds
+dismissDialog("Run Simulation"); // e (Run Simulation Progress)
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, valid_data]", 5, false, false, false, false, true, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Popup Trigger
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// HMemoryUtils.trashcanNow. Engine heap size: 2,001 MB. GUI used memory: 104 MB. Current time: 9/1/24, 9:32:13 PM CEST
+// Elapsed time: 16 seconds
+selectButton(PAResourceTtoZ.TaskBanner_CLOSE, (String) null); // j (PAResourceTtoZ.TaskBanner_CLOSE)
+closeTask("Simulation", "Behavioral Simulation - Functional - sim_1 - AddRoundKey", "DesignTask.SIMULATION");
+selectButton(RDIResource.BaseDialog_OK, "OK", "Confirm Close"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: WAVEFORM_CLOSE_WCFG
+dismissDialog("Confirm Close"); // t (dialog11)
+// TclEventType: SIMULATION_CLOSE_SIMULATION
+// Tcl Message: close_sim 
+// Tcl Message: INFO: [Simtcl 6-16] Simulation closed 
+dismissDialog("Close"); // bj (Close Progress)
+selectCodeEditor("SubBytes.sv", 417, 496); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 1, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, SubBytes (SubBytes.sv)]", 1, false, false, false, false, true, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Popup Trigger
+selectMenu(PAResourceCommand.PACommandNames_OPEN_FILE_WITH, "Open With"); // am (PAResourceCommand.PACommandNames_OPEN_FILE_WITH, Open With)
+selectMenu(PAResourceCommand.PACommandNames_AUTO_UPDATE_HIER, "Hierarchy Update"); // am (PAResourceCommand.PACommandNames_AUTO_UPDATE_HIER, Hierarchy Update)
+selectCodeEditor("SubBytes.sv", 765, 262); // ac (SubBytes.sv)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources]", 22, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources]", 22, true, false, false, false, false, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Double Click - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources, sim_1]", 23, true); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Node
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources, sim_1]", 23); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources, sim_1, SubBytes (SubBytes.sv)]", 36, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources, sim_1, SubBytes (SubBytes.sv)]", 36, false, false, false, false, true, false); // E (PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE) - Popup Trigger
+selectMenu(PAResourceCommand.PACommandNames_AUTO_UPDATE_HIER, "Hierarchy Update"); // am (PAResourceCommand.PACommandNames_AUTO_UPDATE_HIER, Hierarchy Update)
+selectMenu(PAResourceQtoS.SrcMenu_IP_HIERARCHY, "IP Hierarchy"); // am (PAResourceQtoS.SrcMenu_IP_HIERARCHY, IP Hierarchy)
+selectMenuItem(PAResourceCommand.PACommandNames_SET_AS_TOP, "Set as Top"); // ap (PAResourceCommand.PACommandNames_SET_AS_TOP, set_as_top_menu)
+// Run Command: PAResourceCommand.PACommandNames_SET_AS_TOP
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: FILE_SET_OPTIONS_CHANGE
+// Tcl Message: set_property top SubBytes [get_filesets sim_1] 
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: FILE_SET_OPTIONS_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// Tcl Message: set_property top_lib xil_defaultlib [get_filesets sim_1] 
+// TclEventType: DG_GRAPH_STALE
+// Elapsed Time for: 'L.f': 01h:14m:20s
+// Elapsed Time for: 'L.f': 01h:14m:22s
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Simulation, Run Simulation]", 10, false); // g (PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, Flow Navigator Tree)
+selectMenuItem(PAResourceCommand.PACommandNames_SIMULATION_RUN_BEHAVIORAL, "Run Behavioral Simulation"); // ap (PAResourceCommand.PACommandNames_SIMULATION_RUN_BEHAVIORAL, simulation_run_behavioral_menu)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_RUN_BEHAVIORAL
+// TclEventType: LAUNCH_SIM
+// TclEventType: FILE_SET_OPTIONS_CHANGE
+// Tcl Message: launch_simulation 
+// Tcl Message: Command: launch_simulation  
+// Tcl Message: INFO: [Vivado 12-12493] Simulation top is 'SubBytes' 
+// Tcl Message: "xvlog --incr --relax -L uvm -prj SubBytes_vlog.prj" 
+// TclEventType: LAUNCH_SIM_LOG
+// Tcl Message: INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv" into library xil_defaultlib INFO: [VRFC 10-311] analyzing module SubBytes 
+// Tcl Message: INFO: [USF-XSim-69] 'compile' step finished in '2' seconds INFO: [USF-XSim-3] XSim::Elaborate design INFO: [USF-XSim-61] Executing 'ELABORATE' step in 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/sim_1/behav/xsim' 
+// Tcl Message: "xelab --incr --debug typical --relax --mt 2 -L xil_defaultlib -L uvm -L unisims_ver -L unimacro_ver -L secureip --snapshot SubBytes_behav xil_defaultlib.SubBytes xil_defaultlib.glbl -log elaborate.log" 
+// TclEventType: LAUNCH_SIM
+// Tcl Message: INFO: [USF-XSim-69] 'elaborate' step finished in '2' seconds INFO: [USF-XSim-4] XSim::Simulate design INFO: [USF-XSim-61] Executing 'SIMULATE' step in 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/sim_1/behav/xsim' INFO: [USF-XSim-98] *** Running xsim 
+// Tcl Message:    with args "SubBytes_behav -key {Behavioral:sim_1:Functional:SubBytes} -tclbatch {SubBytes.tcl} -log {simulate.log}" 
+// Tcl Message: INFO: [USF-XSim-8] Loading simulator feature 
+// TclEventType: SIMULATION_CREATE_SIMULATION_OBJECT
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: WAVEFORM_UPDATE_TITLE
+// TclEventType: WAVEFORM_OPEN_WCFG
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// Tcl Message: Time resolution is 1 ps 
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: WAVEFORM_OPEN_WCFG
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,001 MB. GUI used memory: 111 MB. Current time: 9/1/24, 9:32:58 PM CEST
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_UPDATE_TITLE
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_TITLE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: source SubBytes.tcl 
+// Tcl Message: # set curr_wave [current_wave_config] # if { [string length $curr_wave] == 0 } { #   if { [llength [get_objects]] > 0} { #     add_wave / #     set_property needs_save false [current_wave_config] #   } else { #      send_msg_id Add_Wave-1 WARNING "No top level signals found. Simulator will start without a wave window. If you want to open a wave window go to 'File->New Waveform Configuration' or type 'create_wave_config' in the TCL console." #   } # } # run 1000ns 
+// Tcl Message: INFO: [USF-XSim-96] XSim completed. Design snapshot 'SubBytes_behav' loaded. INFO: [USF-XSim-97] XSim simulation ran for 1000ns 
+// Tcl Message: launch_simulation: Time (s): cpu = 00:00:03 ; elapsed = 00:00:07 . Memory (MB): peak = 2355.102 ; gain = 0.891 
+// 'd' command handler elapsed time: 7 seconds
+dismissDialog("Run Simulation"); // e (Run Simulation Progress)
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// HMemoryUtils.trashcanNow. Engine heap size: 2,002 MB. GUI used memory: 112 MB. Current time: 9/1/24, 9:33:10 PM CEST
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,002 MB. GUI used memory: 112 MB. Current time: 9/1/24, 9:33:16 PM CEST
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,003 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:33:18 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// Elapsed time: 26 seconds
+selectButton(RDIResource.GraphicalView_ZOOM_OUT, "Waveform Viewer_zoom_out"); // B (RDIResource.GraphicalView_ZOOM_OUT, Waveform Viewer_zoom_out)
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,006 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:33:25 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,006 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:33:26 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,006 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:33:26 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,006 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:33:27 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,006 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:33:27 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,006 MB. GUI used memory: 113 MB. Current time: 9/1/24, 9:33:27 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// [Engine Memory]: 2,012 MB (+1525kb) [01:15:46]
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,034 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:34:07 PM CEST
+// Elapsed time: 42 seconds
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, input_state[0:127]]", 2, true); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Node
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, input_state[0:127]]", 2, true, false, false, false, true, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Popup Trigger - Node
+selectMenuItem((HResource) null, "Force Constant..."); // ap (Force Constant...)
+// TclEventType: SIMULATION_SHOW_FORCE_DIALOG
+selectComboBox(PAResourceQtoS.SimulationForceSettingsDialog_VALUE_RADIX, "Value radix:", "Hexadecimal", 1); // d (PAResourceQtoS.SimulationForceSettingsDialog_VALUE_RADIX, Value radix: )
+setText(PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE, "0"); // R (PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE)
+selectButton(RDIResource.BaseDialog_OK, "OK", "Force Constant:  /SubBytes/input_state"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// Tcl Message: add_force {/SubBytes/input_state} -radix hex {0 0ns} 
+dismissDialog("Force Constant:  /SubBytes/input_state"); // a (dialog12)
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, rst]", 1, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, rst]", 1, false, false, false, false, true, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Popup Trigger
+selectMenuItem((HResource) null, "Force Constant..."); // ap (Force Constant...)
+// TclEventType: SIMULATION_SHOW_FORCE_DIALOG
+setText(PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE, "0"); // R (PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE)
+selectButton(RDIResource.BaseDialog_OK, "OK", "Force Constant:  /SubBytes/rst"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// Tcl Message: add_force {/SubBytes/rst} -radix hex {0 0ns} 
+dismissDialog("Force Constant:  /SubBytes/rst"); // a (dialog13)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, clk]", 0, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,036 MB. GUI used memory: 115 MB. Current time: 9/1/24, 9:34:31 PM CEST
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, clk]", 0, false, false, false, false, true, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Popup Trigger
+selectMenuItem((HResource) null, "Force Clock..."); // ap (Force Clock...)
+// TclEventType: SIMULATION_SHOW_FORCE_DIALOG
+selectComboBox(PAResourceQtoS.SimulationForceSettingsDialog_VALUE_RADIX, "Value radix:", "Binary", 0); // d (PAResourceQtoS.SimulationForceSettingsDialog_VALUE_RADIX, Value radix: )
+setText(PAResourceQtoS.SimulationForceSettingsDialog_LEADING_EDGE_VALUE, "0"); // R (PAResourceQtoS.SimulationForceSettingsDialog_LEADING_EDGE_VALUE)
+setText(PAResourceQtoS.SimulationForceSettingsDialog_TRAILING_EDGE_VALUE, "1"); // R (PAResourceQtoS.SimulationForceSettingsDialog_TRAILING_EDGE_VALUE)
+setText(PAResourceQtoS.SimulationForceSettingsDialog_PERIOD, "1ns"); // R (PAResourceQtoS.SimulationForceSettingsDialog_PERIOD)
+selectButton(RDIResource.BaseDialog_OK, "OK", "Force Clock:  /SubBytes/clk"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// Tcl Message: add_force {/SubBytes/clk} -radix bin {0 0ns} {1 500ps} -repeat_every 1000ps 
+dismissDialog("Force Clock:  /SubBytes/clk"); // a (dialog14)
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,036 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:34:53 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,036 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:34:54 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,036 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:34:54 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,036 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:34:55 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,036 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:34:58 PM CEST
+// Elapsed time: 41 seconds
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:35:33 PM CEST
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:35:34 PM CEST
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// Tcl Message: run 1 ns 
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 115 MB. Current time: 9/1/24, 9:35:36 PM CEST
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+selectButton(RDIResource.GraphicalView_ZOOM_OUT, "Waveform Viewer_zoom_out"); // B (RDIResource.GraphicalView_ZOOM_OUT, Waveform Viewer_zoom_out)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+selectButton(RDIResource.GraphicalView_ZOOM_OUT, "Waveform Viewer_zoom_out"); // B (RDIResource.GraphicalView_ZOOM_OUT, Waveform Viewer_zoom_out)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:35:39 PM CEST
+selectButton(RDIResource.GraphicalView_ZOOM_OUT, "Waveform Viewer_zoom_out"); // B (RDIResource.GraphicalView_ZOOM_OUT, Waveform Viewer_zoom_out)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+selectButton(RDIResource.GraphicalView_ZOOM_OUT, "Waveform Viewer_zoom_out"); // B (RDIResource.GraphicalView_ZOOM_OUT, Waveform Viewer_zoom_out)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:36:15 PM CEST
+// Elapsed time: 36 seconds
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, input_state[0:127]]", 2, true, false, false, false, true, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Popup Trigger - Node
+selectMenuItem((HResource) null, "Force Constant..."); // ap (Force Constant...)
+// TclEventType: SIMULATION_SHOW_FORCE_DIALOG
+setText(PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE, "63636363636363636363636363636363"); // R (PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE)
+selectButton(RDIResource.BaseDialog_OK, "OK", "Force Constant:  /SubBytes/input_state"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// Tcl Message: add_force {/SubBytes/input_state} -radix hex {63636363636363636363636363636363 0ns} 
+dismissDialog("Force Constant:  /SubBytes/input_state"); // a (dialog15)
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+selectButton(RDIResource.GraphicalView_ZOOM_IN, "Waveform Viewer_zoom_in"); // B (RDIResource.GraphicalView_ZOOM_IN, Waveform Viewer_zoom_in)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+selectButton(RDIResource.GraphicalView_ZOOM_IN, "Waveform Viewer_zoom_in"); // B (RDIResource.GraphicalView_ZOOM_IN, Waveform Viewer_zoom_in)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:36:38 PM CEST
+selectButton(RDIResource.GraphicalView_ZOOM_IN, "Waveform Viewer_zoom_in"); // B (RDIResource.GraphicalView_ZOOM_IN, Waveform Viewer_zoom_in)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+selectButton(RDIResource.GraphicalView_ZOOM_IN, "Waveform Viewer_zoom_in"); // B (RDIResource.GraphicalView_ZOOM_IN, Waveform Viewer_zoom_in)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+selectButton(RDIResource.GraphicalView_ZOOM_IN, "Waveform Viewer_zoom_in"); // B (RDIResource.GraphicalView_ZOOM_IN, Waveform Viewer_zoom_in)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:36:40 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 115 MB. Current time: 9/1/24, 9:36:45 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 115 MB. Current time: 9/1/24, 9:36:45 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:36:45 PM CEST
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+selectButton(RDIResource.GraphicalView_ZOOM_OUT, "Waveform Viewer_zoom_out"); // B (RDIResource.GraphicalView_ZOOM_OUT, Waveform Viewer_zoom_out)
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// Elapsed time: 20 seconds
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, input_state[0:127]]", 2, true); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Node
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, input_state[0:127]]", 2, true, false, false, false, true, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Popup Trigger - Node
+selectMenuItem((HResource) null, "Force Constant..."); // ap (Force Constant...)
+// TclEventType: SIMULATION_SHOW_FORCE_DIALOG
+setText(PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE, "fbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfb"); // R (PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE)
+selectButton(RDIResource.BaseDialog_OK, "OK", "Force Constant:  /SubBytes/input_state"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// Tcl Message: add_force {/SubBytes/input_state} -radix hex {fbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfb 0ns} 
+dismissDialog("Force Constant:  /SubBytes/input_state"); // a (dialog16)
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 116 MB. Current time: 9/1/24, 9:37:22 PM CEST
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// Elapsed time: 42 seconds
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, input_state[0:127]]", 2, true); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Node
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, input_state[0:127]]", 2, true, false, false, false, true, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Popup Trigger - Node
+selectMenuItem((HResource) null, "Force Constant..."); // ap (Force Constant...)
+// TclEventType: SIMULATION_SHOW_FORCE_DIALOG
+setText(PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE, "99989898999898989998989899989898"); // R (PAResourceQtoS.SimulationForceSettingsDialog_FORCE_VALUE)
+selectButton(RDIResource.BaseDialog_OK, "OK", "Force Constant:  /SubBytes/input_state"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// Tcl Message: add_force {/SubBytes/input_state} -radix hex {99989898999898989998989899989898 0ns} 
+dismissDialog("Force Constant:  /SubBytes/input_state"); // a (dialog17)
+selectButton(PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, "simulation_live_run_for_time"); // B (PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN, simulation_live_run_for_time)
+// Run Command: PAResourceCommand.PACommandNames_SIMULATION_LIVE_RUN
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// Tcl Message: run 1 ns 
+selectGraphicalView(RDIResource.RDIViews_WAVEFORM_VIEWER, 567, 133); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+/********** leftMouseClick (2164, 486, true); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer) **********/
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// Elapsed time: 14 seconds
+selectGraphicalView(RDIResource.RDIViews_WAVEFORM_VIEWER, 309, 139); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+/********** leftMouseClick (1992, 490, true); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer) **********/
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:38:30 PM CEST
+selectGraphicalView(RDIResource.RDIViews_WAVEFORM_VIEWER, 517, 185); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+/********** leftMouseClick (2131, 521, true); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer) **********/
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+selectGraphicalView(RDIResource.RDIViews_WAVEFORM_VIEWER, 576, 131); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+/********** leftMouseClick (2170, 485, true); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer) **********/
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+selectGraphicalView(RDIResource.RDIViews_WAVEFORM_VIEWER, 393, 249); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+/********** startDrag (2048, 564); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer) **********/
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 114 MB. Current time: 9/1/24, 9:38:41 PM CEST
+/********** endDrag (2048, 564); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer_viewer) **********/
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// Run Command: RDIResourceCommand.RDICommands_WAVEFORM_SAVE_CONFIGURATION
+dismissFileChooser();
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,088 MB. GUI used memory: 117 MB. Current time: 9/1/24, 9:38:46 PM CEST
+// TclEventType: WAVEFORM_CLOSE_WCFG
+closeView(RDIResource.RDIViews_WAVEFORM_VIEWER, "Untitled 2"); // t (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform Viewer)
+selectButton(PAResourceTtoZ.TaskBanner_CLOSE, (String) null); // j (PAResourceTtoZ.TaskBanner_CLOSE)
+closeTask("Simulation", "Behavioral Simulation - Functional - sim_1 - SubBytes", "DesignTask.SIMULATION");
+selectButton(RDIResource.BaseDialog_OK, "OK", "Confirm Close"); // a (RDIResource.BaseDialog_OK)
+// TclEventType: SIMULATION_CLOSE_SIMULATION
+dismissDialog("Confirm Close"); // t (dialog19)
+// Tcl Message: close_sim 
+// Tcl Message: INFO: [Simtcl 6-16] Simulation closed 
+dismissDialog("Close"); // bj (Close Progress)
+selectCodeEditor("SubBytes.sv", 259, 300); // ac (SubBytes.sv)
+selectCodeEditor("SubBytes.sv", 458, 460); // ac (SubBytes.sv)
