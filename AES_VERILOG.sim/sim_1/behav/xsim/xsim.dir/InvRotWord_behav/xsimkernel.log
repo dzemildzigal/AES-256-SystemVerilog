@@ -1,7 +1,0 @@
-Running: xsim.dir/InvRotWord_behav/xsimk.exe -simmode gui -wdb InvRotWord_behav.wdb -simrunnum 0 -socket 61787
-Design successfully loaded
-Design Loading Memory Usage: 8292 KB (Peak: 8292 KB)
-Design Loading CPU Usage: 15 ms
-Simulation completed
-Simulation Memory Usage: 8800 KB (Peak: 8800 KB)
-Simulation CPU Usage: 31 ms

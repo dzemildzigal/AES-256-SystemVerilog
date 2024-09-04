@@ -23,7 +23,7 @@
 module AddRoundKey(
     input clk,
     input rst,
-    input [0:127] state,
+    input [0:127] input_state,
     input [0:127] round_key,
     output reg [0:127] output_state,
     output reg valid_data
@@ -38,7 +38,7 @@ always @ (posedge clk) begin
         valid_data <= 1'b0;
     end
     else begin
-        output_state <= state ^ round_key;
+        output_state <= input_state ^ round_key;
         valid_data <= 1'b1; 
     end
 end

@@ -21,9 +21,21 @@
 
 
 module ShiftRows(
-    input rst,
     input clk,
-    input [127:0] in,
-    output [127:0] out
+    input rst,
+    input [0:127] input_state,
+    output reg [0:127] output_state,
+    output reg valid_data
     );
+    
+always @ (posedge clk) begin
+    if (rst) begin
+        output_state <= {128{1'b0}};
+        valid_data <= 1'b0;
+    end
+    else begin
+        
+    end
+end
+    
 endmodule
