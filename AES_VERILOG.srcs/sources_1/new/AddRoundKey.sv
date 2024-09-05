@@ -37,9 +37,12 @@ always @ (posedge clk) begin
         output_state <= {128{1'b0}};
         valid_data <= 1'b0;
     end
-    else begin
+    else if(!rst && !$isunknown(input_state) && !$isunknown(round_key)) begin
         output_state <= input_state ^ round_key;
         valid_data <= 1'b1; 
+    end
+    else begin
+        valid_data <= 1'b0;
     end
 end
 

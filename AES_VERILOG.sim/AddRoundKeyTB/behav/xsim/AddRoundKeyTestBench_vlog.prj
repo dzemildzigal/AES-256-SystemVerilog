@@ -1,0 +1,25 @@
+# compile verilog/system verilog design source files
+sv xil_defaultlib  \
+"../../../../AES_VERILOG.srcs/sources_1/new/ShiftRows.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/Top.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/Decrypt.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/Encrypt.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/InvMixColumns.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/InvRotWord.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/InvShiftRows.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/InvSubBytes.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/KeyExpansion.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/MixColumn.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/MixColumns.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/RotWord.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/SubWord.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/XTime.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/SubBytes.sv" \
+"../../../../AES_VERILOG.srcs/AddRoundKeyTB/new/AddRoundKeyTestBench.sv" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort
