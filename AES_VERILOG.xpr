@@ -47,7 +47,7 @@
     <Option Name="BoardPart" Val="tul.com.tw:pynq-z2:part0:1.0"/>
     <Option Name="BoardPartRepoPaths" Val="$PPRDIR/../../AppData/Roaming/Xilinx/Vivado/2024.1/xhub/board_store/xilinx_board_store"/>
     <Option Name="SourceMgmtMode" Val="DisplayOnly"/>
-    <Option Name="ActiveSimSet" Val="AddRoundKeyTB"/>
+    <Option Name="ActiveSimSet" Val="ShiftRowsTB"/>
     <Option Name="DefaultLib" Val="xil_defaultlib"/>
     <Option Name="ProjectType" Val="Default"/>
     <Option Name="IPOutputRepo" Val="$PCACHEDIR/ip"/>
@@ -62,7 +62,7 @@
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSABoardId" Val="pynq-z2"/>
-    <Option Name="WTXSimLaunchSim" Val="38"/>
+    <Option Name="WTXSimLaunchSim" Val="39"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -278,6 +278,7 @@
       </Config>
     </FileSet>
     <FileSet Name="InvSubBytesTB" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/InvSubBytesTB" RelGenDir="$PGENDIR/InvSubBytesTB">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/InvSubBytesTB/new/InvSubBytesTestBench.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -306,6 +307,7 @@
       </Config>
     </FileSet>
     <FileSet Name="AddRoundKeyTB" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/AddRoundKeyTB" RelGenDir="$PGENDIR/AddRoundKeyTB">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/AddRoundKeyTB/new/AddRoundKeyTestBench.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -331,6 +333,28 @@
         <Option Name="PamPseudoTop" Val="pseudo_tb"/>
         <Option Name="SrcSet" Val="sources_1"/>
         <Option Name="XSimWcfgFile" Val="$PSIMDIR/AddRoundKeyTB/behav/AddRoundKeyTestBench_behav.wcfg"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="ShiftRowsTB" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/ShiftRowsTB" RelGenDir="$PGENDIR/ShiftRowsTB">
+      <File Path="$PSRCDIR/ShiftRowsTB/new/ShiftRowsTestBench.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <Config>
+        <Option Name="DesignMode" Val="RTL"/>
+        <Option Name="TopModule" Val="ShiftRowsTestBench"/>
+        <Option Name="TopLib" Val="xil_defaultlib"/>
+        <Option Name="TransportPathDelay" Val="0"/>
+        <Option Name="TransportIntDelay" Val="0"/>
+        <Option Name="SelectedSimModel" Val="rtl"/>
+        <Option Name="PamDesignTestbench" Val=""/>
+        <Option Name="PamDutBypassFile" Val="xil_dut_bypass"/>
+        <Option Name="PamSignalDriverFile" Val="xil_bypass_driver"/>
+        <Option Name="PamPseudoTop" Val="pseudo_tb"/>
+        <Option Name="SrcSet" Val="sources_1"/>
       </Config>
     </FileSet>
   </FileSets>
