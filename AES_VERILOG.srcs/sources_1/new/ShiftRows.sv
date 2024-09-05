@@ -44,7 +44,6 @@ always @ (posedge clk) begin
         word[2] = word[3]
         word[3] = temp
         */
-        //0th row is    
         
         output_state[0 +:8] = input_state[0 +:8]; 
         output_state[8 +:8] = input_state[40 +:8];
