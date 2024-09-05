@@ -37,12 +37,15 @@ always @ (posedge clk) begin
         output_state <= {128{1'b0}};
         valid_data <= 1'b0;
     end
-    else begin
+    else if(!rst && !$isunknown(input_state)) begin
         for (i = 0; i < 16; i++) begin
             $readmemh("inv_s_box.mem", inv_s_box);
             output_state[i*8 +:8] <= inv_s_box[input_state[i*8 +:8]];
         end
         valid_data <= 1'b1; 
+    end
+    else begin
+        valid_data <= 1'b0;
     end
 end  
 endmodule

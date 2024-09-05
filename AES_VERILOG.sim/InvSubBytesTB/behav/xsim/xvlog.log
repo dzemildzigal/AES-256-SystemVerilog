@@ -1,0 +1,34 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/ShiftRows.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module ShiftRows
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/Top.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module Top
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module AddRoundKey
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/Decrypt.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module Decrypt
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/Encrypt.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module Encrypt
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/InvMixColumns.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module InvMixColumns
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/InvRotWord.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module InvRotWord
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/InvShiftRows.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module InvShiftRows
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/InvSubBytes.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module InvSubBytes
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/KeyExpansion.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module KeyExpansion
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/MixColumn.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module MixColumn
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/MixColumns.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module MixColumns
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/RotWord.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RotWord
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubWord.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module SubWord
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/XTime.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module XTime
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module SubBytes
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/InvSubBytesTB/new/InvSubBytesTestBench.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module InvSubBytesTestBench
