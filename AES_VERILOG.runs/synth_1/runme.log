@@ -1,6 +1,6 @@
 
 *** Running vivado
-    with args -log SubBytes.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source SubBytes.tcl
+    with args -log MixColumn.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source MixColumn.tcl
 
 
 
@@ -8,16 +8,16 @@
   **** SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
   **** IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
   **** SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
-  **** Start of session at: Sun Sep  1 21:30:20 2024
+  **** Start of session at: Thu Sep 19 10:35:52 2024
     ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
     ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 
-source SubBytes.tcl -notrace
-create_project: Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 630.344 ; gain = 200.680
+source MixColumn.tcl -notrace
+create_project: Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 627.637 ; gain = 199.848
 Command: read_checkpoint -auto_incremental -incremental C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp
 INFO: [Vivado 12-5825] Read reference checkpoint from C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp for incremental synthesis
 INFO: [Vivado 12-7989] Please ensure there are no constraint changes
-Command: synth_design -top SubBytes -part xc7z020clg400-1
+Command: synth_design -top MixColumn -part xc7z020clg400-1
 Starting synth_design
 Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
@@ -25,53 +25,40 @@ INFO: [Designutils 20-5440] No compile time benefit to using incremental synthes
 INFO: [Designutils 20-4379] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
 INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
 INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
-INFO: [Synth 8-7075] Helper process launched with PID 14476
+INFO: [Synth 8-7075] Helper process launched with PID 14688
 ---------------------------------------------------------------------------------
-Starting Synthesize : Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 1091.902 ; gain = 447.082
+Starting Synthesize : Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 1091.523 ; gain = 449.148
 ---------------------------------------------------------------------------------
-INFO: [Synth 8-6157] synthesizing module 'SubBytes' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:23]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-3876] $readmem data file 's_box.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:42]
-INFO: [Synth 8-6155] done synthesizing module 'SubBytes' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'MixColumn' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/MixColumn.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'XTime' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/XTime.sv:23]
+INFO: [Synth 8-3876] $readmem data file 'x_time.mem' is read successfully [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/XTime.sv:32]
+INFO: [Synth 8-6155] done synthesizing module 'XTime' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/XTime.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'MixColumn' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/MixColumn.sv:23]
 ---------------------------------------------------------------------------------
-Finished Synthesize : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 1204.707 ; gain = 559.887
+Finished Synthesize : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 1201.691 ; gain = 559.316
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 1204.707 ; gain = 559.887
+Finished Constraint Validation : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 1201.691 ; gain = 559.316
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7z020clg400-1
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 1204.707 ; gain = 559.887
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 1201.691 ; gain = 559.316
 ---------------------------------------------------------------------------------
 INFO: [Device 21-403] Loading part xc7z020clg400-1
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:09 ; elapsed = 00:00:10 . Memory (MB): peak = 1204.707 ; gain = 559.887
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 1201.691 ; gain = 559.316
 ---------------------------------------------------------------------------------
 No constraint files found.
 ---------------------------------------------------------------------------------
 Start RTL Component Statistics 
 ---------------------------------------------------------------------------------
 Detailed RTL Component Info : 
-+---Registers : 
-	              128 Bit    Registers := 1     
-	                1 Bit    Registers := 1     
++---XORs : 
+	   2 Input      8 Bit         XORs := 5     
+	   3 Input      8 Bit         XORs := 4     
 ---------------------------------------------------------------------------------
 Finished RTL Component Statistics 
 ---------------------------------------------------------------------------------
@@ -91,7 +78,7 @@ Start Cross Boundary and Area Optimization
 ---------------------------------------------------------------------------------
 WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
 ---------------------------------------------------------------------------------
-Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:15 ; elapsed = 00:00:16 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP, Shift Register and Retiming Reporting
@@ -101,38 +88,11 @@ ROM: Preliminary Mapping Report
 +------------+------------+---------------+----------------+
 |Module Name | RTL Object | Depth x Width | Implemented As | 
 +------------+------------+---------------+----------------+
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | s_box      | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
-|SubBytes    | p_0_out    | 256x8         | LUT            | 
+|XTime       | x_time     | 256x8         | LUT            | 
+|MixColumn   | p_0_out    | 256x8         | LUT            | 
+|MixColumn   | p_0_out    | 256x8         | LUT            | 
+|MixColumn   | p_0_out    | 256x8         | LUT            | 
+|MixColumn   | p_0_out    | 256x8         | LUT            | 
 +------------+------------+---------------+----------------+
 
 ---------------------------------------------------------------------------------
@@ -143,13 +103,13 @@ No constraint files found.
 Start Timing Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:00:26 ; elapsed = 00:00:27 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Timing Optimization : Time (s): cpu = 00:00:15 ; elapsed = 00:00:16 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Technology Mapping
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:00:26 ; elapsed = 00:00:27 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Technology Mapping : Time (s): cpu = 00:00:15 ; elapsed = 00:00:16 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start IO Insertion
@@ -167,37 +127,37 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished IO Insertion : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Writing Synthesis Report
@@ -213,40 +173,39 @@ Report Cell Usage:
 +------+-----+------+
 |      |Cell |Count |
 +------+-----+------+
-|1     |BUFG |     1|
-|2     |LUT6 |   640|
-|3     |FDRE |   129|
-|4     |IBUF |   130|
-|5     |OBUF |   129|
+|1     |LUT4 |     3|
+|2     |LUT5 |    20|
+|3     |LUT6 |    12|
+|4     |IBUF |    32|
+|5     |OBUF |    32|
 +------+-----+------+
 
 Report Instance Areas: 
 +------+---------+-------+------+
 |      |Instance |Module |Cells |
 +------+---------+-------+------+
-|1     |top      |       |  1029|
+|1     |top      |       |    99|
 +------+---------+-------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 0 critical warnings and 1 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
-Synthesis Optimization Complete : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 1425.004 ; gain = 780.184
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
+Synthesis Optimization Complete : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1414.066 ; gain = 771.691
 INFO: [Project 1-571] Translating synthesized netlist
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.010 . Memory (MB): peak = 1435.574 ; gain = 0.000
-WARNING: [Netlist 29-101] Netlist 'SubBytes' is not ideal for floorplanning, since the cellview 'SubBytes' contains a large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1422.992 ; gain = 0.000
 INFO: [Project 1-570] Preparing netlist for logic optimization
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1524.715 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1526.457 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
-Synth Design complete | Checksum: 85ff9883
+Synth Design complete | Checksum: d4bdeb
 INFO: [Common 17-83] Releasing license: Synthesis
-33 Infos, 2 Warnings, 0 Critical Warnings and 0 Errors encountered.
+20 Infos, 1 Warnings, 0 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:00:33 ; elapsed = 00:00:35 . Memory (MB): peak = 1524.715 ; gain = 887.203
-Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.004 . Memory (MB): peak = 1524.715 ; gain = 0.000
-INFO: [Common 17-1381] The checkpoint 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/SubBytes.dcp' has been generated.
-INFO: [Vivado 12-24828] Executing command : report_utilization -file SubBytes_utilization_synth.rpt -pb SubBytes_utilization_synth.pb
-INFO: [Common 17-206] Exiting Vivado at Sun Sep  1 21:31:08 2024...
+synth_design: Time (s): cpu = 00:00:23 ; elapsed = 00:00:24 . Memory (MB): peak = 1526.457 ; gain = 890.816
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1526.457 ; gain = 0.000
+INFO: [Common 17-1381] The checkpoint 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/MixColumn.dcp' has been generated.
+INFO: [Vivado 12-24828] Executing command : report_utilization -file MixColumn_utilization_synth.rpt -pb MixColumn_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Thu Sep 19 10:36:29 2024...

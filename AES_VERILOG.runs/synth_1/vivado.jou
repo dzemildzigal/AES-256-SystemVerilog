@@ -3,11 +3,11 @@
 # SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
 # IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
 # SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
-# Start of session at: Sun Sep  1 21:30:20 2024
-# Process ID: 3796
+# Start of session at: Thu Sep 19 10:35:52 2024
+# Process ID: 3616
 # Current directory: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1
-# Command line: vivado.exe -log SubBytes.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source SubBytes.tcl
-# Log file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/SubBytes.vds
+# Command line: vivado.exe -log MixColumn.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source MixColumn.tcl
+# Log file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/MixColumn.vds
 # Journal file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1\vivado.jou
 # Running On        :DESKTOP-95HTTJA
 # Platform          :Windows Server 2016 or Windows 10
@@ -19,6 +19,6 @@
 # Host memory       :68626 MB
 # Swap memory       :10200 MB
 # Total Virtual     :78827 MB
-# Available Virtual :65268 MB
+# Available Virtual :65996 MB
 #-----------------------------------------------------------
-source SubBytes.tcl -notrace
+source MixColumn.tcl -notrace

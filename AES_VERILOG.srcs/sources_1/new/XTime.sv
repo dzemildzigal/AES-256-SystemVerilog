@@ -21,9 +21,15 @@
 
 
 module XTime(
-    input clk,
-    input rst,
-    input [7:0] in,
-    output [7:0] out
+    //input clk,
+    //input rst,
+    input [0:7] input_byte,
+    output reg [0:7] output_byte
     );
+    reg [0:7] x_time [0:255];
+
+    always @* begin
+        $readmemh("x_time.mem", x_time);
+        output_byte <= x_time[input_byte];
+    end
 endmodule

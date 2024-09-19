@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1725219016" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/Top.dcp">
-  <File Type="PA-TCL" Name="SubBytes.tcl"/>
-  <File Type="REPORTS-TCL" Name="SubBytes_reports.tcl"/>
-  <File Type="RDS-RDS" Name="SubBytes.vds"/>
-  <File Type="RDS-UTIL" Name="ShiftRows_utilization_synth.rpt"/>
-  <File Type="RDS-UTIL-PB" Name="ShiftRows_utilization_synth.pb"/>
-  <File Type="RDS-DCP" Name="SubBytes.dcp"/>
+<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1726734948" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/Top.dcp">
+  <File Type="PA-TCL" Name="MixColumn.tcl"/>
+  <File Type="RDS-PROPCONSTRS" Name="MixColumn_drc_synth.rpt"/>
+  <File Type="REPORTS-TCL" Name="MixColumn_reports.tcl"/>
+  <File Type="RDS-RDS" Name="MixColumn.vds"/>
+  <File Type="RDS-UTIL" Name="MixColumn_utilization_synth.rpt"/>
+  <File Type="RDS-UTIL-PB" Name="MixColumn_utilization_synth.pb"/>
+  <File Type="RDS-DCP" Name="MixColumn.dcp"/>
+  <File Type="VDS-TIMINGSUMMARY" Name="MixColumn_timing_summary_synth.rpt"/>
+  <File Type="VDS-TIMING-PB" Name="MixColumn_timing_summary_synth.pb"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
-    <File Path="$PSRCDIR/sources_1/new/SubBytes.sv">
+    <File Path="$PSRCDIR/sources_1/new/ShiftRows.sv">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
@@ -17,7 +20,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/Top.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -25,7 +27,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/AddRoundKey.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -33,7 +34,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/Decrypt.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -41,7 +41,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/Encrypt.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -49,7 +48,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/InvMixColumns.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -57,7 +55,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/InvRotWord.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -65,7 +62,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/InvShiftRows.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -73,7 +69,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/InvSubBytes.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -81,7 +76,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/KeyExpansion.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -89,7 +83,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/MixColumn.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -97,7 +90,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/MixColumns.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -105,15 +97,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/RotWord.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
-        <Attr Name="UsedIn" Val="synthesis"/>
-        <Attr Name="UsedIn" Val="implementation"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
-    <File Path="$PSRCDIR/sources_1/new/ShiftRows.sv">
-      <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -121,7 +104,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/SubWord.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -129,7 +111,6 @@
     </File>
     <File Path="$PSRCDIR/sources_1/new/XTime.sv">
       <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -153,9 +134,22 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
+    <File Path="$PSRCDIR/sources_1/new/SubBytes.sv">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/x_time.mem">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
     <Config>
       <Option Name="DesignMode" Val="RTL"/>
-      <Option Name="TopModule" Val="SubBytes"/>
+      <Option Name="TopModule" Val="MixColumn"/>
     </Config>
   </FileSet>
   <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">

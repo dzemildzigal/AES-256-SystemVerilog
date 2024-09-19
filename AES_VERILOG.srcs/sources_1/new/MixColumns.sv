@@ -23,8 +23,10 @@
 module MixColumns(
     input clk,
     input rst,
-    input [127:0] in,
-    input [2:0] Nb,
-    output [127:0] out
+    input [0:127] input_state,
+    output reg [0:127] output_state,
+    output reg valid_data
     );
+    
+    
 endmodule
