@@ -33,7 +33,7 @@ always @ (posedge clk) begin
         output_state <= {128{1'b0}};
         valid_data <= 1'b0;
     end
-    else if (!rst && !$isunknown(input_state)) begin
+    else if (!rst && !(^input_state === 1'bx)) begin
         
         //shift 0th row by 0, first row by 1, second by 2, third by 3
         //shift to the left

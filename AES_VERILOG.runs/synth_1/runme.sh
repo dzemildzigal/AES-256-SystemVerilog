@@ -41,4 +41,4 @@ EAStep()
      fi
 }
 
-EAStep vivado -log MixColumn.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source MixColumn.tcl
+EAStep vivado -log MixColumns.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source MixColumns.tcl

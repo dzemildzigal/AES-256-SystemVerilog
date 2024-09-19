@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="MixColumnsTestBench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="MixColumnsTestBench" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="993.800 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,000.011 ns"></ZoomEndTime>
+      <Cursor1Time time="15.480 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="272"></NameColumnWidth>
+      <ValueColumnWidth column_width="363"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="8" />
+   <wvobject fp_name="/MixColumnsTestBench/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/MixColumnsTestBench/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/MixColumnsTestBench/input_state" type="array">
+      <obj_property name="ElementShortName">input_state[0:127]</obj_property>
+      <obj_property name="ObjectShortName">input_state[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/MixColumnsTestBench/output_state" type="array">
+      <obj_property name="ElementShortName">output_state[0:127]</obj_property>
+      <obj_property name="ObjectShortName">output_state[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/MixColumnsTestBench/zeroth_out" type="array">
+      <obj_property name="ElementShortName">zeroth_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">zeroth_out[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/MixColumnsTestBench/first_out" type="array">
+      <obj_property name="ElementShortName">first_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">first_out[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/MixColumnsTestBench/second_out" type="array">
+      <obj_property name="ElementShortName">second_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">second_out[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/MixColumnsTestBench/third_out" type="array">
+      <obj_property name="ElementShortName">third_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">third_out[0:31]</obj_property>
+   </wvobject>
+</wave_config>
