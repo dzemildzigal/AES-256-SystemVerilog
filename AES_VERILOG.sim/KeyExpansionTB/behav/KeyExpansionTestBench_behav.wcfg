@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="KeyExpansionTestBench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="KeyExpansionTestBench" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="113.179 ns"></ZoomStartTime>
+      <ZoomEndTime time="124.110 ns"></ZoomEndTime>
+      <Cursor1Time time="115.789 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="629"></NameColumnWidth>
+      <ValueColumnWidth column_width="794"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="12" />
+   <wvobject fp_name="/KeyExpansionTestBench/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/new_masterkey" type="logic">
+      <obj_property name="ElementShortName">new_masterkey</obj_property>
+      <obj_property name="ObjectShortName">new_masterkey</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/masterkey" type="array">
+      <obj_property name="ElementShortName">masterkey[0:255]</obj_property>
+      <obj_property name="ObjectShortName">masterkey[0:255]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/w" type="array">
+      <obj_property name="ElementShortName">w[0:1919]</obj_property>
+      <obj_property name="ObjectShortName">w[0:1919]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/valid_data" type="logic">
+      <obj_property name="ElementShortName">valid_data</obj_property>
+      <obj_property name="ObjectShortName">valid_data</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/state" type="array">
+      <obj_property name="ElementShortName">state[0:1]</obj_property>
+      <obj_property name="ObjectShortName">state[0:1]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/i_out" type="array">
+      <obj_property name="ElementShortName">i_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">i_out[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/working_word_out" type="array">
+      <obj_property name="ElementShortName">working_word_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">working_word_out[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/sub_word_out_out" type="array">
+      <obj_property name="ElementShortName">sub_word_out_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">sub_word_out_out[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/rot_word_out_out" type="array">
+      <obj_property name="ElementShortName">rot_word_out_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">rot_word_out_out[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/KeyExpansionTestBench/just_sub_word_out_out" type="array">
+      <obj_property name="ElementShortName">just_sub_word_out_out[0:31]</obj_property>
+      <obj_property name="ObjectShortName">just_sub_word_out_out[0:31]</obj_property>
+   </wvobject>
+</wave_config>

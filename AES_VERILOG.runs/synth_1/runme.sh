@@ -41,4 +41,4 @@ EAStep()
      fi
 }
 
-EAStep vivado -log MixColumns.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source MixColumns.tcl
+EAStep vivado -log KeyExpansion.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source KeyExpansion.tcl

@@ -21,9 +21,13 @@
 
 
 module RotWord(
-    input clk,
-    input rst,
-    input [31:0] word,
-    output [31:0] out
+    input [0:31] word,
+    output reg [0:31] out
     );
+always @* begin
+    out[0 +:8] = word[8 +:8];
+    out[8 +:8] = word[16 +:8];
+    out[16 +:8] = word[24 +:8];
+    out[24 +:8] = word[0 +:8];
+end
 endmodule
