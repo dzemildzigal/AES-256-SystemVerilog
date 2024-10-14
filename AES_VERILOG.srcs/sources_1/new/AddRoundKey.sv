@@ -21,18 +21,19 @@
 
 
 module AddRoundKey(
-    input clk,
-    input rst,
+    //input clk,
+    //input rst,
     input [0:127] input_state,
     input [0:127] round_key,
-    output reg [0:127] output_state,
-    output reg valid_data
+    output reg [0:127] output_state
+    //output reg valid_data
     );
 // Additional variables
 // integer i, j;
 // Functionality
 // All signals used in a procedural block should be declared as type reg  
-always @ (posedge clk) begin 
+assign output_state = input_state ^ round_key;
+/*always @ (posedge clk) begin 
     if (rst) begin
         output_state <= {128{1'b0}};
         valid_data <= 1'b0;
@@ -45,5 +46,5 @@ always @ (posedge clk) begin
         valid_data <= 1'b0;
     end
 end
-
+*/
 endmodule

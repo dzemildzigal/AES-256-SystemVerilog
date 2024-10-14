@@ -21,20 +21,9 @@
 
 
 module ShiftRows(
-    input clk,
-    input rst,
     input [0:127] input_state,
-    output reg [0:127] output_state,
-    output reg valid_data
+    output reg [0:127] output_state
     );
-    
-always @ (posedge clk) begin
-    if (rst) begin
-        output_state <= {128{1'b0}};
-        valid_data <= 1'b0;
-    end
-    else if (!rst && !(^input_state === 1'bx)) begin
-        
         //shift 0th row by 0, first row by 1, second by 2, third by 3
         //shift to the left
         /*
@@ -44,7 +33,7 @@ always @ (posedge clk) begin
         word[2] = word[3]
         word[3] = temp
         */
-        
+always @ * begin
         output_state[0 +:8] = input_state[0 +:8]; 
         output_state[8 +:8] = input_state[40 +:8];
         output_state[16 +:8] = input_state[80 +:8];
@@ -64,13 +53,6 @@ always @ (posedge clk) begin
         output_state[104 +:8] = input_state[8 +:8];
         output_state[112 +:8] = input_state[48 +:8];
         output_state[120 +:8] = input_state[88 +:8];
-        
-        
-        valid_data <= 1'b1;
-    end
-    else begin
-        valid_data <= 1'b0;
-    end
 end
     
 endmodule

@@ -24,7 +24,6 @@ module MixColumns(
     input [0:127] input_state,
     output reg [0:127] output_state
     );
-integer i;
 reg [0:31] zeroth_result;
 reg [0:31] first_result;
 reg [0:31] second_result;
