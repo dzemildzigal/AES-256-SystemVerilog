@@ -3,10 +3,10 @@
 # SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
 # IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
 # SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
-# Start of session at: Mon Oct 14 21:15:13 2024
-# Process ID: 2544
+# Start of session at: Sun Oct 20 22:29:44 2024
+# Process ID: 18224
 # Current directory: C:/Users/dzemi/Desktop/AES-256-SystemVerilog
-# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent9904 C:\Users\dzemi\Desktop\AES-256-SystemVerilog\AES_VERILOG.xpr
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent10588 C:\Users\dzemi\Desktop\AES-256-SystemVerilog\AES_VERILOG.xpr
 # Log file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/vivado.log
 # Journal file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog\vivado.jou
 # Running On        :DESKTOP-95HTTJA
@@ -19,7 +19,576 @@
 # Host memory       :68626 MB
 # Swap memory       :10200 MB
 # Total Virtual     :78827 MB
-# Available Virtual :70625 MB
+# Available Virtual :72712 MB
 #-----------------------------------------------------------
 start_gui
 open_project C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.xpr
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+step
+run 1 ns
+step
+step
+step
+run 1 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+step
+step
+step
+step
+step
+run 1 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+run 1 ns
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+step
+step
+step
+step
+step
+step
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/EncryptTB/new/EncryptTestBench.sv} -line 52
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/EncryptTB/new/EncryptTestBench.sv} 50
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+run 1 ns
+step
+step
+step
+step
+step
+step
+step
+run 1 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/EncryptTB/new/EncryptTestBench.sv} -line 50
+run 10 ns
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/Encrypt.sv} -line 64
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+source EncryptTestBench.tcl
+save_wave_config {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg}
+add_files -fileset EncryptTB -norecurse C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+set_property xsim.view C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg [get_filesets EncryptTB]
+close_sim

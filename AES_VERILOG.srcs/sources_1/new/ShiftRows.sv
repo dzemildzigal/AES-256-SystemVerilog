@@ -22,7 +22,7 @@
 
 module ShiftRows(
     input [0:127] input_state,
-    output reg [0:127] output_state
+    output[0:127] output_state
     );
         //shift 0th row by 0, first row by 1, second by 2, third by 3
         //shift to the left
@@ -33,26 +33,26 @@ module ShiftRows(
         word[2] = word[3]
         word[3] = temp
         */
-always @ * begin
-        output_state[0 +:8] = input_state[0 +:8]; 
-        output_state[8 +:8] = input_state[40 +:8];
-        output_state[16 +:8] = input_state[80 +:8];
-        output_state[24 +:8] = input_state[120 +:8];
+//always @ * begin
+        assign output_state[0 +:8] = input_state[0 +:8]; 
+        assign output_state[8 +:8] = input_state[40 +:8];
+        assign output_state[16 +:8] = input_state[80 +:8];
+        assign output_state[24 +:8] = input_state[120 +:8];
         
-        output_state[32 +:8] = input_state[32 +:8];
-        output_state[40 +:8] = input_state[72 +:8];
-        output_state[48 +:8] = input_state[112 +:8];
-        output_state[56 +:8] = input_state[24 +:8];
+        assign output_state[32 +:8] = input_state[32 +:8];
+        assign output_state[40 +:8] = input_state[72 +:8];
+        assign output_state[48 +:8] = input_state[112 +:8];
+        assign output_state[56 +:8] = input_state[24 +:8];
         
-        output_state[64 +:8] = input_state[64 +:8];
-        output_state[72 +:8] = input_state[104 +:8];
-        output_state[80 +:8] = input_state[16 +:8];
-        output_state[88 +:8] = input_state[56 +:8];
+        assign output_state[64 +:8] = input_state[64 +:8];
+        assign output_state[72 +:8] = input_state[104 +:8];
+        assign output_state[80 +:8] = input_state[16 +:8];
+        assign output_state[88 +:8] = input_state[56 +:8];
         
-        output_state[96 +:8] = input_state[96 +:8];
-        output_state[104 +:8] = input_state[8 +:8];
-        output_state[112 +:8] = input_state[48 +:8];
-        output_state[120 +:8] = input_state[88 +:8];
-end
+        assign output_state[96 +:8] = input_state[96 +:8];
+        assign output_state[104 +:8] = input_state[8 +:8];
+        assign output_state[112 +:8] = input_state[48 +:8];
+        assign output_state[120 +:8] = input_state[88 +:8];
+//end
     
 endmodule

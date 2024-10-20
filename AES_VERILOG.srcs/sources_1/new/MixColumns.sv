@@ -22,12 +22,12 @@
 
 module MixColumns(
     input [0:127] input_state,
-    output reg [0:127] output_state
+    output [0:127] output_state
     );
-reg [0:31] zeroth_result;
-reg [0:31] first_result;
-reg [0:31] second_result;
-reg [0:31] third_result;
+wire [0:31] zeroth_result;
+wire [0:31] first_result;
+wire [0:31] second_result;
+wire [0:31] third_result;
 
 MixColumn mix_zeroth(
             .input_column(input_state[0:31]),
@@ -46,7 +46,7 @@ MixColumn mix_third(
             .output_column(third_result)
             );     
  
-always @* begin    
-output_state = {zeroth_result, first_result, second_result, third_result};
-end   
+//always @* begin    
+assign output_state = {zeroth_result, first_result, second_result, third_result};
+//end   
 endmodule

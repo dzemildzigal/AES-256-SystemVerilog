@@ -22,14 +22,14 @@
 
 module MixColumn(
     input [0:31] input_column,
-    output reg [0:31] output_column
+    output [0:31] output_column
     );
     wire [0:7] zeroth_output;
     wire [0:7] first_output;
     wire [0:7] second_output;
     wire [0:7] third_output;
-    reg [0:7] u;
-    reg [0:7] t;
+    wire [0:7] u;
+    wire [0:7] t;
     XTime zeroth(.input_byte(input_column[0 +:8] ^ input_column[8 +:8]),
                     .output_byte(zeroth_output)
                     );
@@ -42,14 +42,14 @@ module MixColumn(
     XTime third(.input_byte(input_column[24 +:8] ^ u),
                 .output_byte(third_output)
                 );
-    always @ * begin
+    //always @ * begin
     
-        t = input_column[0 +:8] ^ input_column[8 +:8] ^ input_column[16 +:8] ^ input_column[24 +:8];
-        u = input_column[0 +:8];
+    assign    t = input_column[0 +:8] ^ input_column[8 +:8] ^ input_column[16 +:8] ^ input_column[24 +:8];
+    assign    u = input_column[0 +:8];
         
-        output_column = {input_column[0 +:8] ^ t ^zeroth_output, 
+    assign    output_column = {input_column[0 +:8] ^ t ^zeroth_output, 
                          input_column[8 +:8] ^ t ^ first_output, 
                          input_column[16 +:8] ^ t ^ second_output, 
                          input_column[24 +:8] ^ t ^ third_output};
-    end
+    //end
 endmodule

@@ -22,7 +22,7 @@
 
 module SubBytes(
     input [0:127] input_state,
-    output reg [0:127] output_state
+    output[0:127] output_state
     );
 
 /*integer i;

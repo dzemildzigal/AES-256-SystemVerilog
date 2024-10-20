@@ -62,7 +62,7 @@
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSABoardId" Val="pynq-z2"/>
-    <Option Name="WTXSimLaunchSim" Val="103"/>
+    <Option Name="WTXSimLaunchSim" Val="117"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -549,10 +549,16 @@
       </Config>
     </FileSet>
     <FileSet Name="EncryptTB" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/EncryptTB" RelGenDir="$PGENDIR/EncryptTB">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/EncryptTB/new/EncryptTestBench.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSIMDIR/EncryptTB/EncryptTestBench_behav.wcfg">
+        <FileInfo>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -568,6 +574,7 @@
         <Option Name="PamSignalDriverFile" Val="xil_bypass_driver"/>
         <Option Name="PamPseudoTop" Val="pseudo_tb"/>
         <Option Name="SrcSet" Val="sources_1"/>
+        <Option Name="XSimWcfgFile" Val="$PSIMDIR/EncryptTB/EncryptTestBench_behav.wcfg"/>
       </Config>
     </FileSet>
   </FileSets>

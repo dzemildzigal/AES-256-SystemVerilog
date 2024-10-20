@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="EncryptTestBench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="EncryptTestBench" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="8.050 ns"></ZoomStartTime>
+      <ZoomEndTime time="73.601 ns"></ZoomEndTime>
+      <Cursor1Time time="67.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="163"></NameColumnWidth>
+      <ValueColumnWidth column_width="253"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="6" />
+   <wvobject fp_name="/EncryptTestBench/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/in" type="array">
+      <obj_property name="ElementShortName">in[0:127]</obj_property>
+      <obj_property name="ObjectShortName">in[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/expanded_key" type="array">
+      <obj_property name="ElementShortName">expanded_key[0:1919]</obj_property>
+      <obj_property name="ObjectShortName">expanded_key[0:1919]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/out" type="array">
+      <obj_property name="ElementShortName">out[0:127]</obj_property>
+      <obj_property name="ObjectShortName">out[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/valid_data" type="logic">
+      <obj_property name="ElementShortName">valid_data</obj_property>
+      <obj_property name="ObjectShortName">valid_data</obj_property>
+   </wvobject>
+</wave_config>

@@ -1,0 +1,5 @@
+Time resolution is 1 ps
+Error: Assertion violation
+Time: 91 ns  Iteration: 0  Process: /EncryptTestBench/Initial37_1  File: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/EncryptTB/new/EncryptTestBench.sv
+Error: Assertion violation
+Time: 91 ns  Iteration: 0  Process: /EncryptTestBench/Initial37_1  File: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/EncryptTB/new/EncryptTestBench.sv
