@@ -1,0 +1,709 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Mon Oct 28 21:45:50 2024
+# Process ID: 288
+# Current directory: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1
+# Command line: vivado.exe -log EncryptPipelined.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source EncryptPipelined.tcl
+# Log file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/EncryptPipelined.vds
+# Journal file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1\vivado.jou
+# Running On        :DESKTOP-95HTTJA
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :19045
+# Processor Detail  :AMD Ryzen 7 2700X Eight-Core Processor         
+# CPU Frequency     :3693 MHz
+# CPU Physical cores:8
+# CPU Logical cores :16
+# Host memory       :68626 MB
+# Swap memory       :10200 MB
+# Total Virtual     :78827 MB
+# Available Virtual :65581 MB
+#-----------------------------------------------------------
+source EncryptPipelined.tcl -notrace
+create_project: Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 629.125 ; gain = 199.703
+Command: read_checkpoint -auto_incremental -incremental C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp
+INFO: [Vivado 12-5825] Read reference checkpoint from C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/utils_1/imports/synth_1/Top.dcp for incremental synthesis
+INFO: [Vivado 12-7989] Please ensure there are no constraint changes
+Command: synth_design -top EncryptPipelined -part xc7z020clg400-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Designutils 20-5440] No compile time benefit to using incremental synthesis; A full resynthesis will be run
+INFO: [Designutils 20-4379] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 14584
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 1091.266 ; gain = 449.340
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'EncryptPipelined' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptPipelined.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionInitialRound' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionInitialRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'AddRoundKey' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'AddRoundKey' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'SubBytes' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'SubBytes' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/SubBytes.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'ShiftRows' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/ShiftRows.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'ShiftRows' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/ShiftRows.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'MixColumns' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/MixColumns.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'MixColumn' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/MixColumn.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'XTime' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/XTime.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'XTime' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/XTime.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'MixColumn' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/MixColumn.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'MixColumns' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/MixColumns.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionInitialRound' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionInitialRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 2 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized0' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 3 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized0' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized1' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 4 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized1' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized2' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 5 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized2' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized3' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 6 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized3' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized4' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 7 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized4' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized5' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 8 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized5' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized6' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 9 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized6' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized7' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 10 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized7' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized8' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 11 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized8' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized9' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 12 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized9' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionRound__parameterized10' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+	Parameter i bound to: 13 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionRound__parameterized10' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'EncryptionFinalRound' [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionFinalRound.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'EncryptionFinalRound' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionFinalRound.sv:23]
+WARNING: [Synth 8-589] replacing case/wildcard equality operator === with logical equality operator == [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptPipelined.sv:140]
+INFO: [Synth 8-6155] done synthesizing module 'EncryptPipelined' (0#1) [C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptPipelined.sv:23]
+WARNING: [Synth 8-7129] Port expanded_key[0] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[1] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[2] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[3] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[4] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[5] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[6] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[7] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[8] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[9] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[10] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[11] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[12] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[13] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[14] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[15] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[16] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[17] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[18] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[19] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[20] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[21] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[22] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[23] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[24] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[25] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[26] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[27] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[28] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[29] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[30] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[31] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[32] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[33] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[34] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[35] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[36] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[37] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[38] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[39] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[40] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[41] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[42] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[43] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[44] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[45] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[46] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[47] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[48] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[49] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[50] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[51] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[52] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[53] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[54] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[55] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[56] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[57] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[58] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[59] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[60] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[61] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[62] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[63] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[64] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[65] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[66] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[67] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[68] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[69] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[70] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[71] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[72] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[73] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[74] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[75] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[76] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[77] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[78] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[79] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[80] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[81] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[82] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[83] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[84] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[85] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[86] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[87] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[88] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[89] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[90] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[91] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[92] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[93] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[94] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[95] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[96] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[97] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[98] in module EncryptionFinalRound is either unconnected or has no load
+WARNING: [Synth 8-7129] Port expanded_key[99] in module EncryptionFinalRound is either unconnected or has no load
+INFO: [Common 17-14] Message 'Synth 8-7129' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 1218.242 ; gain = 576.316
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 1218.242 ; gain = 576.316
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg400-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 1218.242 ; gain = 576.316
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7z020clg400-1
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:14 ; elapsed = 00:00:12 . Memory (MB): peak = 1228.754 ; gain = 586.828
+---------------------------------------------------------------------------------
+INFO: [Device 21-9227] Part: xc7z020clg400-1 does not have CEAM library.
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   32 Bit       Adders := 1     
++---XORs : 
+	   2 Input    128 Bit         XORs := 15    
+	   2 Input      8 Bit         XORs := 260   
+	   3 Input      8 Bit         XORs := 208   
++---Registers : 
+	              128 Bit    Registers := 28    
+	               32 Bit    Registers := 1     
+	                1 Bit    Registers := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:39 ; elapsed = 00:00:41 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+ROM: Preliminary Mapping Report
++-----------------+---------------------------------------------+---------------+----------------+
+|Module Name      | RTL Object                                  | Depth x Width | Implemented As | 
++-----------------+---------------------------------------------+---------------+----------------+
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|XTime            | x_time                                      | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|SubBytes         | sbox                                        | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_zeroth/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_first/third/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/zeroth/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/first/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/second/x_time | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_second/third/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/zeroth/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/first/x_time   | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/second/x_time  | 256x8         | LUT            | 
+|EncryptPipelined | mix_columns_middle/mix_third/third/x_time   | 256x8         | LUT            | 
++-----------------+---------------------------------------------+---------------+----------------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:39 ; elapsed = 00:00:42 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:41 ; elapsed = 00:00:43 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:46 ; elapsed = 00:00:49 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:47 ; elapsed = 00:00:49 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:47 ; elapsed = 00:00:50 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:48 ; elapsed = 00:00:50 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:48 ; elapsed = 00:00:50 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:48 ; elapsed = 00:00:50 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |BUFG   |     1|
+|2     |CARRY4 |     8|
+|3     |LUT1   |     1|
+|4     |LUT2   |   880|
+|5     |LUT4   |   162|
+|6     |LUT5   |     4|
+|7     |LUT6   |  8833|
+|8     |MUXF7  |  3584|
+|9     |MUXF8  |  1792|
+|10    |FDRE   |  3617|
+|11    |IBUF   |  2050|
+|12    |OBUF   |  1793|
++------+-------+------+
+
+Report Instance Areas: 
++------+-----------------------+---------------------------------+------+
+|      |Instance               |Module                           |Cells |
++------+-----------------------+---------------------------------+------+
+|1     |top                    |                                 | 22725|
+|2     |  round1               |EncryptionInitialRound           |  1944|
+|3     |    mix_columns_middle |MixColumns_65                    |   120|
+|4     |      mix_first        |MixColumn_67                     |    30|
+|5     |      mix_second       |MixColumn_68                     |    30|
+|6     |      mix_third        |MixColumn_69                     |    30|
+|7     |      mix_zeroth       |MixColumn_70                     |    30|
+|8     |    sub_bytes_middle   |SubBytes_66                      |   968|
+|9     |  round10              |EncryptionRound__parameterized7  |  1212|
+|10    |    mix_columns_middle |MixColumns_59                    |    60|
+|11    |      mix_first        |MixColumn_61                     |    15|
+|12    |      mix_second       |MixColumn_62                     |    15|
+|13    |      mix_third        |MixColumn_63                     |    15|
+|14    |      mix_zeroth       |MixColumn_64                     |    15|
+|15    |    sub_bytes_middle   |SubBytes_60                      |   480|
+|16    |  round11              |EncryptionRound__parameterized8  |  1212|
+|17    |    mix_columns_middle |MixColumns_53                    |    60|
+|18    |      mix_first        |MixColumn_55                     |    15|
+|19    |      mix_second       |MixColumn_56                     |    15|
+|20    |      mix_third        |MixColumn_57                     |    15|
+|21    |      mix_zeroth       |MixColumn_58                     |    15|
+|22    |    sub_bytes_middle   |SubBytes_54                      |   480|
+|23    |  round12              |EncryptionRound__parameterized9  |  1212|
+|24    |    mix_columns_middle |MixColumns_47                    |    60|
+|25    |      mix_first        |MixColumn_49                     |    15|
+|26    |      mix_second       |MixColumn_50                     |    15|
+|27    |      mix_third        |MixColumn_51                     |    15|
+|28    |      mix_zeroth       |MixColumn_52                     |    15|
+|29    |    sub_bytes_middle   |SubBytes_48                      |   480|
+|30    |  round13              |EncryptionRound__parameterized10 |  1152|
+|31    |    sub_bytes_middle   |SubBytes_46                      |   480|
+|32    |  round14              |EncryptionFinalRound             |   608|
+|33    |    sub_bytes_middle   |SubBytes_45                      |   480|
+|34    |  round2               |EncryptionRound                  |  1212|
+|35    |    mix_columns_middle |MixColumns_39                    |    60|
+|36    |      mix_first        |MixColumn_41                     |    15|
+|37    |      mix_second       |MixColumn_42                     |    15|
+|38    |      mix_third        |MixColumn_43                     |    15|
+|39    |      mix_zeroth       |MixColumn_44                     |    15|
+|40    |    sub_bytes_middle   |SubBytes_40                      |   480|
+|41    |  round3               |EncryptionRound__parameterized0  |  1212|
+|42    |    mix_columns_middle |MixColumns_33                    |    60|
+|43    |      mix_first        |MixColumn_35                     |    15|
+|44    |      mix_second       |MixColumn_36                     |    15|
+|45    |      mix_third        |MixColumn_37                     |    15|
+|46    |      mix_zeroth       |MixColumn_38                     |    15|
+|47    |    sub_bytes_middle   |SubBytes_34                      |   480|
+|48    |  round4               |EncryptionRound__parameterized1  |  1212|
+|49    |    mix_columns_middle |MixColumns_27                    |    60|
+|50    |      mix_first        |MixColumn_29                     |    15|
+|51    |      mix_second       |MixColumn_30                     |    15|
+|52    |      mix_third        |MixColumn_31                     |    15|
+|53    |      mix_zeroth       |MixColumn_32                     |    15|
+|54    |    sub_bytes_middle   |SubBytes_28                      |   480|
+|55    |  round5               |EncryptionRound__parameterized2  |  1212|
+|56    |    mix_columns_middle |MixColumns_21                    |    60|
+|57    |      mix_first        |MixColumn_23                     |    15|
+|58    |      mix_second       |MixColumn_24                     |    15|
+|59    |      mix_third        |MixColumn_25                     |    15|
+|60    |      mix_zeroth       |MixColumn_26                     |    15|
+|61    |    sub_bytes_middle   |SubBytes_22                      |   480|
+|62    |  round6               |EncryptionRound__parameterized3  |  1212|
+|63    |    mix_columns_middle |MixColumns_15                    |    60|
+|64    |      mix_first        |MixColumn_17                     |    15|
+|65    |      mix_second       |MixColumn_18                     |    15|
+|66    |      mix_third        |MixColumn_19                     |    15|
+|67    |      mix_zeroth       |MixColumn_20                     |    15|
+|68    |    sub_bytes_middle   |SubBytes_16                      |   480|
+|69    |  round7               |EncryptionRound__parameterized4  |  1212|
+|70    |    mix_columns_middle |MixColumns_9                     |    60|
+|71    |      mix_first        |MixColumn_11                     |    15|
+|72    |      mix_second       |MixColumn_12                     |    15|
+|73    |      mix_third        |MixColumn_13                     |    15|
+|74    |      mix_zeroth       |MixColumn_14                     |    15|
+|75    |    sub_bytes_middle   |SubBytes_10                      |   480|
+|76    |  round8               |EncryptionRound__parameterized5  |  1212|
+|77    |    mix_columns_middle |MixColumns_3                     |    60|
+|78    |      mix_first        |MixColumn_5                      |    15|
+|79    |      mix_second       |MixColumn_6                      |    15|
+|80    |      mix_third        |MixColumn_7                      |    15|
+|81    |      mix_zeroth       |MixColumn_8                      |    15|
+|82    |    sub_bytes_middle   |SubBytes_4                       |   480|
+|83    |  round9               |EncryptionRound__parameterized6  |  1212|
+|84    |    mix_columns_middle |MixColumns                       |    60|
+|85    |      mix_first        |MixColumn                        |    15|
+|86    |      mix_second       |MixColumn_0                      |    15|
+|87    |      mix_third        |MixColumn_1                      |    15|
+|88    |      mix_zeroth       |MixColumn_2                      |    15|
+|89    |    sub_bytes_middle   |SubBytes                         |   480|
++------+-----------------------+---------------------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:48 ; elapsed = 00:00:50 . Memory (MB): peak = 1508.465 ; gain = 866.539
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 24962 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:48 ; elapsed = 00:00:50 . Memory (MB): peak = 1508.465 ; gain = 866.539
+Synthesis Optimization Complete : Time (s): cpu = 00:00:48 ; elapsed = 00:00:50 . Memory (MB): peak = 1508.465 ; gain = 866.539
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.375 . Memory (MB): peak = 1518.984 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 5384 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.004 . Memory (MB): peak = 1609.562 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete | Checksum: 9b9abea1
+INFO: [Common 17-83] Releasing license: Synthesis
+60 Infos, 102 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:55 ; elapsed = 00:00:57 . Memory (MB): peak = 1609.562 ; gain = 973.949
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.109 . Memory (MB): peak = 1609.562 ; gain = 0.000
+INFO: [Common 17-1381] The checkpoint 'C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/EncryptPipelined.dcp' has been generated.
+INFO: [Vivado 12-24828] Executing command : report_utilization -file EncryptPipelined_utilization_synth.rpt -pb EncryptPipelined_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Mon Oct 28 21:47:03 2024...

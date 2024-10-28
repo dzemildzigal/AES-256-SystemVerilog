@@ -41,4 +41,4 @@ EAStep()
      fi
 }
 
-EAStep vivado -log Encrypt.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source Encrypt.tcl
+EAStep vivado -log EncryptPipelined.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source EncryptPipelined.tcl

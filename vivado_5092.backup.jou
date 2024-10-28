@@ -1,0 +1,1573 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Sun Oct 27 19:52:17 2024
+# Process ID: 5092
+# Current directory: C:/Users/dzemi/Desktop/AES-256-SystemVerilog
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent4028 C:\Users\dzemi\Desktop\AES-256-SystemVerilog\AES_VERILOG.xpr
+# Log file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/vivado.log
+# Journal file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog\vivado.jou
+# Running On        :DESKTOP-95HTTJA
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :19045
+# Processor Detail  :AMD Ryzen 7 2700X Eight-Core Processor         
+# CPU Frequency     :3693 MHz
+# CPU Physical cores:8
+# CPU Logical cores :16
+# Host memory       :68626 MB
+# Swap memory       :10200 MB
+# Total Virtual     :78827 MB
+# Available Virtual :71144 MB
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.xpr
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv} -line 28
+run 3 ns
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv} 28
+run 3 ns
+run 3 ns
+step
+run 3 ns
+run 3 ns
+run 3 ns
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/AddRoundKey.sv} -line 28
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
+set_property source_mgmt_mode None [current_project]
+set_property top EncryptPipelined [current_fileset]
+# Re-enabling previously disabled source management mode.
+set_property source_mgmt_mode DisplayOnly [current_project]
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/ff_1_2}} {{/EncryptTestBench/ff_2_3}} {{/EncryptTestBench/ff_3_4}} {{/EncryptTestBench/ff_4_5}} {{/EncryptTestBench/ff_5_6}} {{/EncryptTestBench/ff_6_7}} {{/EncryptTestBench/ff_7_8}} {{/EncryptTestBench/ff_8_9}} {{/EncryptTestBench/ff_9_10}} {{/EncryptTestBench/ff_10_11}} {{/EncryptTestBench/ff_11_12}} {{/EncryptTestBench/ff_12_13}} {{/EncryptTestBench/ff_13_14}} {{/EncryptTestBench/ff_14_out}} 
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+get_property DISPLAY_LIMIT
+get_property DISPLAY_LIMIT .
+get_property DISPLAY_LIMIT EncryptTestBench.sv
+get_property DISPLAY_LIMIT ./EncryptTestBench.sv
+get_property DISPLAY_LIMIT ./Sim/EncryptTB/EncryptTestBench.sv
+get_property DISPLAY_LIMIT C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/EncryptTB/new/EncryptTestBench.sv
+get_property array_display_limit
+set_property DISPLAY_LIMIT 3000
+set_property -help
+clear
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv} 48
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+run 3 ns
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv} -line 48
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptPipelined.sv} 156
+step
+step
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/ff_1_2}} {{/EncryptTestBench/ff_2_3}} {{/EncryptTestBench/ff_3_4}} {{/EncryptTestBench/ff_4_5}} {{/EncryptTestBench/ff_5_6}} {{/EncryptTestBench/ff_6_7}} {{/EncryptTestBench/ff_7_8}} {{/EncryptTestBench/ff_8_9}} {{/EncryptTestBench/ff_9_10}} {{/EncryptTestBench/ff_10_11}} {{/EncryptTestBench/ff_11_12}} {{/EncryptTestBench/ff_12_13}} {{/EncryptTestBench/ff_13_14}} {{/EncryptTestBench/ff_14_out}} 
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+run 3 ns
+run 3 ns
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/encrypt/ff_1_2_o}} {{/EncryptTestBench/encrypt/ff_2_3_o}} {{/EncryptTestBench/encrypt/ff_3_4_o}} {{/EncryptTestBench/encrypt/ff_4_5_o}} {{/EncryptTestBench/encrypt/ff_5_6_o}} {{/EncryptTestBench/encrypt/ff_6_7_o}} {{/EncryptTestBench/encrypt/ff_7_8_o}} {{/EncryptTestBench/encrypt/ff_8_9_o}} {{/EncryptTestBench/encrypt/ff_9_10_o}} {{/EncryptTestBench/encrypt/ff_10_11_o}} {{/EncryptTestBench/encrypt/ff_11_12_o}} {{/EncryptTestBench/encrypt/ff_12_13_o}} {{/EncryptTestBench/encrypt/ff_13_14_o}} {{/EncryptTestBench/encrypt/ff_14_out_o}} 
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/encrypt/ff_1_2_o}} {{/EncryptTestBench/encrypt/ff_2_3_o}} {{/EncryptTestBench/encrypt/ff_3_4_o}} {{/EncryptTestBench/encrypt/ff_4_5_o}} {{/EncryptTestBench/encrypt/ff_5_6_o}} {{/EncryptTestBench/encrypt/ff_6_7_o}} {{/EncryptTestBench/encrypt/ff_7_8_o}} {{/EncryptTestBench/encrypt/ff_8_9_o}} {{/EncryptTestBench/encrypt/ff_9_10_o}} {{/EncryptTestBench/encrypt/ff_10_11_o}} {{/EncryptTestBench/encrypt/ff_11_12_o}} {{/EncryptTestBench/encrypt/ff_12_13_o}} {{/EncryptTestBench/encrypt/ff_13_14_o}} {{/EncryptTestBench/encrypt/ff_14_out_o}} 
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+restart
+run 30 ns
+run 30 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv} 63
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/encrypt/ff_1_2_o}} {{/EncryptTestBench/encrypt/ff_2_3_o}} {{/EncryptTestBench/encrypt/ff_3_4_o}} {{/EncryptTestBench/encrypt/ff_4_5_o}} {{/EncryptTestBench/encrypt/ff_5_6_o}} {{/EncryptTestBench/encrypt/ff_6_7_o}} {{/EncryptTestBench/encrypt/ff_7_8_o}} {{/EncryptTestBench/encrypt/ff_8_9_o}} {{/EncryptTestBench/encrypt/ff_9_10_o}} {{/EncryptTestBench/encrypt/ff_10_11_o}} {{/EncryptTestBench/encrypt/ff_11_12_o}} {{/EncryptTestBench/encrypt/ff_12_13_o}} {{/EncryptTestBench/encrypt/ff_13_14_o}} {{/EncryptTestBench/encrypt/ff_14_out_o}} 
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+close [ open C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptFinalRound.sv w ]
+add_files C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptFinalRound.sv
+close [ open C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionFinalRound.sv w ]
+add_files C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionFinalRound.sv
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+restart
+run 3 ns
+run 3 ns
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/ff_1_2}} {{/EncryptTestBench/ff_2_3}} {{/EncryptTestBench/ff_3_4}} {{/EncryptTestBench/ff_4_5}} {{/EncryptTestBench/ff_5_6}} {{/EncryptTestBench/ff_6_7}} {{/EncryptTestBench/ff_7_8}} {{/EncryptTestBench/ff_8_9}} {{/EncryptTestBench/ff_9_10}} {{/EncryptTestBench/ff_10_11}} {{/EncryptTestBench/ff_11_12}} {{/EncryptTestBench/ff_12_13}} {{/EncryptTestBench/ff_13_14}} 
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptPipelined.sv} 151
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+restart
+step
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/ff_1_2}} {{/EncryptTestBench/ff_2_3}} {{/EncryptTestBench/ff_3_4}} {{/EncryptTestBench/ff_4_5}} {{/EncryptTestBench/ff_5_6}} {{/EncryptTestBench/ff_6_7}} {{/EncryptTestBench/ff_7_8}} {{/EncryptTestBench/ff_8_9}} {{/EncryptTestBench/ff_9_10}} {{/EncryptTestBench/ff_10_11}} {{/EncryptTestBench/ff_11_12}} {{/EncryptTestBench/ff_12_13}} {{/EncryptTestBench/ff_13_14}} 
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+restart
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/ff_1_2}} {{/EncryptTestBench/ff_2_3}} {{/EncryptTestBench/ff_3_4}} {{/EncryptTestBench/ff_4_5}} {{/EncryptTestBench/ff_5_6}} {{/EncryptTestBench/ff_6_7}} {{/EncryptTestBench/ff_7_8}} {{/EncryptTestBench/ff_8_9}} {{/EncryptTestBench/ff_9_10}} {{/EncryptTestBench/ff_10_11}} {{/EncryptTestBench/ff_11_12}} {{/EncryptTestBench/ff_12_13}} {{/EncryptTestBench/ff_13_14}} 
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptPipelined.sv} 152
+step
+restart
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+close [ open C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionInitialRound.sv w ]
+add_files C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionInitialRound.sv
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionInitialRound.sv} 53
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionFinalRound.sv} 42
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv} 48
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/encrypt/ff_1_2_o}} {{/EncryptTestBench/encrypt/ff_2_3_o}} {{/EncryptTestBench/encrypt/ff_3_4_o}} {{/EncryptTestBench/encrypt/ff_4_5_o}} {{/EncryptTestBench/encrypt/ff_5_6_o}} {{/EncryptTestBench/encrypt/ff_6_7_o}} {{/EncryptTestBench/encrypt/ff_7_8_o}} {{/EncryptTestBench/encrypt/ff_8_9_o}} {{/EncryptTestBench/encrypt/ff_9_10_o}} {{/EncryptTestBench/encrypt/ff_10_11_o}} {{/EncryptTestBench/encrypt/ff_11_12_o}} {{/EncryptTestBench/encrypt/ff_12_13_o}} {{/EncryptTestBench/encrypt/ff_13_14_o}} {{/EncryptTestBench/encrypt/i}} {{/EncryptTestBench/encrypt/ff_1_2}} {{/EncryptTestBench/encrypt/ff_2_3}} {{/EncryptTestBench/encrypt/ff_3_4}} {{/EncryptTestBench/encrypt/ff_4_5}} {{/EncryptTestBench/encrypt/ff_5_6}} {{/EncryptTestBench/encrypt/ff_6_7}} {{/EncryptTestBench/encrypt/ff_7_8}} {{/EncryptTestBench/encrypt/ff_8_9}} {{/EncryptTestBench/encrypt/ff_9_10}} {{/EncryptTestBench/encrypt/ff_10_11}} {{/EncryptTestBench/encrypt/ff_11_12}} {{/EncryptTestBench/encrypt/ff_12_13}} {{/EncryptTestBench/encrypt/ff_13_14}} {{/EncryptTestBench/encrypt/final_out}} 
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionFinalRound.sv} -line 42
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv} -line 48
+remove_bps -file {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptPipelined.sv} -line 152
+relaunch_sim
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+save_wave_config {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg}
+save_wave_config {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg}
+save_wave_config {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg}
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 16
+wait_on_run synth_1
+launch_simulation -simset [get_filesets EncryptTB ]
+open_wave_config C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.sim/EncryptTB/EncryptTestBench_behav.wcfg
+source EncryptTestBench.tcl
+run 3 ns
+run 3 ns
+run 3 ns
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+current_wave_config {EncryptTestBench_behav.wcfg}
+add_wave {{/EncryptTestBench/encrypt/ff_1_2_o}} {{/EncryptTestBench/encrypt/ff_2_3_o}} {{/EncryptTestBench/encrypt/ff_3_4_o}} {{/EncryptTestBench/encrypt/ff_4_5_o}} {{/EncryptTestBench/encrypt/ff_5_6_o}} {{/EncryptTestBench/encrypt/ff_6_7_o}} {{/EncryptTestBench/encrypt/ff_7_8_o}} {{/EncryptTestBench/encrypt/ff_8_9_o}} {{/EncryptTestBench/encrypt/ff_9_10_o}} {{/EncryptTestBench/encrypt/ff_10_11_o}} {{/EncryptTestBench/encrypt/ff_11_12_o}} {{/EncryptTestBench/encrypt/ff_12_13_o}} {{/EncryptTestBench/encrypt/ff_13_14_o}} {{/EncryptTestBench/encrypt/i}} {{/EncryptTestBench/encrypt/ff_1_2}} {{/EncryptTestBench/encrypt/ff_2_3}} {{/EncryptTestBench/encrypt/ff_3_4}} {{/EncryptTestBench/encrypt/ff_4_5}} {{/EncryptTestBench/encrypt/ff_5_6}} {{/EncryptTestBench/encrypt/ff_6_7}} {{/EncryptTestBench/encrypt/ff_7_8}} {{/EncryptTestBench/encrypt/ff_8_9}} {{/EncryptTestBench/encrypt/ff_9_10}} {{/EncryptTestBench/encrypt/ff_10_11}} {{/EncryptTestBench/encrypt/ff_11_12}} {{/EncryptTestBench/encrypt/ff_12_13}} {{/EncryptTestBench/encrypt/ff_13_14}} {{/EncryptTestBench/encrypt/final_out}} 
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+step
+run 3 ns
+run 3 ns
+run 3 ns
+run 3 ns
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionFinalRound.sv} 43
+run 3 ns
+add_bp {C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv} 49
+run 3 ns
+run 3 ns

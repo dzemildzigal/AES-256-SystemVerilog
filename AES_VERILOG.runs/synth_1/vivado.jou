@@ -3,11 +3,11 @@
 # SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
 # IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
 # SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
-# Start of session at: Mon Oct 21 00:28:09 2024
-# Process ID: 2736
+# Start of session at: Mon Oct 28 21:45:50 2024
+# Process ID: 288
 # Current directory: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1
-# Command line: vivado.exe -log Encrypt.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source Encrypt.tcl
-# Log file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/Encrypt.vds
+# Command line: vivado.exe -log EncryptPipelined.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source EncryptPipelined.tcl
+# Log file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1/EncryptPipelined.vds
 # Journal file: C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.runs/synth_1\vivado.jou
 # Running On        :DESKTOP-95HTTJA
 # Platform          :Windows Server 2016 or Windows 10
@@ -19,6 +19,6 @@
 # Host memory       :68626 MB
 # Swap memory       :10200 MB
 # Total Virtual     :78827 MB
-# Available Virtual :64977 MB
+# Available Virtual :65581 MB
 #-----------------------------------------------------------
-source Encrypt.tcl -notrace
+source EncryptPipelined.tcl -notrace

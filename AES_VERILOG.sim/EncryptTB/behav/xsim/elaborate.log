@@ -15,7 +15,21 @@ Compiling module xil_defaultlib.ShiftRows
 Compiling module xil_defaultlib.XTime
 Compiling module xil_defaultlib.MixColumn
 Compiling module xil_defaultlib.MixColumns
-Compiling module xil_defaultlib.Encrypt
+Compiling module xil_defaultlib.EncryptionInitialRound
+Compiling module xil_defaultlib.EncryptionRound(i=2)
+Compiling module xil_defaultlib.EncryptionRound(i=3)
+Compiling module xil_defaultlib.EncryptionRound(i=4)
+Compiling module xil_defaultlib.EncryptionRound(i=5)
+Compiling module xil_defaultlib.EncryptionRound(i=6)
+Compiling module xil_defaultlib.EncryptionRound(i=7)
+Compiling module xil_defaultlib.EncryptionRound(i=8)
+Compiling module xil_defaultlib.EncryptionRound(i=9)
+Compiling module xil_defaultlib.EncryptionRound(i=10)
+Compiling module xil_defaultlib.EncryptionRound(i=11)
+Compiling module xil_defaultlib.EncryptionRound(i=12)
+Compiling module xil_defaultlib.EncryptionRound(i=13)
+Compiling module xil_defaultlib.EncryptionFinalRound
+Compiling module xil_defaultlib.EncryptPipelined
 Compiling module xil_defaultlib.EncryptTestBench
 Compiling module xil_defaultlib.glbl
 Built simulation snapshot EncryptTestBench_behav

@@ -23,15 +23,42 @@ module EncryptTestBench;
     reg rst;
     reg [0:127] in;
     reg [0:1919] expanded_key;
+    
     wire [0:127] out;
     wire valid_data;
-    
-Encrypt encrypt(.clk(clk),
+    wire [0:127] ff_1_2;
+    wire [0:127] ff_2_3;
+    wire [0:127] ff_3_4;
+    wire [0:127] ff_4_5;
+    wire [0:127] ff_5_6;
+    wire [0:127] ff_6_7;
+    wire [0:127] ff_7_8;
+    wire [0:127] ff_8_9;
+    wire [0:127] ff_9_10;
+    wire [0:127] ff_10_11;
+    wire [0:127] ff_11_12;
+    wire [0:127] ff_12_13;
+    wire [0:127] ff_13_14;
+        
+EncryptPipelined encrypt(.clk(clk),
                 .rst(rst),
                 .in(in),
                 .expanded_key(expanded_key),
                 .out(out),
-                .valid_data(valid_data)
+                .valid_data(valid_data),
+                .ff_1_2_o(ff_1_2),
+                .ff_2_3_o(ff_2_3),
+                .ff_3_4_o(ff_3_4),
+                .ff_4_5_o(ff_4_5),
+                .ff_5_6_o(ff_5_6),
+                .ff_6_7_o(ff_6_7),
+                .ff_7_8_o(ff_7_8),
+                .ff_8_9_o(ff_8_9),
+                .ff_9_10_o(ff_9_10),
+                .ff_10_11_o(ff_10_11),
+                .ff_11_12_o(ff_11_12),
+                .ff_12_13_o(ff_12_13),
+                .ff_13_14_o(ff_13_14)
                 );
                 
 initial begin

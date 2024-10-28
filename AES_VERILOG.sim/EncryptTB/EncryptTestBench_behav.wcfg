@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="8.050 ns"></ZoomStartTime>
-      <ZoomEndTime time="73.601 ns"></ZoomEndTime>
-      <Cursor1Time time="67.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="51.001 ns"></ZoomEndTime>
+      <Cursor1Time time="12.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="163"></NameColumnWidth>
-      <ValueColumnWidth column_width="253"></ValueColumnWidth>
+      <NameColumnWidth column_width="139"></NameColumnWidth>
+      <ValueColumnWidth column_width="211"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="6" />
+   <WVObjectSize size="20" />
    <wvobject fp_name="/EncryptTestBench/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -43,5 +43,61 @@
    <wvobject fp_name="/EncryptTestBench/valid_data" type="logic">
       <obj_property name="ElementShortName">valid_data</obj_property>
       <obj_property name="ObjectShortName">valid_data</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_1_2" type="array">
+      <obj_property name="ElementShortName">ff_1_2[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_1_2[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_2_3" type="array">
+      <obj_property name="ElementShortName">ff_2_3[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_2_3[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_3_4" type="array">
+      <obj_property name="ElementShortName">ff_3_4[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_3_4[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_4_5" type="array">
+      <obj_property name="ElementShortName">ff_4_5[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_4_5[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_5_6" type="array">
+      <obj_property name="ElementShortName">ff_5_6[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_5_6[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_6_7" type="array">
+      <obj_property name="ElementShortName">ff_6_7[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_6_7[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_7_8" type="array">
+      <obj_property name="ElementShortName">ff_7_8[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_7_8[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_8_9" type="array">
+      <obj_property name="ElementShortName">ff_8_9[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_8_9[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_9_10" type="array">
+      <obj_property name="ElementShortName">ff_9_10[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_9_10[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_10_11" type="array">
+      <obj_property name="ElementShortName">ff_10_11[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_10_11[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_11_12" type="array">
+      <obj_property name="ElementShortName">ff_11_12[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_11_12[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_12_13" type="array">
+      <obj_property name="ElementShortName">ff_12_13[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_12_13[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/ff_13_14" type="array">
+      <obj_property name="ElementShortName">ff_13_14[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ff_13_14[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/EncryptTestBench/encrypt/final_out" type="array">
+      <obj_property name="ElementShortName">final_out[0:127]</obj_property>
+      <obj_property name="ObjectShortName">final_out[0:127]</obj_property>
    </wvobject>
 </wave_config>

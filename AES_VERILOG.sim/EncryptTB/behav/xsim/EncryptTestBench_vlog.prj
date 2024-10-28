@@ -16,6 +16,11 @@ sv xil_defaultlib  \
 "../../../../AES_VERILOG.srcs/sources_1/new/InvMixColumns.sv" \
 "../../../../AES_VERILOG.srcs/sources_1/new/SubBytes.sv" \
 "../../../../AES_VERILOG.srcs/sources_1/new/InvShiftRows.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/EncryptPipelined.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/EncryptionRound.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/EncryptFinalRound.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/EncryptionFinalRound.sv" \
+"../../../../AES_VERILOG.srcs/sources_1/new/EncryptionInitialRound.sv" \
 "../../../../AES_VERILOG.srcs/EncryptTB/new/EncryptTestBench.sv" \
 
 # compile glbl module

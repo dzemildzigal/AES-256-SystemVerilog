@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1729463285" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/Top.dcp">
-  <File Type="PA-TCL" Name="Encrypt.tcl"/>
-  <File Type="RDS-PROPCONSTRS" Name="Encrypt_drc_synth.rpt"/>
-  <File Type="REPORTS-TCL" Name="Encrypt_reports.tcl"/>
-  <File Type="RDS-RDS" Name="Encrypt.vds"/>
-  <File Type="RDS-UTIL" Name="Encrypt_utilization_synth.rpt"/>
-  <File Type="RDS-UTIL-PB" Name="Encrypt_utilization_synth.pb"/>
-  <File Type="RDS-DCP" Name="Encrypt.dcp"/>
-  <File Type="VDS-TIMINGSUMMARY" Name="Encrypt_timing_summary_synth.rpt"/>
-  <File Type="VDS-TIMING-PB" Name="Encrypt_timing_summary_synth.pb"/>
+<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1730148346" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/Top.dcp">
+  <File Type="PA-TCL" Name="EncryptPipelined.tcl"/>
+  <File Type="RDS-PROPCONSTRS" Name="EncryptPipelined_drc_synth.rpt"/>
+  <File Type="REPORTS-TCL" Name="EncryptPipelined_reports.tcl"/>
+  <File Type="RDS-RDS" Name="EncryptPipelined.vds"/>
+  <File Type="RDS-UTIL" Name="EncryptPipelined_utilization_synth.rpt"/>
+  <File Type="RDS-UTIL-PB" Name="EncryptPipelined_utilization_synth.pb"/>
+  <File Type="RDS-DCP" Name="EncryptPipelined.dcp"/>
+  <File Type="VDS-TIMINGSUMMARY" Name="EncryptPipelined_timing_summary_synth.rpt"/>
+  <File Type="VDS-TIMING-PB" Name="EncryptPipelined_timing_summary_synth.pb"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
     <File Path="$PSRCDIR/sources_1/new/r_con.mem">
@@ -147,9 +147,44 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
+    <File Path="$PSRCDIR/sources_1/new/EncryptPipelined.sv">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/EncryptionRound.sv">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/EncryptFinalRound.sv">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/EncryptionFinalRound.sv">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/EncryptionInitialRound.sv">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
     <Config>
       <Option Name="DesignMode" Val="RTL"/>
-      <Option Name="TopModule" Val="Encrypt"/>
+      <Option Name="TopModule" Val="EncryptPipelined"/>
     </Config>
   </FileSet>
   <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">

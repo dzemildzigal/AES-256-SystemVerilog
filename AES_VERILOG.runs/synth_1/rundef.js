@@ -24,7 +24,7 @@ eval( EAInclude(ISEJScriptLib) );
 
 
 ISEStep( "vivado",
-         "-log Encrypt.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source Encrypt.tcl" );
+         "-log EncryptPipelined.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source EncryptPipelined.tcl" );
 
 
 
