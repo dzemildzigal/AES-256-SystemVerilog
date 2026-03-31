@@ -17,123 +17,138 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Icarus Verilog
+      - name: Install tools
         run: |
           sudo apt-get update
           sudo apt-get install -y iverilog
+          # sv2v converts SystemVerilog → Verilog, working around iverilog
+          # limitations with always_comb/always_ff and variable part-selects
+          curl -fsSL https://github.com/zachjs/sv2v/releases/latest/download/sv2v-Linux.zip -o sv2v.zip
+          unzip -q sv2v.zip
+          sudo mv sv2v-Linux/sv2v /usr/local/bin/
+          sv2v --version
 
       - name: Define source paths
         run: |
           echo "SRC=AES_VERILOG.srcs/sources_1/new" >> $GITHUB_ENV
           echo "TB=AES_VERILOG.srcs" >> $GITHUB_ENV
 
-      # ── Core design sources shared by all testbenches ──────────
-      # Listed explicitly so each sim step can just append its TB file.
+      # Helper: sv2v converts .sv → .v, then iverilog compiles, vvp runs.
+      # sv2v turns always_comb → always @*, assert → if(!cond), logic → reg/wire.
 
       - name: KeyExpansion TB
         run: |
-          iverilog -g2012 -o sim_ke \
-            $SRC/KeyExpansion.sv \
-            $TB/KeyExpansionTB/new/KeyExpansionTestBench.sv
+          sv2v $SRC/KeyExpansion.sv \
+               $TB/KeyExpansionTB/new/KeyExpansionTestBench.sv \
+               -w ke_all.v
+          iverilog -g2012 -o sim_ke ke_all.v
           vvp sim_ke | tee ke_out.log
           ! grep -qi "error\|failed\|assertion" ke_out.log
 
       - name: Encrypt Iterative TB
         run: |
-          iverilog -g2012 -o sim_enc_iter \
-            $SRC/KeyExpansion.sv \
-            $SRC/Encrypt.sv \
-            $SRC/SubBytes.sv \
-            $SRC/ShiftRows.sv \
-            $SRC/MixColumns.sv \
-            $SRC/MixColumn.sv \
-            $SRC/XTime.sv \
-            $SRC/AddRoundKey.sv \
-            $TB/EncryptTB/new/EncryptIterativeTestBench.sv
+          sv2v $SRC/Encrypt.sv \
+               $SRC/SubBytes.sv \
+               $SRC/ShiftRows.sv \
+               $SRC/MixColumns.sv \
+               $SRC/MixColumn.sv \
+               $SRC/XTime.sv \
+               $SRC/AddRoundKey.sv \
+               $TB/EncryptTB/new/EncryptIterativeTestBench.sv \
+               -w enc_iter_all.v
+          iverilog -g2012 -o sim_enc_iter enc_iter_all.v
           vvp sim_enc_iter | tee enc_iter_out.log
           grep -q "All iterative encrypt tests passed" enc_iter_out.log
 
       - name: Encrypt Pipelined TB
         run: |
-          iverilog -g2012 -o sim_enc_pipe \
-            $SRC/KeyExpansion.sv \
-            $SRC/EncryptPipelined.sv \
-            $SRC/EncryptionRound.sv \
-            $SRC/EncryptionInitialRound.sv \
-            $SRC/EncryptionFinalRound.sv \
-            $SRC/SubBytes.sv \
-            $SRC/ShiftRows.sv \
-            $SRC/MixColumns.sv \
-            $SRC/MixColumn.sv \
-            $SRC/XTime.sv \
-            $SRC/AddRoundKey.sv \
-            $TB/EncryptTB/new/EncryptTestBench.sv
+          sv2v $SRC/EncryptPipelined.sv \
+               $SRC/EncryptionRound.sv \
+               $SRC/EncryptionInitialRound.sv \
+               $SRC/EncryptionFinalRound.sv \
+               $SRC/SubBytes.sv \
+               $SRC/ShiftRows.sv \
+               $SRC/MixColumns.sv \
+               $SRC/MixColumn.sv \
+               $SRC/XTime.sv \
+               $SRC/AddRoundKey.sv \
+               $TB/EncryptTB/new/EncryptTestBench.sv \
+               -w enc_pipe_all.v
+          iverilog -g2012 -o sim_enc_pipe enc_pipe_all.v
           vvp sim_enc_pipe | tee enc_pipe_out.log
           ! grep -qi "error\|failed\|assertion" enc_pipe_out.log
 
       - name: SubBytes TB
         run: |
-          iverilog -g2012 -o sim_sb \
-            $SRC/SubBytes.sv \
-            $TB/SubBytesTB/new/SubBytesTestBench.sv
+          sv2v $SRC/SubBytes.sv \
+               $TB/SubBytesTB/new/SubBytesTestBench.sv \
+               -w sb_all.v
+          iverilog -g2012 -o sim_sb sb_all.v
           vvp sim_sb | tee sb_out.log
           ! grep -qi "error\|failed" sb_out.log
 
       - name: InvSubBytes TB
         run: |
-          iverilog -g2012 -o sim_isb \
-            $SRC/InvSubBytes.sv \
-            $TB/InvSubBytesTB/new/InvSubBytesTestBench.sv
+          sv2v $SRC/InvSubBytes.sv \
+               $TB/InvSubBytesTB/new/InvSubBytesTestBench.sv \
+               -w isb_all.v
+          iverilog -g2012 -o sim_isb isb_all.v
           vvp sim_isb | tee isb_out.log
           ! grep -qi "error\|failed" isb_out.log
 
       - name: ShiftRows TB
         run: |
-          iverilog -g2012 -o sim_sr \
-            $SRC/ShiftRows.sv \
-            $TB/ShiftRowsTB/new/ShiftRowsTestBench.sv
+          sv2v $SRC/ShiftRows.sv \
+               $TB/ShiftRowsTB/new/ShiftRowsTestBench.sv \
+               -w sr_all.v
+          iverilog -g2012 -o sim_sr sr_all.v
           vvp sim_sr | tee sr_out.log
           ! grep -qi "error\|failed" sr_out.log
 
       - name: InvShiftRows TB
         run: |
-          iverilog -g2012 -o sim_isr \
-            $SRC/InvShiftRows.sv \
-            $TB/InvShiftRowsTB/new/InvShiftRowsTestBench.sv
+          sv2v $SRC/InvShiftRows.sv \
+               $TB/InvShiftRowsTB/new/InvShiftRowsTestBench.sv \
+               -w isr_all.v
+          iverilog -g2012 -o sim_isr isr_all.v
           vvp sim_isr | tee isr_out.log
           ! grep -qi "error\|failed" isr_out.log
 
       - name: MixColumn TB
         run: |
-          iverilog -g2012 -o sim_mc \
-            $SRC/MixColumn.sv \
-            $SRC/XTime.sv \
-            $TB/MixColumnTB/new/MixColumnTestBench.sv
+          sv2v $SRC/MixColumn.sv \
+               $SRC/XTime.sv \
+               $TB/MixColumnTB/new/MixColumnTestBench.sv \
+               -w mc_all.v
+          iverilog -g2012 -o sim_mc mc_all.v
           vvp sim_mc | tee mc_out.log
           ! grep -qi "error\|failed" mc_out.log
 
       - name: MixColumns TB
         run: |
-          iverilog -g2012 -o sim_mcs \
-            $SRC/MixColumns.sv \
-            $SRC/MixColumn.sv \
-            $SRC/XTime.sv \
-            $TB/MixColumnsTB/new/MixColumnsTestBench.sv
+          sv2v $SRC/MixColumns.sv \
+               $SRC/MixColumn.sv \
+               $SRC/XTime.sv \
+               $TB/MixColumnsTB/new/MixColumnsTestBench.sv \
+               -w mcs_all.v
+          iverilog -g2012 -o sim_mcs mcs_all.v
           vvp sim_mcs | tee mcs_out.log
           ! grep -qi "error\|failed" mcs_out.log
 
       - name: XTime TB
         run: |
-          iverilog -g2012 -o sim_xt \
-            $SRC/XTime.sv \
-            $TB/XTimeTB/new/XTimeTestBench.sv
+          sv2v $SRC/XTime.sv \
+               $TB/XTimeTB/new/XTimeTestBench.sv \
+               -w xt_all.v
+          iverilog -g2012 -o sim_xt xt_all.v
           vvp sim_xt | tee xt_out.log
           ! grep -qi "error\|failed" xt_out.log
 
       - name: AddRoundKey TB
         run: |
-          iverilog -g2012 -o sim_ark \
-            $SRC/AddRoundKey.sv \
-            $TB/AddRoundKeyTB/new/AddRoundKeyTestBench.sv
+          sv2v $SRC/AddRoundKey.sv \
+               $TB/AddRoundKeyTB/new/AddRoundKeyTestBench.sv \
+               -w ark_all.v
+          iverilog -g2012 -o sim_ark ark_all.v
           vvp sim_ark | tee ark_out.log
           ! grep -qi "error\|failed" ark_out.log
