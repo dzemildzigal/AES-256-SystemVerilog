@@ -2,23 +2,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module InvSubBytes(
-    input  logic       clk,
-    input  logic       rst,
-    input  logic [0:127] input_state,
-    output logic [0:127] output_state,
-    output logic       valid_data
+    input  [0:127] input_state,
+    output [0:127] output_state
     );
 
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            output_state <= '0;
-            valid_data   <= 1'b0;
-        end
-        else begin
-            output_state <= inv_sbox(input_state);
-            valid_data   <= 1'b1;
-        end
-    end
+assign output_state = inv_sbox(input_state);
 
 function [0:127] inv_sbox;
 input [0:127] data;

@@ -86,10 +86,18 @@ jobs:
                $SRC/EncryptionRound.sv \
                $SRC/EncryptionInitialRound.sv \
                $SRC/EncryptionFinalRound.sv \
+               $SRC/DecryptPipelined.sv \
+               $SRC/DecryptionRound.sv \
+               $SRC/DecryptionInitialRound.sv \
+               $SRC/DecryptionFinalRound.sv \
                $SRC/SubBytes.sv \
+               $SRC/InvSubBytes.sv \
                $SRC/ShiftRows.sv \
+               $SRC/InvShiftRows.sv \
                $SRC/MixColumns.sv \
                $SRC/MixColumn.sv \
+               $SRC/InvMixColumns.sv \
+               $SRC/InvMixColumn.sv \
                $SRC/XTime.sv \
                $SRC/AddRoundKey.sv \
                $TB/TopTB/new/TopTestBench.sv \
@@ -154,6 +162,50 @@ jobs:
           iverilog -g2012 -o sim_mcs mcs_all.v
           vvp sim_mcs | tee mcs_out.log
           grep -q "PASSED" mcs_out.log
+
+      - name: InvMixColumns TB
+        run: |
+          sv2v $SRC/InvMixColumns.sv \
+               $SRC/InvMixColumn.sv \
+               $SRC/XTime.sv \
+               $TB/InvMixColumnsTB/new/InvMixColumnsTestBench.sv \
+               -w imcs_all.v
+          iverilog -g2012 -o sim_imcs imcs_all.v
+          vvp sim_imcs | tee imcs_out.log
+          grep -q "PASSED" imcs_out.log
+
+      - name: Decrypt Pipelined TB
+        run: |
+          sv2v $SRC/DecryptPipelined.sv \
+               $SRC/DecryptionRound.sv \
+               $SRC/DecryptionInitialRound.sv \
+               $SRC/DecryptionFinalRound.sv \
+               $SRC/InvSubBytes.sv \
+               $SRC/InvShiftRows.sv \
+               $SRC/InvMixColumns.sv \
+               $SRC/InvMixColumn.sv \
+               $SRC/XTime.sv \
+               $SRC/AddRoundKey.sv \
+               $TB/DecryptPipelinedTB/new/DecryptPipelinedTestBench.sv \
+               -w dec_pipe_all.v
+          iverilog -g2012 -o sim_dec_pipe dec_pipe_all.v
+          vvp sim_dec_pipe | tee dec_pipe_out.log
+          grep -q "PASSED" dec_pipe_out.log
+
+      - name: Decrypt Iterative TB
+        run: |
+          sv2v $SRC/Decrypt.sv \
+               $SRC/InvSubBytes.sv \
+               $SRC/InvShiftRows.sv \
+               $SRC/InvMixColumns.sv \
+               $SRC/InvMixColumn.sv \
+               $SRC/XTime.sv \
+               $SRC/AddRoundKey.sv \
+               $TB/DecryptIterativeTB/new/DecryptIterativeTestBench.sv \
+               -w dec_iter_all.v
+          iverilog -g2012 -o sim_dec_iter dec_iter_all.v
+          vvp sim_dec_iter | tee dec_iter_out.log
+          grep -q "PASSED" dec_iter_out.log
 
       - name: XTime TB
         run: |

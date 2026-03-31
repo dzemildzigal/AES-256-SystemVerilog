@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Top-level testbench: KeyExpansion + EncryptPipelined end-to-end.
-// Demonstrates: key load → wait for expansion → encrypt → verify ciphertext.
+// Top-level testbench: KeyExpansion + EncryptPipelined + DecryptPipelined.
+// Demonstrates: key load → encrypt → verify ct → decrypt → verify pt roundtrip.
 
 module TopTestBench;
     reg clk;
@@ -13,6 +13,10 @@ module TopTestBench;
     reg [0:127] plaintext;
     wire [0:127] ciphertext;
     wire ct_valid;
+    reg dec_start_i;
+    reg [0:127] ciphertext_in;
+    wire [0:127] decrypted;
+    wire pt_valid;
 
     Top top(
         .clk(clk),
@@ -23,7 +27,11 @@ module TopTestBench;
         .start_i(start_i),
         .plaintext(plaintext),
         .ciphertext(ciphertext),
-        .ct_valid(ct_valid)
+        .ct_valid(ct_valid),
+        .dec_start_i(dec_start_i),
+        .ciphertext_in(ciphertext_in),
+        .decrypted(decrypted),
+        .pt_valid(pt_valid)
     );
 
     integer errors;
@@ -37,6 +45,8 @@ module TopTestBench;
         masterkey = '0;
         start_i = 0;
         plaintext = '0;
+        dec_start_i = 0;
+        ciphertext_in = '0;
 
         // ---- Reset ----
         @(posedge clk);
@@ -181,6 +191,60 @@ module TopTestBench;
         @(posedge clk);
         #1;
         if (ct_valid !== 1'b0) begin $display("FAIL T5: ct_valid still high after stream"); errors = errors + 1; end
+
+        // ================================================================
+        // Test 6: Decrypt — NIST key, decrypt known ciphertext
+        //   ct = 8ea2b7ca516745bfeafc49904b496089 → pt = 00112233..eeff
+        // ================================================================
+        $display("  T6: NIST key, decrypt ct -> pt");
+        // Key is already expanded from T5 (NIST key)
+        ciphertext_in = 128'h8ea2b7ca516745bfeafc49904b496089;
+        dec_start_i = 1;
+        @(posedge clk);
+        #1; dec_start_i = 0;
+        ciphertext_in = '0;
+
+        repeat(14) @(posedge clk);
+        #1;
+        if (pt_valid !== 1'b1) begin $display("FAIL T6: pt_valid not asserted"); errors = errors + 1; end
+        if (decrypted !== 128'h00112233445566778899aabbccddeeff) begin $display("FAIL T6: wrong pt, got %h", decrypted); errors = errors + 1; end
+
+        // ================================================================
+        // Test 7: Encrypt-then-Decrypt roundtrip — custom key
+        //   Encrypt "Hello world!  :)", then decrypt the result
+        // ================================================================
+        $display("  T7: roundtrip encrypt then decrypt");
+        masterkey = 256'h5468697349735468654265737450617373776f72644943616e5468696e6b4f66;
+        new_masterkey = 1;
+        @(posedge clk);
+        #1; new_masterkey = 0;
+
+        wait(keys_ready == 4'd15);
+        @(posedge clk);
+
+        // Encrypt
+        plaintext = "Hello world!  :)";
+        start_i = 1;
+        @(posedge clk);
+        #1; start_i = 0;
+        plaintext = '0;
+
+        repeat(14) @(posedge clk);
+        #1;
+        if (ct_valid !== 1'b1) begin $display("FAIL T7a: ct_valid not asserted"); errors = errors + 1; end
+        if (ciphertext !== 128'hea1044c3b1139b6cf71095be1071b90d) begin $display("FAIL T7a: wrong ct, got %h", ciphertext); errors = errors + 1; end
+
+        // Now decrypt the ciphertext we just got
+        ciphertext_in = ciphertext;
+        dec_start_i = 1;
+        @(posedge clk);
+        #1; dec_start_i = 0;
+        ciphertext_in = '0;
+
+        repeat(14) @(posedge clk);
+        #1;
+        if (pt_valid !== 1'b1) begin $display("FAIL T7b: pt_valid not asserted"); errors = errors + 1; end
+        if (decrypted !== 128'h48656c6c6f20776f726c642120203a29) begin $display("FAIL T7b: wrong pt, got %h", decrypted); errors = errors + 1; end
 
         // ================================================================
         // Summary
