@@ -106,6 +106,34 @@ jobs:
           vvp sim_top | tee top_out.log
           grep -q "PASSED" top_out.log
 
+      - name: TopRoundtrip TB
+        run: |
+          sv2v $SRC/TopRoundtrip.sv \
+               $SRC/KeyExpansion.sv \
+               $SRC/EncryptPipelined.sv \
+               $SRC/EncryptionRound.sv \
+               $SRC/EncryptionInitialRound.sv \
+               $SRC/EncryptionFinalRound.sv \
+               $SRC/DecryptPipelined.sv \
+               $SRC/DecryptionRound.sv \
+               $SRC/DecryptionInitialRound.sv \
+               $SRC/DecryptionFinalRound.sv \
+               $SRC/SubBytes.sv \
+               $SRC/InvSubBytes.sv \
+               $SRC/ShiftRows.sv \
+               $SRC/InvShiftRows.sv \
+               $SRC/MixColumns.sv \
+               $SRC/MixColumn.sv \
+               $SRC/InvMixColumns.sv \
+               $SRC/InvMixColumn.sv \
+               $SRC/XTime.sv \
+               $SRC/AddRoundKey.sv \
+               $TB/TopRoundtripTB/new/TopRoundtripTestBench.sv \
+               -w roundtrip_all.v
+          iverilog -g2012 -o sim_roundtrip roundtrip_all.v
+          vvp sim_roundtrip | tee roundtrip_out.log
+          grep -q "PASSED" roundtrip_out.log
+
       - name: SubBytes TB
         run: |
           sv2v $SRC/SubBytes.sv \
