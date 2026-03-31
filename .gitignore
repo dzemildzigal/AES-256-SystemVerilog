@@ -8,6 +8,8 @@
 *.sim/
 *.hw/
 *.ip_user_files/
+*.dvt/
+*.Xil/
 
 # Vivado logs and journals
 vivado*.jou

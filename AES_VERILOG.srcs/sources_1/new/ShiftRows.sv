@@ -1,24 +1,5 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 08/13/2024 02:25:20 AM
-// Design Name: 
-// Module Name: ShiftRows
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 
 module ShiftRows(
     input [0:127] input_state,
@@ -33,7 +14,6 @@ module ShiftRows(
         word[2] = word[3]
         word[3] = temp
         */
-//always @ * begin
         assign output_state[0 +:8] = input_state[0 +:8]; 
         assign output_state[8 +:8] = input_state[40 +:8];
         assign output_state[16 +:8] = input_state[80 +:8];
@@ -53,6 +33,5 @@ module ShiftRows(
         assign output_state[104 +:8] = input_state[8 +:8];
         assign output_state[112 +:8] = input_state[48 +:8];
         assign output_state[120 +:8] = input_state[88 +:8];
-//end
     
 endmodule
