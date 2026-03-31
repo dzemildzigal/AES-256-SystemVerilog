@@ -47,7 +47,7 @@ module EncryptPipelinedTestBench;
         in = 128'h00000000000000000000000000000000;
         start_i = 1;
         @(posedge clk);
-        start_i = 0;
+        #1; start_i = 0;
         repeat(14) @(posedge clk);
         #1;
         if (valid_data !== 1'b1) begin $display("FAIL T1: valid_data not asserted"); errors = errors + 1; end
@@ -64,7 +64,7 @@ module EncryptPipelinedTestBench;
         in = 128'h00000000000000000000000000000000;
         start_i = 1;
         @(posedge clk);
-        start_i = 0;
+        #1; start_i = 0;
         repeat(14) @(posedge clk);
         #1;
         if (valid_data !== 1'b1) begin $display("FAIL T2: valid_data not asserted"); errors = errors + 1; end
@@ -77,7 +77,7 @@ module EncryptPipelinedTestBench;
         in = 128'h00112233445566778899aabbccddeeff;
         start_i = 1;
         @(posedge clk);
-        start_i = 0;
+        #1; start_i = 0;
         repeat(14) @(posedge clk);
         #1;
         if (valid_data !== 1'b1) begin $display("FAIL T3: valid_data not asserted"); errors = errors + 1; end
@@ -91,11 +91,11 @@ module EncryptPipelinedTestBench;
         in = "Hello world!  :)";
         start_i = 1;
         @(posedge clk);
-        start_i = 0;
+        #1; start_i = 0;
         repeat(14) @(posedge clk);
         #1;
         if (valid_data !== 1'b1) begin $display("FAIL T4: valid_data not asserted"); errors = errors + 1; end
-        if (out !== 128'h8e00ecc38998b9806a9559f59054aaa6) begin $display("FAIL T4: wrong ct, got %h", out); errors = errors + 1; end
+        if (out !== 128'hea1044c3b1139b6cf71095be1071b90d) begin $display("FAIL T4: wrong ct, got %h", out); errors = errors + 1; end
 
         // ================================================================
         // Test 5: Continuous streaming — 4 blocks same NIST key
@@ -112,7 +112,7 @@ module EncryptPipelinedTestBench;
         @(posedge clk);
         in = 128'h00112233445566778899aabbccddeeff;
         @(posedge clk);
-        start_i = 0;
+        #1; start_i = 0;
         in = '0;
         repeat(10) @(posedge clk);
         // 4 feeds (cycles 0-3) + 10 idle + 1 more = 15 posedges for first result

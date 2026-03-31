@@ -78,6 +78,26 @@ jobs:
           vvp sim_enc_pipe | tee enc_pipe_out.log
           grep -q "PASSED" enc_pipe_out.log
 
+      - name: Top TB
+        run: |
+          sv2v $SRC/Top.sv \
+               $SRC/KeyExpansion.sv \
+               $SRC/EncryptPipelined.sv \
+               $SRC/EncryptionRound.sv \
+               $SRC/EncryptionInitialRound.sv \
+               $SRC/EncryptionFinalRound.sv \
+               $SRC/SubBytes.sv \
+               $SRC/ShiftRows.sv \
+               $SRC/MixColumns.sv \
+               $SRC/MixColumn.sv \
+               $SRC/XTime.sv \
+               $SRC/AddRoundKey.sv \
+               $TB/TopTB/new/TopTestBench.sv \
+               -w top_all.v
+          iverilog -g2012 -o sim_top top_all.v
+          vvp sim_top | tee top_out.log
+          grep -q "PASSED" top_out.log
+
       - name: SubBytes TB
         run: |
           sv2v $SRC/SubBytes.sv \
