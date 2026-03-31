@@ -7,7 +7,7 @@
 //   0x00   CTRL     W     [0] go — start roundtrip (1-cycle pulse)
 //                         [1] load_key — trigger key expansion (1-cycle pulse)
 //   0x04   STATUS   R     [3:0] keys_ready counter (15 = all keys done)
-//                         [4]   busy
+//                         [4]   ct_valid (intermediate ciphertext valid)
 //                         [5]   result_valid
 //                         [6]   match (result == original plaintext)
 //   0x08   KEY0     R/W   masterkey[0:31]     (MSB of key)
@@ -118,9 +118,9 @@ module AXI_AES_Roundtrip #(
 
     // TopRoundtrip interface wires
     wire [3:0]   keys_ready;
-    wire [0:127] ct_latched;
+    wire [0:127] ct_out;
+    wire         ct_valid;
     wire [0:127] result;
-    wire         busy;
     wire         result_valid;
     wire         match;
 
@@ -132,9 +132,9 @@ module AXI_AES_Roundtrip #(
         .keys_ready(keys_ready),
         .start_i(go_pulse),
         .plaintext(pt_reg),
-        .ct_latched(ct_latched),
+        .ct_out(ct_out),
+        .ct_valid(ct_valid),
         .result(result),
-        .busy(busy),
         .result_valid(result_valid),
         .match(match)
     );
@@ -244,7 +244,7 @@ module AXI_AES_Roundtrip #(
 
     always_comb begin
         case (rd_index)
-            5'd1:  rd_mux = {25'b0, match, result_valid, busy, keys_ready};
+            5'd1:  rd_mux = {25'b0, match, result_valid, ct_valid, keys_ready};
             5'd2:  rd_mux = key_reg[0   +:32];
             5'd3:  rd_mux = key_reg[32  +:32];
             5'd4:  rd_mux = key_reg[64  +:32];
@@ -257,10 +257,10 @@ module AXI_AES_Roundtrip #(
             5'd11: rd_mux = pt_reg[32  +:32];
             5'd12: rd_mux = pt_reg[64  +:32];
             5'd13: rd_mux = pt_reg[96  +:32];
-            5'd14: rd_mux = ct_latched[0   +:32];
-            5'd15: rd_mux = ct_latched[32  +:32];
-            5'd16: rd_mux = ct_latched[64  +:32];
-            5'd17: rd_mux = ct_latched[96  +:32];
+            5'd14: rd_mux = ct_out[0   +:32];
+            5'd15: rd_mux = ct_out[32  +:32];
+            5'd16: rd_mux = ct_out[64  +:32];
+            5'd17: rd_mux = ct_out[96  +:32];
             5'd18: rd_mux = result[0   +:32];
             5'd19: rd_mux = result[32  +:32];
             5'd20: rd_mux = result[64  +:32];

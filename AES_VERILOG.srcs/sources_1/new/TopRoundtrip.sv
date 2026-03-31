@@ -1,16 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// AES-256 Encrypt-then-Decrypt roundtrip module.
+// AES-256 Encrypt-then-Decrypt roundtrip module (fully pipelined / streaming).
 // Chains KeyExpansion -> EncryptPipelined -> DecryptPipelined.
 // The encrypt ciphertext feeds directly into the decrypt input.
-// Total latency: 30 clock cycles from start_i to result_valid.
+//
+// Latency:  30 clock cycles from start_i to result_valid (initial fill).
+// Throughput: 1 block per cycle once pipeline is full.
+//
+// A 30-deep delay line of saved plaintexts lets us compare each output
+// to the exact plaintext that produced it, so "match" is valid even
+// during continuous streaming.
 //
 // Outputs:
-//   ct_latched   — intermediate ciphertext (latched when encrypt finishes)
+//   ct_out       — intermediate ciphertext (valid when ct_valid=1)
+//   ct_valid     — asserted when ct_out is valid (15-cycle latency)
 //   result       — decrypted plaintext (should match original input)
-//   result_valid — asserted for 1+ cycles when result is ready
-//   match        — 1 if result == original plaintext
-//   busy         — 1 while a roundtrip is in progress
+//   result_valid — asserted when result is valid (30-cycle latency)
+//   match        — 1 if result == original plaintext for this block
 
 module TopRoundtrip(
     input  logic         clk,
@@ -23,15 +29,14 @@ module TopRoundtrip(
     input  logic         start_i,
     input  logic [0:127] plaintext,
     // Outputs
-    output logic [0:127] ct_latched,
+    output logic [0:127] ct_out,
+    output logic         ct_valid,
     output logic [0:127] result,
-    output logic         busy,
     output logic         result_valid,
     output logic         match
     );
 
     logic [0:1919] expanded_key;
-    logic [0:127]  pt_saved;
 
     // Internal encrypt -> decrypt wires
     wire [0:127] enc_out;
@@ -39,8 +44,8 @@ module TopRoundtrip(
     wire [0:127] dec_out;
     wire         dec_valid;
 
-    // Only accept new data when idle and keys are fully expanded
-    wire gated_start = start_i && !busy && (keys_ready == 4'd15);
+    // Gate start until keys are ready (but no busy gate — streaming allowed)
+    wire gated_start = start_i && (keys_ready == 4'd15);
 
     KeyExpansion ke(
         .clk(clk), .rst(rst),
@@ -69,30 +74,47 @@ module TopRoundtrip(
         .valid_data(dec_valid)
     );
 
+    // Plaintext delay line: matches each result to its input.
+    // Internal pipeline latency: 29 cycles from gated_start to dec_valid.
+    // The output always_ff block adds 1 registered cycle, sampling at
+    // cycle 30. The delay line must hold the correct plaintext at
+    // pt_delay[DEPTH-1] when read at cycle 30's posedge (RHS sampling).
+    // Plaintext enters pt_delay[0] at cycle 0; after 29 shifts it is at
+    // pt_delay[29] at the END of cycle 29, readable at START of cycle 30.
+    // Therefore DEPTH = 30.
+    localparam DEPTH = 30;
+    logic [0:127] pt_delay [0:DEPTH-1];
+
     always_ff @(posedge clk) begin
         if (rst) begin
-            pt_saved     <= '0;
-            ct_latched   <= '0;
+            for (int i = 0; i < DEPTH; i++)
+                pt_delay[i] <= '0;
+        end
+        else begin
+            pt_delay[0] <= gated_start ? plaintext : '0;
+            for (int i = 1; i < DEPTH; i++)
+                pt_delay[i] <= pt_delay[i-1];
+        end
+    end
+
+    // Outputs — registered so that match compares pt_delay[DEPTH-1]
+    // at the same posedge, using pre-NBA (RHS-sampled) values.
+    // This adds 1 cycle of output latency: total = 30 cycles.
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            ct_out       <= '0;
+            ct_valid     <= 1'b0;
             result       <= '0;
-            busy         <= 1'b0;
             result_valid <= 1'b0;
             match        <= 1'b0;
         end
         else begin
-            if (gated_start) begin
-                pt_saved     <= plaintext;
-                busy         <= 1'b1;
-                result_valid <= 1'b0;
-                match        <= 1'b0;
-            end
-            if (enc_valid)
-                ct_latched <= enc_out;
-            if (dec_valid) begin
-                result       <= dec_out;
-                result_valid <= 1'b1;
-                match        <= (dec_out == pt_saved);
-                busy         <= 1'b0;
-            end
+            ct_out       <= enc_out;
+            ct_valid     <= enc_valid;
+            result       <= dec_out;
+            result_valid <= dec_valid;
+            match        <= dec_valid && (dec_out == pt_delay[DEPTH-1]);
         end
     end
+
 endmodule
