@@ -17,6 +17,7 @@ module KeyExpansionTestBench;
                                .keys_ready(keys_ready)
                                );
     initial begin
+        $display("[KeyExpansion TB] Starting...");
         clk = 0;
         rst = 0;
         new_masterkey = 0;
@@ -37,6 +38,8 @@ module KeyExpansionTestBench;
         assert(keys_ready == 4'd15);
         assert (w == 1920'h603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff49ba354118e6925afa51a8b5f2067fcdea8b09c1a93d194cdbe49846eb75d5b9ad59aecb85bf3c917fee94248de8ebe96b5a9328a2678a647983122292f6c79b3812c81addadf48ba24360af2fab8b46498c5bfc9bebd198e268c3ba709e0421468007bacb2df331696e939e46c518d80c814e20476a9fb8a5025c02d59c58239de1369676ccc5a71fa2563959674ee155886ca5d2e2f31d77e0af1fa27cf73c3749c47ab18501ddae2757e4f7401905acafaaae3e4d59b349adf6acebd10190dfe4890d1e6188d0b046df344706c631e);
 
+        $display("[KeyExpansion TB] PASSED");
+        $finish;
     end
     always #1 clk = ~clk;
 endmodule

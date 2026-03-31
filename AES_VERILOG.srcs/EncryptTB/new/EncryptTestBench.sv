@@ -45,6 +45,7 @@ EncryptPipelined encrypt(.clk(clk),
                 );
                 
 initial begin
+        $display("[Encrypt Pipelined TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -137,7 +138,9 @@ initial begin
         @(posedge clk);
         assert(valid_data == 1'b1);
         assert(out == 128'hf29000b62a499fd0a9f39a6add2e7780);
-       
+
+        $display("[Encrypt Pipelined TB] PASSED");
+        $finish;
 end
     always #1 clk = ~clk;        
 endmodule

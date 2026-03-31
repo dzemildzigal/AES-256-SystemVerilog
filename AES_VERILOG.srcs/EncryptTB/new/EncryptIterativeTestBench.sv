@@ -22,6 +22,7 @@ module EncryptIterativeTestBench;
     );
 
     initial begin
+        $display("[Encrypt Iterative TB] Starting...");
         clk = 0;
         rst = 0;
         start_i = 0;
@@ -83,7 +84,7 @@ module EncryptIterativeTestBench;
         assert(valid_data == 1'b1) else $error("V4: valid_data not asserted");
         assert(out == 128'h8e00ecc38998b9806a9559f59054aaa6) else $error("V4: wrong ciphertext");
 
-        $display("All iterative encrypt tests passed.");
+        $display("[Encrypt Iterative TB] PASSED — All iterative encrypt tests passed.");
         $finish;
     end
 

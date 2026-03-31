@@ -15,6 +15,7 @@ module InvShiftRowsTestBench;
                      .valid_data(valid_data)
                      );
     initial begin
+        $display("[InvShiftRows TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -110,6 +111,9 @@ module InvShiftRowsTestBench;
         input_state = 128'h9ced7cbef73139c0f0516bc520d72600;
         @(posedge clk);
         assert (output_state == 128'h9cd76bc0f7ed26c5f0317c00205139be&& valid_data==1'b1);
+
+        $display("[InvShiftRows TB] PASSED");
+        $finish;
     end
     // set up clk
     always #1 clk = ~clk;

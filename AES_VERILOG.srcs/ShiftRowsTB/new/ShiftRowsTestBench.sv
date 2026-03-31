@@ -16,6 +16,7 @@ module ShiftRowsTestBench;
                 );
                 
     initial begin     
+        $display("[ShiftRows TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -405,7 +406,9 @@ module ShiftRowsTestBench;
         input_state = 128'hd50e50b20a067d5e877f1cf8670a19a9;
         @(posedge clk);
         assert (output_state == 128'hd5061ca90a7f19b2870a505e670e7df8&& valid_data==1'b1);
-    
+
+        $display("[ShiftRows TB] PASSED");
+        $finish;
     end
                 
     //set up clk

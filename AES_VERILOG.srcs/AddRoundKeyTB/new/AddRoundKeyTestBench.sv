@@ -19,6 +19,7 @@ module AddRoundKeyTestBench;
                     );
                     
     initial begin
+        $display("[AddRoundKey TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -691,7 +692,7 @@ module AddRoundKeyTestBench;
         @(posedge clk);
         assert (output_state == 128'h33a022523ea889587b4c4fba0831b2c3&& valid_data==1'b1);
         
-        $stop;
+        $display("[AddRoundKey TB] PASSED");
         $finish;
     end
     

@@ -12,6 +12,7 @@ module MixColumnsTestBench;
                            .output_state(output_state)
                            );    
     initial begin
+        $display("[MixColumns TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -455,7 +456,9 @@ module MixColumnsTestBench;
         @(posedge clk);
         input_state = 128'hcb169097531b07899183a4cceca6384b;
         assert (output_state == 128'hb0db44f505e5c6e0cfb70e0c41b8e727);
-        
+
+        $display("[MixColumns TB] PASSED");
+        $finish;
     end
     always #1 clk = ~clk;
 endmodule

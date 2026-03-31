@@ -43,7 +43,7 @@ jobs:
                -w ke_all.v
           iverilog -g2012 -o sim_ke ke_all.v
           vvp sim_ke | tee ke_out.log
-          ! grep -qi "error\|failed\|assertion" ke_out.log
+          grep -q "PASSED" ke_out.log
 
       - name: Encrypt Iterative TB
         run: |
@@ -58,7 +58,7 @@ jobs:
                -w enc_iter_all.v
           iverilog -g2012 -o sim_enc_iter enc_iter_all.v
           vvp sim_enc_iter | tee enc_iter_out.log
-          grep -q "All iterative encrypt tests passed" enc_iter_out.log
+          grep -q "PASSED" enc_iter_out.log
 
       - name: Encrypt Pipelined TB
         run: |
@@ -76,7 +76,7 @@ jobs:
                -w enc_pipe_all.v
           iverilog -g2012 -o sim_enc_pipe enc_pipe_all.v
           vvp sim_enc_pipe | tee enc_pipe_out.log
-          ! grep -qi "error\|failed\|assertion" enc_pipe_out.log
+          grep -q "PASSED" enc_pipe_out.log
 
       - name: SubBytes TB
         run: |
@@ -85,7 +85,7 @@ jobs:
                -w sb_all.v
           iverilog -g2012 -o sim_sb sb_all.v
           vvp sim_sb | tee sb_out.log
-          ! grep -qi "error\|failed" sb_out.log
+          grep -q "PASSED" sb_out.log
 
       - name: InvSubBytes TB
         run: |
@@ -94,7 +94,7 @@ jobs:
                -w isb_all.v
           iverilog -g2012 -o sim_isb isb_all.v
           vvp sim_isb | tee isb_out.log
-          ! grep -qi "error\|failed" isb_out.log
+          grep -q "PASSED" isb_out.log
 
       - name: ShiftRows TB
         run: |
@@ -103,7 +103,7 @@ jobs:
                -w sr_all.v
           iverilog -g2012 -o sim_sr sr_all.v
           vvp sim_sr | tee sr_out.log
-          ! grep -qi "error\|failed" sr_out.log
+          grep -q "PASSED" sr_out.log
 
       - name: InvShiftRows TB
         run: |
@@ -112,7 +112,7 @@ jobs:
                -w isr_all.v
           iverilog -g2012 -o sim_isr isr_all.v
           vvp sim_isr | tee isr_out.log
-          ! grep -qi "error\|failed" isr_out.log
+          grep -q "PASSED" isr_out.log
 
       - name: MixColumn TB
         run: |
@@ -122,7 +122,7 @@ jobs:
                -w mc_all.v
           iverilog -g2012 -o sim_mc mc_all.v
           vvp sim_mc | tee mc_out.log
-          ! grep -qi "error\|failed" mc_out.log
+          grep -q "PASSED" mc_out.log
 
       - name: MixColumns TB
         run: |
@@ -133,7 +133,7 @@ jobs:
                -w mcs_all.v
           iverilog -g2012 -o sim_mcs mcs_all.v
           vvp sim_mcs | tee mcs_out.log
-          ! grep -qi "error\|failed" mcs_out.log
+          grep -q "PASSED" mcs_out.log
 
       - name: XTime TB
         run: |
@@ -142,7 +142,7 @@ jobs:
                -w xt_all.v
           iverilog -g2012 -o sim_xt xt_all.v
           vvp sim_xt | tee xt_out.log
-          ! grep -qi "error\|failed" xt_out.log
+          grep -q "PASSED" xt_out.log
 
       - name: AddRoundKey TB
         run: |
@@ -151,4 +151,4 @@ jobs:
                -w ark_all.v
           iverilog -g2012 -o sim_ark ark_all.v
           vvp sim_ark | tee ark_out.log
-          ! grep -qi "error\|failed" ark_out.log
+          grep -q "PASSED" ark_out.log

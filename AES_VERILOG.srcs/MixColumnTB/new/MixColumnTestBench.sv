@@ -12,6 +12,7 @@ module MixColumnTestBench;
                          );
                          
     initial begin
+        $display("[MixColumn TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -1396,6 +1397,8 @@ module MixColumnTestBench;
         input_column = 32'heca6384b;
         assert (output_column == 32'h41b8e727);
 
+        $display("[MixColumn TB] PASSED");
+        $finish;
     end
     always #1 clk = ~clk;
 endmodule

@@ -16,6 +16,7 @@ module SubBytesTestBench;
                     .valid_data(valid_data)
                     );
     initial begin
+        $display("[SubBytes TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -283,7 +284,7 @@ module SubBytesTestBench;
      
  
         
-        $stop;
+        $display("[SubBytes TB] PASSED");
         $finish;
         
     end

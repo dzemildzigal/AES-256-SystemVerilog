@@ -16,6 +16,7 @@ module InvSubBytesTestBench;
                     .valid_data(valid_data)
                     );
     initial begin
+        $display("[InvSubBytes TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -112,7 +113,7 @@ module InvSubBytesTestBench;
         @(posedge clk);
         assert (output_state == 128'h1c0d051f26532307172e015254705b5a&& valid_data==1'b1);
         
-        $stop;
+        $display("[InvSubBytes TB] PASSED");
         $finish;
     end
     

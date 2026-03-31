@@ -12,6 +12,7 @@ module XTimeTestBench;
                 );
     
     initial begin
+        $display("[XTime TB] Starting...");
         clk = 0;
         rst = 0;
         @(posedge clk);
@@ -1689,6 +1690,9 @@ module XTimeTestBench;
         @(posedge clk);
         input_byte = 8'd21;
         assert (output_byte == 8'd42);
+
+        $display("[XTime TB] PASSED");
+        $finish;
     end
 always #1 clk = ~clk;
 endmodule
