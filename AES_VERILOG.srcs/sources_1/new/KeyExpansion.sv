@@ -1,117 +1,61 @@
 `timescale 1ns / 1ps
-`define NB 4
-`define NK 8
-`define NR 14
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 08/13/2024 02:29:16 AM
-// Design Name: 
-// Module Name: KeyExpansion
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
-//we will always output w, no matter if it's done or not, it's the responsibilty of the
-//key user to check if subkey [n:n+255] truly has a legitimate key (no X or Z values).
 module KeyExpansion(
-    input clk,
-    input rst,
-    input new_masterkey,
-    input [0:255] masterkey,
-    output reg [0:1919] w,
-    output reg valid_data
-    //output reg [0:1]state,
-    //output reg [0:31] i_out,
-    //output reg [0:31] working_word_out,
-    //output reg [0:31] sub_word_out_out,
-    //output reg [0:31] rot_word_out_out,
-    //output reg [0:31] just_sub_word_out_out
+    input  logic        clk,
+    input  logic        rst,
+    input  logic        new_masterkey,
+    input  logic [0:255] masterkey,
+    output logic [0:1919] w,
+    output logic [3:0]  keys_ready
     );
-    integer i = 8;
-    reg [0:255] current_masterkey;
-    reg [0:1919] output_w;
-    reg [0:31] working_word;
-    //reg [0:7] r_con [0:31];
-    reg [0:31] rot_word_out;
-    reg [0:31] sub_word_out;
-    reg [0:31] just_sub_word_out;
-    always @(posedge clk) begin
-        working_word = output_w[(i-1)*4*8 +:32];
-    if(rst) begin
-        //reset state
-        w <= {1920{1'b0}};
-        output_w <= w;
-        valid_data <= 1'b0;
-        //state <= 2'd0;
-        i = 8;
-    end
-    else if(!rst && !(^current_masterkey === 1'bx) && !new_masterkey && (i < `NB * (`NR + 1))) begin
-        //key expanding state from existing masterkey
-        //every entry in this state expands the key by 1
-        if(i % `NK == 0) begin
-            rot_word_out = rotword(working_word);
-            sub_word_out = subword(rot_word_out);
-            working_word = sub_word_out ^ rcon(i/`NK);
-        end
-        else if(i % `NK == 4) begin
-            just_sub_word_out = subword(working_word);
-            working_word = just_sub_word_out;
-        end
-        
-        output_w[i*4*8 +:32] = output_w[(i-`NK)*4*8 +:32] ^ working_word;
-        if(!(^output_w === 1'bx)) begin
-            valid_data <= 1'b1;
-        end
-        else begin
-            valid_data <= 1'b0;
-        end
-        //state <= 2'd1;
-        i <= i + 1;
 
+    localparam NB = 4;
+    localparam NK = 8;
+    localparam NR = 14;
+
+    logic [5:0] i;
+    logic       expanding;
+
+    // Combinational: compute 4 new key words per cycle
+    logic [0:31] prev_word, word_0, word_1, word_2, word_3;
+
+    always_comb begin
+        prev_word = w[(i - 6'd1) * 32 +:32];
+
+        if (i[2:0] == 3'd0) // i % 8 == 0: RotWord + SubWord + Rcon
+            word_0 = w[(i - NK) * 32 +:32] ^ subword(rotword(prev_word)) ^ rcon(i >> 3);
+        else // i % 8 == 4: SubWord only
+            word_0 = w[(i - NK) * 32 +:32] ^ subword(prev_word);
+
+        word_1 = w[(i - NK + 1) * 32 +:32] ^ word_0;
+        word_2 = w[(i - NK + 2) * 32 +:32] ^ word_1;
+        word_3 = w[(i - NK + 3) * 32 +:32] ^ word_2;
     end
-    else if(!rst && !(^masterkey === 1'bx) && new_masterkey) begin
-        //add new masterkey that must not have X or Z values in it
-        if((^current_masterkey === 1'bx) || masterkey != current_masterkey) begin
-            valid_data = 1'b0;
-            current_masterkey = masterkey;
-            output_w[0:255] = masterkey;
-            w[0:255] = masterkey;
-            working_word = output_w[(i-1)*4*8 +:32];
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            w          <= '0;
+            keys_ready <= 4'd0;
+            i          <= 6'd8;
+            expanding  <= 1'b0;
         end
-        valid_data <= 1'b0;
-        i = 8;
-        //state <= 2'd2;
-    end
-    else begin
-        //do nothing state
-        if((^output_w === 1'bx)) begin
-            valid_data <= 1'b0;
+        else if (new_masterkey) begin
+            w[0:255]    <= masterkey;
+            w[256:1919] <= '0;
+            keys_ready  <= 4'd2;
+            i           <= 6'd8;
+            expanding   <= 1'b1;
         end
-        else begin
-            valid_data <= 1'b1;
+        else if (expanding && i < NB * (NR + 1)) begin
+            w[i * 32 +:128] <= {word_0, word_1, word_2, word_3};
+            i               <= i + 6'd4;
+            keys_ready      <= keys_ready + 4'd1;
         end
-        //state <= 2'd3;
+        else if (expanding) begin
+            expanding <= 1'b0;
+        end
     end
-    w[0:1919] <= output_w[0:1919];
-    //i_out <= i;    
-    
-    //working_word_out <= working_word;
-    //sub_word_out_out <= sub_word_out;
-    //rot_word_out_out <= rot_word_out;
-    //just_sub_word_out_out <= just_sub_word_out;
-    end
-    
+
 function [0:31] rotword;
 input [0:31] data;
 begin

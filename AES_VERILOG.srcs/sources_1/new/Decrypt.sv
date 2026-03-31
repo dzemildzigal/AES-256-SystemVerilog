@@ -23,7 +23,7 @@
 module Decrypt(
     input clk,
     input rst,
-    input [127:0] in,
-    output [127:0] out
+    input [0:127] in,
+    output [0:127] out
     );
 endmodule

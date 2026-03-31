@@ -1,0 +1,42 @@
+# =========================
+# Xilinx Vivado artifacts
+# =========================
+
+# Project-level generated directories
+*.cache/
+*.runs/
+*.sim/
+*.hw/
+*.ip_user_files/
+
+# Vivado logs and journals
+vivado*.jou
+vivado*.log
+vivado*.str
+vivado*.backup.jou
+vivado*.backup.log
+
+# Synthesis / implementation checkpoints
+*.dcp
+*.pb
+
+# Simulation artifacts
+*.wdb
+*.saif
+*.vcd
+
+# Vivado HLS
+*.aps
+*.rpt
+
+# Build outputs
+*.bit
+*.bin
+*.ltx
+*.mmi
+
+# OS / editor junk
+Thumbs.db
+.DS_Store
+*.swp
+*~

@@ -25,5 +25,5 @@ module AddRoundKey(
     input [0:127] round_key,
     output[0:127] output_state
     );
-   assign output_state = input_state ^ round_key;
+    assign output_state = input_state ^ round_key;
 endmodule

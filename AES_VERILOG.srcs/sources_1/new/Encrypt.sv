@@ -21,79 +21,92 @@
 
 
 module Encrypt(
-    input clk,
-    input rst,
-    input [0:127] in,
-    input [0:1919] expanded_key,
-    output reg [0:127] out,
-    output reg valid_data
+    input  logic        clk,
+    input  logic        rst,
+    input  logic        start_i,
+    input  logic [0:127] in,
+    input  logic [0:1919] expanded_key,
+    output logic [0:127] out,
+    output logic        valid_data
     );
-    
-reg [0:127] state;
 
-reg [0:127] add_round_key_input_state;
-reg [0:127] add_round_key_round_key; 
-wire [0:127] add_round_key_output_state;   
-AddRoundKey add_round_key(.input_state(add_round_key_input_state),
-                          .round_key(add_round_key_round_key),
-                          .output_state(add_round_key_output_state)
-                          );
+    logic [0:127] state;
+    logic [3:0]   round_i;
+    logic         running;
 
-wire [0:127] sub_bytes_middle_output;
-SubBytes sub_bytes_middle(.input_state(state),
-                          .output_state(sub_bytes_middle_output));
-wire [0:127] shift_rows_middle_output;
-ShiftRows shift_rows_middle(.input_state(sub_bytes_middle_output),
-                            .output_state(shift_rows_middle_output));
-wire [0:127] mix_colmns_middle_output;
-MixColumns mix_columns_middle(.input_state(shift_rows_middle_output),
-                              .output_state(mix_colmns_middle_output));
+    // Combinational SubBytes -> ShiftRows -> MixColumns chain
+    wire [0:127] sub_bytes_out;
+    SubBytes sub_bytes_middle(
+        .input_state(state),
+        .output_state(sub_bytes_out)
+    );
 
-integer i=0;
-integer read_data=0;
-//Plain encryption block
-    always @(posedge clk) begin
-        if(rst) begin
-            valid_data <= 1'b0;
+    wire [0:127] shift_rows_out;
+    ShiftRows shift_rows_middle(
+        .input_state(sub_bytes_out),
+        .output_state(shift_rows_out)
+    );
+
+    wire [0:127] mix_columns_out;
+    MixColumns mix_columns_middle(
+        .input_state(shift_rows_out),
+        .output_state(mix_columns_out)
+    );
+
+    // Combinational mux for AddRoundKey inputs
+    logic [0:127] ark_in;
+    logic [0:127] ark_key;
+    wire  [0:127] ark_out;
+
+    always_comb begin
+        if (!running || round_i == 4'd0) begin
+            ark_in = in;
+        end
+        else if (round_i <= 4'd13) begin
+            ark_in = mix_columns_out;
         end
         else begin
-            //working state, since evaluation is not instant but in next time segment we need to divide this.
-            if(!(^expanded_key[i<<7 +:128] === 1'bx) /*&& !(^state === 1'bx)*/) begin 
-                //if key expansion got to this point then work, otherwise wait
-                if(read_data == 0) begin
-                    if(i==0) begin
-                        //initial add round key
-                        state = in;
-                        add_round_key_input_state = state;
-                        add_round_key_round_key = expanded_key[0:127];
-                        valid_data = 1'b0;
-                        i = i + 1;
-                        
-                    end
-                    else if(i>=1 && i <14)begin
-                        //range 1 to Nr (Nr=14 for 256 AES)
-                        add_round_key_input_state = mix_colmns_middle_output;
-                        add_round_key_round_key = expanded_key[i*128 +:128];
-                        valid_data = 1'b0;
-                        i = i + 1;
-                    end
-                    else if(i==14) begin
-                        //i = 14 and final steps
-                        add_round_key_input_state = shift_rows_middle_output;
-                        add_round_key_round_key = expanded_key[i*128 +:128];
-                        i = 0;
-                    end
-                    read_data = 1;
-                end
-                else if (read_data == 1) begin
-                    state = add_round_key_output_state;
-                    out   = state;
-                    if (i==0) begin
-                        valid_data = 1'b1;
-                    end
-                    read_data = 0;
-                end
+            ark_in = shift_rows_out;
+        end
+        ark_key = expanded_key[round_i * 128 +:128];
+    end
+
+    AddRoundKey add_round_key(
+        .input_state(ark_in),
+        .round_key(ark_key),
+        .output_state(ark_out)
+    );
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            state      <= '0;
+            round_i    <= 4'd0;
+            running    <= 1'b0;
+            valid_data <= 1'b0;
+            out        <= '0;
+        end
+        else if (start_i && !running) begin
+            state      <= ark_out;
+            round_i    <= 4'd1;
+            running    <= 1'b1;
+            valid_data <= 1'b0;
+        end
+        else if (running) begin
+            if (round_i == 4'd14) begin
+                out        <= ark_out;
+                state      <= ark_out;
+                valid_data <= 1'b1;
+                round_i    <= 4'd0;
+                running    <= 1'b0;
             end
+            else begin
+                state      <= ark_out;
+                round_i    <= round_i + 4'd1;
+                valid_data <= 1'b0;
+            end
+        end
+        else begin
+            valid_data <= 1'b0;
         end
     end
 endmodule
