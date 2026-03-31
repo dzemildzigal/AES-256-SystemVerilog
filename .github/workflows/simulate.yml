@@ -72,7 +72,7 @@ jobs:
                $SRC/MixColumn.sv \
                $SRC/XTime.sv \
                $SRC/AddRoundKey.sv \
-               $TB/EncryptTB/new/EncryptTestBench.sv \
+               $TB/EncryptTB/new/EncryptPipelinedTestBench.sv \
                -w enc_pipe_all.v
           iverilog -g2012 -o sim_enc_pipe enc_pipe_all.v
           vvp sim_enc_pipe | tee enc_pipe_out.log
