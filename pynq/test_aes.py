@@ -14,7 +14,7 @@ Register map (AXI_AES_Roundtrip):
 
 Usage:
     1. Build the bitstream in Vivado: source pynq/build_bd.tcl
-    2. Copy aes_roundtrip.bit + aes_roundtrip.hwh to the PYNQ board
+    2. Copy aes_roundtrip_wrapper.bit + aes_roundtrip_wrapper.hwh to the PYNQ board
     3. Run: python3 test_aes.py
 """
 
@@ -22,7 +22,7 @@ from pynq import Overlay
 import os
 
 # ── Register map ─────────────────────────────────────────────
-BITSTREAM   = "aes_roundtrip.bit"
+BITSTREAM   = "aes_roundtrip_wrapper.bit"
 IP_NAME     = "aes_roundtrip_0"
 CTRL        = 0x00
 STATUS      = 0x04

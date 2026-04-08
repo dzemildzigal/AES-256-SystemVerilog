@@ -7,9 +7,9 @@
 //   0x00   CTRL     W     [0] go — start roundtrip (1-cycle pulse)
 //                         [1] load_key — trigger key expansion (1-cycle pulse)
 //   0x04   STATUS   R     [3:0] keys_ready counter (15 = all keys done)
-//                         [4]   ct_valid (intermediate ciphertext valid)
-//                         [5]   result_valid
-//                         [6]   match (result == original plaintext)
+//                         [4]   ct_valid (latched, cleared by go)
+//                         [5]   result_valid (latched, cleared by go)
+//                         [6]   match (latched, cleared by go)
 //   0x08   KEY0     R/W   masterkey[0:31]     (MSB of key)
 //   0x0C   KEY1     R/W   masterkey[32:63]
 //   0x10   KEY2     R/W   masterkey[64:95]
@@ -140,6 +140,34 @@ module AXI_AES_Roundtrip #(
     );
 
     // ----------------------------------------------------------------
+    // Sticky status latches
+    // ct_valid/result_valid/match are single-cycle pulses from the
+    // pipeline.  Latch them so slow AXI polling can observe them.
+    // Cleared by the next go_pulse.
+    // ----------------------------------------------------------------
+    reg ct_valid_sticky;
+    reg result_valid_sticky;
+    reg match_sticky;
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            ct_valid_sticky     <= 1'b0;
+            result_valid_sticky <= 1'b0;
+            match_sticky        <= 1'b0;
+        end
+        else if (go_pulse) begin
+            ct_valid_sticky     <= 1'b0;
+            result_valid_sticky <= 1'b0;
+            match_sticky        <= 1'b0;
+        end
+        else begin
+            if (ct_valid)     ct_valid_sticky     <= 1'b1;
+            if (result_valid) result_valid_sticky  <= 1'b1;
+            if (result_valid) match_sticky         <= match;
+        end
+    end
+
+    // ----------------------------------------------------------------
     // AXI Write Address + Write Data (accept together)
     // ----------------------------------------------------------------
     wire wr_handshake = axi_awready && S_AXI_AWVALID
@@ -244,7 +272,7 @@ module AXI_AES_Roundtrip #(
 
     always_comb begin
         case (rd_index)
-            5'd1:  rd_mux = {25'b0, match, result_valid, ct_valid, keys_ready};
+            5'd1:  rd_mux = {25'b0, match_sticky, result_valid_sticky, ct_valid_sticky, keys_ready};
             5'd2:  rd_mux = key_reg[0   +:32];
             5'd3:  rd_mux = key_reg[32  +:32];
             5'd4:  rd_mux = key_reg[64  +:32];
