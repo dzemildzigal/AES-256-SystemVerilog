@@ -21,6 +21,17 @@ set AES_INST    "aes_ctr_0"
 set BD_NAME     "aes_ctr"
 
 # ── 1. Create block design ───────────────────────────────────
+# Re-runnable flow: if BD already exists, close and remove it.
+if {[llength [get_bd_designs -quiet $BD_NAME]] > 0} {
+    puts "INFO: Existing block design '$BD_NAME' found; removing it."
+    catch {close_bd_design [get_bd_designs $BD_NAME]}
+
+    set bd_file "AES_VERILOG.srcs/sources_1/bd/${BD_NAME}/${BD_NAME}.bd"
+    if {[llength [get_files -quiet $bd_file]] > 0} {
+        remove_files [get_files $bd_file]
+    }
+}
+
 create_bd_design $BD_NAME
 
 # ── 2. Set board part ────────────────────────────────────────
@@ -42,9 +53,37 @@ set_property -dict [list \
     CONFIG.PCW_USE_FABRIC_INTERRUPT {0} \
 ] [get_bd_cells ps7]
 
-# ── 4. Add AES CTR module reference ──────────────────────────
+# ── 4. Add AES CTR module reference and RTL dependencies ─────
 set_property source_mgmt_mode All [current_project]
-add_files -norecurse AES_VERILOG.srcs/sources_1/new/AXI_AES_CTR_wrapper.v
+
+set rtl_dir "AES_VERILOG.srcs/sources_1/new"
+set ctr_sources [list \
+    "$rtl_dir/AXI_AES_CTR_wrapper.v" \
+    "$rtl_dir/AXI_AES_CTR.sv" \
+    "$rtl_dir/CtrMode.sv" \
+    "$rtl_dir/KeyExpansion.sv" \
+    "$rtl_dir/EncryptPipelined.sv" \
+    "$rtl_dir/EncryptionRound.sv" \
+    "$rtl_dir/EncryptionInitialRound.sv" \
+    "$rtl_dir/EncryptionFinalRound.sv" \
+    "$rtl_dir/SubBytes.sv" \
+    "$rtl_dir/ShiftRows.sv" \
+    "$rtl_dir/MixColumns.sv" \
+    "$rtl_dir/MixColumn.sv" \
+    "$rtl_dir/XTime.sv" \
+    "$rtl_dir/AddRoundKey.sv" \
+]
+
+foreach f $ctr_sources {
+    if {[file exists $f]} {
+        if {[llength [get_files -quiet $f]] == 0} {
+            add_files -norecurse $f
+        }
+    } else {
+        puts "WARNING: Missing source file: $f"
+    }
+}
+
 update_compile_order -fileset sources_1
 
 create_bd_cell -type module -reference $AES_MODULE $AES_INST

@@ -133,14 +133,19 @@ module AXI_AES_CTR #(
     // Cleared by the next go_pulse.
     // ----------------------------------------------------------------
     reg out_valid_sticky;
+    reg [0:127] data_out_latched;
 
     always_ff @(posedge clk) begin
-        if (rst)
+        if (rst) begin
             out_valid_sticky <= 1'b0;
+            data_out_latched <= '0;
+        end
         else if (go_pulse)
             out_valid_sticky <= 1'b0;
-        else if (out_valid)
+        else if (out_valid) begin
             out_valid_sticky <= 1'b1;
+            data_out_latched <= data_out;
+        end
     end
 
     // ----------------------------------------------------------------
@@ -276,10 +281,10 @@ module AXI_AES_CTR #(
             5'd15: rd_mux = din_reg[32  +:32];
             5'd16: rd_mux = din_reg[64  +:32];
             5'd17: rd_mux = din_reg[96  +:32];
-            5'd18: rd_mux = data_out[0   +:32];
-            5'd19: rd_mux = data_out[32  +:32];
-            5'd20: rd_mux = data_out[64  +:32];
-            5'd21: rd_mux = data_out[96  +:32];
+            5'd18: rd_mux = data_out_latched[0   +:32];
+            5'd19: rd_mux = data_out_latched[32  +:32];
+            5'd20: rd_mux = data_out_latched[64  +:32];
+            5'd21: rd_mux = data_out_latched[96  +:32];
             default: rd_mux = 32'd0;
         endcase
     end
