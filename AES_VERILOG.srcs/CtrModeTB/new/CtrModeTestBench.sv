@@ -127,7 +127,6 @@ module CtrModeTestBench;
 
             // Wait for out_valid
             wait(out_valid);
-            @(posedge clk);
             #1;
 
             if (data_out !== NIST_CT[i]) begin
@@ -136,6 +135,7 @@ module CtrModeTestBench;
             end else begin
                 $display("    Block %0d encrypt: PASS", i);
             end
+            @(posedge clk); // advance past valid cycle
         end
 
         // Verify counter auto-incremented to init + 4
@@ -163,7 +163,6 @@ module CtrModeTestBench;
             data_in = '0;
 
             wait(out_valid);
-            @(posedge clk);
             #1;
 
             if (data_out !== NIST_PT[i]) begin
@@ -172,6 +171,7 @@ module CtrModeTestBench;
             end else begin
                 $display("    Block %0d decrypt: PASS", i);
             end
+            @(posedge clk); // advance past valid cycle
         end
 
         // ═════════════════════════════════════════════════════
