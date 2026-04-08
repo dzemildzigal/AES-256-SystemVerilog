@@ -10,6 +10,8 @@
 *.ip_user_files/
 *.dvt/
 *.Xil/
+*.gen/
+*bd/
 
 # Vivado logs and journals
 vivado*.jou
