@@ -97,13 +97,10 @@ module GHashEngine #(
     logic [PTR_W-1:0] rd_ptr;
     logic [PTR_W:0]   fifo_count;
 
-    function automatic logic [PTR_W-1:0] ptr_plus;
-        input logic [PTR_W-1:0] base;
-        input logic [2:0]       offs;
-        begin
-            ptr_plus = base + offs[PTR_W-1:0];
-        end
-    endfunction
+    localparam logic [PTR_W-1:0] PTR_INC1 = 1;
+    localparam logic [PTR_W-1:0] PTR_INC2 = 2;
+    localparam logic [PTR_W-1:0] PTR_INC3 = 3;
+    localparam logic [PTR_W-1:0] PTR_INC4 = 4;
 
     // ----------------------------------------------------------------
     // Precompute H powers with one GF multiplier: H^2, H^3, H^4
@@ -368,9 +365,9 @@ module GHashEngine #(
                 if (do_batch) begin
                     logic [0:127] b0, b1, b2, b3;
                     b0 = fifo_mem[rd_ptr];
-                    b1 = fifo_mem[ptr_plus(rd_ptr, 3'd1)];
-                    b2 = fifo_mem[ptr_plus(rd_ptr, 3'd2)];
-                    b3 = fifo_mem[ptr_plus(rd_ptr, 3'd3)];
+                    b1 = fifo_mem[rd_ptr + PTR_INC1];
+                    b2 = fifo_mem[rd_ptr + PTR_INC2];
+                    b3 = fifo_mem[rd_ptr + PTR_INC3];
 
                     // Default unused lanes to zero.
                     lane_a0 <= '0; lane_b0 <= h1_reg;
@@ -403,7 +400,12 @@ module GHashEngine #(
                     batch_busy        <= 1'b1;
                     batch_size_launch <= batch_size_sel;
 
-                    rd_ptr <= rd_ptr + batch_size_sel[PTR_W-1:0];
+                    case (batch_size_sel)
+                        3'd1: rd_ptr <= rd_ptr + PTR_INC1;
+                        3'd2: rd_ptr <= rd_ptr + PTR_INC2;
+                        3'd3: rd_ptr <= rd_ptr + PTR_INC3;
+                        default: rd_ptr <= rd_ptr + PTR_INC4;
+                    endcase
                 end
 
                 // ----------------------------------------------------
