@@ -440,7 +440,7 @@ module GcmModeTestBench;
         compare_results(exp_ghash_t, exp_tag_t, exp_ct_n, "T1");
 
         // ====================================
-        // T2: 2 AAD blocks, 3 PT blocks
+        // T2: 2 AAD blocks, 4 PT blocks
         // ====================================
         apply_reset();
 
@@ -450,10 +450,11 @@ module GcmModeTestBench;
         aad_blk[0] = 128'hfeedfacedeadbeeffeedfacedeadbeef;
         aad_blk[1] = 128'habaddad2000000000000000000000001;
 
-        exp_ct_n = 3;
+        exp_ct_n = 4;
         pt_blk[0] = 128'h6bc1bee22e409f96e93d7e117393172a;
         pt_blk[1] = 128'hae2d8a571e03ac9c9eb76fac45af8e51;
         pt_blk[2] = 128'h30c81c46a35ce411e5fbc1191a0a52ef;
+        pt_blk[3] = 128'hf69f2445df4f9b17ad2b417be66c3710;
 
         compute_expected(key_t, nonce_t, 2, exp_ct_n, exp_ghash_t, exp_tag_t);
 
@@ -466,7 +467,8 @@ module GcmModeTestBench;
 
         send_pt_block(pt_blk[0], 1'b0);
         send_pt_block(pt_blk[1], 1'b0);
-        send_pt_block(pt_blk[2], 1'b1);
+        send_pt_block(pt_blk[2], 1'b0);
+        send_pt_block(pt_blk[3], 1'b1);
 
         wait_for_tag(6000);
         compare_results(exp_ghash_t, exp_tag_t, exp_ct_n, "T2");

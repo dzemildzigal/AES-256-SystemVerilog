@@ -11,6 +11,8 @@
 *.dvt/
 *.Xil/
 *.gen/
+*.log
+*.jou
 *bd/
 
 # Vivado logs and journals

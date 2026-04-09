@@ -59,15 +59,11 @@ module GHashEngine #(
         PH_DONE = 2'b11
     } phase_t;
 
-    typedef enum logic [2:0] {
-        PREP_IDLE      = 3'd0,
-        PREP_H2_LAUNCH = 3'd1,
-        PREP_H2_WAIT   = 3'd2,
-        PREP_H3_LAUNCH = 3'd3,
-        PREP_H3_WAIT   = 3'd4,
-        PREP_H4_LAUNCH = 3'd5,
-        PREP_H4_WAIT   = 3'd6,
-        PREP_READY     = 3'd7
+    typedef enum logic [1:0] {
+        PREP_IDLE      = 2'd0,
+        PREP_H2_LAUNCH = 2'd1,
+        PREP_H2_WAIT   = 2'd2,
+        PREP_READY     = 2'd3
     } prep_t;
 
     // ----------------------------------------------------------------
@@ -76,7 +72,7 @@ module GHashEngine #(
     phase_t       phase;
     prep_t        prep_state;
 
-    logic [0:127] h1_reg, h2_reg, h3_reg, h4_reg;
+    logic [0:127] h1_reg, h2_reg;
     logic [0:127] tag_mask_reg;
     logic [0:63]  aad_len_bits_reg;
     logic [0:63]  ct_len_bits_reg;
@@ -99,11 +95,8 @@ module GHashEngine #(
 
     localparam logic [PTR_W-1:0] PTR_INC1 = 1;
     localparam logic [PTR_W-1:0] PTR_INC2 = 2;
-    localparam logic [PTR_W-1:0] PTR_INC3 = 3;
-    localparam logic [PTR_W-1:0] PTR_INC4 = 4;
-
     // ----------------------------------------------------------------
-    // Precompute H powers with one GF multiplier: H^2, H^3, H^4
+    // Precompute H power with one GF multiplier: H^2
     // ----------------------------------------------------------------
     logic         pre_start;
     logic [0:127] pre_a;
@@ -122,14 +115,14 @@ module GHashEngine #(
     );
 
     // ----------------------------------------------------------------
-    // 4-lane GHASH batch multipliers
+    // 2-lane GHASH batch multipliers (area-reduced)
     // ----------------------------------------------------------------
     logic         lane_start;
-    logic [0:127] lane_a0, lane_a1, lane_a2, lane_a3;
-    logic [0:127] lane_b0, lane_b1, lane_b2, lane_b3;
+    logic [0:127] lane_a0, lane_a1;
+    logic [0:127] lane_b0, lane_b1;
 
-    wire          lane_v0, lane_v1, lane_v2, lane_v3;
-    wire [0:127]  lane_o0, lane_o1, lane_o2, lane_o3;
+    wire          lane_v0, lane_v1;
+    wire [0:127]  lane_o0, lane_o1;
 
     GFMult128 lane0(
         .clk(clk), .rst(rst), .start_i(lane_start),
@@ -141,21 +134,10 @@ module GHashEngine #(
         .in_a(lane_a1), .in_b(lane_b1), .out_o(lane_o1), .valid_o(lane_v1)
     );
 
-    GFMult128 lane2(
-        .clk(clk), .rst(rst), .start_i(lane_start),
-        .in_a(lane_a2), .in_b(lane_b2), .out_o(lane_o2), .valid_o(lane_v2)
-    );
-
-    GFMult128 lane3(
-        .clk(clk), .rst(rst), .start_i(lane_start),
-        .in_a(lane_a3), .in_b(lane_b3), .out_o(lane_o3), .valid_o(lane_v3)
-    );
-
     logic       batch_busy;
-    logic [2:0] batch_size_launch;
 
     wire lane_done = batch_busy && lane_v0;
-    wire [0:127] lane_xor = lane_o0 ^ lane_o1 ^ lane_o2 ^ lane_o3;
+    wire [0:127] lane_xor = lane_o0 ^ lane_o1;
 
     // ----------------------------------------------------------------
     // Ready signals
@@ -175,8 +157,6 @@ module GHashEngine #(
 
             h1_reg             <= '0;
             h2_reg             <= '0;
-            h3_reg             <= '0;
-            h4_reg             <= '0;
             tag_mask_reg       <= '0;
             aad_len_bits_reg   <= '0;
             ct_len_bits_reg    <= '0;
@@ -198,14 +178,9 @@ module GHashEngine #(
             lane_start         <= 1'b0;
             lane_a0            <= '0;
             lane_a1            <= '0;
-            lane_a2            <= '0;
-            lane_a3            <= '0;
             lane_b0            <= '0;
             lane_b1            <= '0;
-            lane_b2            <= '0;
-            lane_b3            <= '0;
             batch_busy         <= 1'b0;
-            batch_size_launch  <= 3'd0;
 
             ghash_out_o        <= '0;
             ghash_valid_o      <= 1'b0;
@@ -239,8 +214,6 @@ module GHashEngine #(
 
                 h1_reg             <= h_i;
                 h2_reg             <= '0;
-                h3_reg             <= '0;
-                h4_reg             <= '0;
                 tag_mask_reg       <= tag_mask_i;
                 aad_len_bits_reg   <= aad_len_bits_i;
                 ct_len_bits_reg    <= ct_len_bits_i;
@@ -256,7 +229,6 @@ module GHashEngine #(
                 fifo_count         <= '0;
 
                 batch_busy         <= 1'b0;
-                batch_size_launch  <= 3'd0;
             end
             else if (busy_o) begin
                 // ----------------------------------------------------
@@ -273,34 +245,6 @@ module GHashEngine #(
                     PREP_H2_WAIT: begin
                         if (pre_valid) begin
                             h2_reg     <= pre_out;
-                            prep_state <= PREP_H3_LAUNCH;
-                        end
-                    end
-
-                    PREP_H3_LAUNCH: begin
-                        pre_a      <= h2_reg;
-                        pre_b      <= h1_reg;
-                        pre_start  <= 1'b1;
-                        prep_state <= PREP_H3_WAIT;
-                    end
-
-                    PREP_H3_WAIT: begin
-                        if (pre_valid) begin
-                            h3_reg     <= pre_out;
-                            prep_state <= PREP_H4_LAUNCH;
-                        end
-                    end
-
-                    PREP_H4_LAUNCH: begin
-                        pre_a      <= h2_reg;
-                        pre_b      <= h2_reg;
-                        pre_start  <= 1'b1;
-                        prep_state <= PREP_H4_WAIT;
-                    end
-
-                    PREP_H4_WAIT: begin
-                        if (pre_valid) begin
-                            h4_reg     <= pre_out;
                             prep_state <= PREP_READY;
                         end
                     end
@@ -351,8 +295,8 @@ module GHashEngine #(
                 // Launch next GHASH batch when powers are ready
                 // ----------------------------------------------------
                 if ((prep_state == PREP_READY) && !batch_busy) begin
-                    if (fifo_count >= 4)
-                        batch_size_sel = 3'd4;
+                    if (fifo_count >= 2)
+                        batch_size_sel = 3'd2;
                     else if (all_input_enqueued && (fifo_count != 0))
                         batch_size_sel = fifo_count[2:0];
                     else
@@ -363,48 +307,30 @@ module GHashEngine #(
                 end
 
                 if (do_batch) begin
-                    logic [0:127] b0, b1, b2, b3;
+                    logic [0:127] b0, b1;
                     b0 = fifo_mem[rd_ptr];
                     b1 = fifo_mem[rd_ptr + PTR_INC1];
-                    b2 = fifo_mem[rd_ptr + PTR_INC2];
-                    b3 = fifo_mem[rd_ptr + PTR_INC3];
 
                     // Default unused lanes to zero.
                     lane_a0 <= '0; lane_b0 <= h1_reg;
                     lane_a1 <= '0; lane_b1 <= h1_reg;
-                    lane_a2 <= '0; lane_b2 <= h1_reg;
-                    lane_a3 <= '0; lane_b3 <= h1_reg;
 
                     case (batch_size_sel)
                         3'd1: begin
                             lane_a0 <= y_acc ^ b0; lane_b0 <= h1_reg;
                         end
-                        3'd2: begin
+                        default: begin // 2
                             lane_a0 <= y_acc ^ b0; lane_b0 <= h2_reg;
                             lane_a1 <= b1;         lane_b1 <= h1_reg;
-                        end
-                        3'd3: begin
-                            lane_a0 <= y_acc ^ b0; lane_b0 <= h3_reg;
-                            lane_a1 <= b1;         lane_b1 <= h2_reg;
-                            lane_a2 <= b2;         lane_b2 <= h1_reg;
-                        end
-                        default: begin // 4
-                            lane_a0 <= y_acc ^ b0; lane_b0 <= h4_reg;
-                            lane_a1 <= b1;         lane_b1 <= h3_reg;
-                            lane_a2 <= b2;         lane_b2 <= h2_reg;
-                            lane_a3 <= b3;         lane_b3 <= h1_reg;
                         end
                     endcase
 
                     lane_start        <= 1'b1;
                     batch_busy        <= 1'b1;
-                    batch_size_launch <= batch_size_sel;
 
                     case (batch_size_sel)
                         3'd1: rd_ptr <= rd_ptr + PTR_INC1;
-                        3'd2: rd_ptr <= rd_ptr + PTR_INC2;
-                        3'd3: rd_ptr <= rd_ptr + PTR_INC3;
-                        default: rd_ptr <= rd_ptr + PTR_INC4;
+                        default: rd_ptr <= rd_ptr + PTR_INC2;
                     endcase
                 end
 

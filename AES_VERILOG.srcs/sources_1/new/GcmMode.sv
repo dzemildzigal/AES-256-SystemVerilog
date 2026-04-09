@@ -57,7 +57,9 @@ module GcmMode #(
     // Status
     output logic [0:31]  counter_val_o,
     output logic         h_valid_o,
-    output logic         busy_o
+    output logic         busy_o,
+    output logic [0:31]  session_cycles_o,
+    output logic         session_cycles_valid_o
     );
 
     localparam integer ENC_LAT = 15;
@@ -99,6 +101,8 @@ module GcmMode #(
     logic [0:95]  nonce_reg;
     logic [0:63]  aad_len_bits_reg;
     logic [0:63]  pt_len_bits_reg;
+    logic [0:31]  session_cycles_live;
+    logic         session_count_active;
 
     // ----------------------------------------------------------------
     // Shared encrypt scheduler
@@ -238,6 +242,10 @@ module GcmMode #(
             ct_last_o        <= 1'b0;
 
             gh_start         <= 1'b0;
+            session_cycles_o <= '0;
+            session_cycles_valid_o <= 1'b0;
+            session_cycles_live <= '0;
+            session_count_active <= 1'b0;
 
             for (i = 0; i < ENC_LAT; i = i + 1) begin
                 src_pipe[i]   <= SRC_IDLE;
@@ -250,6 +258,7 @@ module GcmMode #(
             gh_start   <= 1'b0;
             ct_valid_o <= 1'b0;
             ct_last_o  <= 1'b0;
+            session_cycles_valid_o <= 1'b0;
 
             // Shift routing / data delay pipelines
             src_pipe[0]   <= enc_start ? enc_src : SRC_IDLE;
@@ -285,7 +294,13 @@ module GcmMode #(
                 sess_running     <= 1'b0;
 
                 counter_val_o    <= 32'd2;
+
+                session_cycles_live  <= '0;
+                session_count_active <= 1'b1;
             end
+
+            if (session_count_active)
+                session_cycles_live <= session_cycles_live + 32'd1;
 
             // Mark scheduled work items as consumed.
             if (launch_h)
@@ -334,6 +349,12 @@ module GcmMode #(
             // Session completes when GHASH emits the final tag.
             if (gh_tag_valid)
                 sess_running <= 1'b0;
+
+            if (gh_tag_valid && session_count_active) begin
+                session_cycles_o       <= session_cycles_live + 32'd1;
+                session_cycles_valid_o <= 1'b1;
+                session_count_active   <= 1'b0;
+            end
         end
     end
 
