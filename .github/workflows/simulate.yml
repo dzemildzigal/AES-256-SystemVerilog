@@ -291,3 +291,25 @@ jobs:
           iverilog -g2012 -o sim_ghash ghash_all.v
           vvp sim_ghash | tee ghash_out.log
           grep -q "PASSED" ghash_out.log
+
+      - name: GcmMode TB
+        run: |
+          sv2v $SRC/GcmMode.sv \
+               $SRC/GHashEngine.sv \
+               $SRC/GFMult128.sv \
+               $SRC/KeyExpansion.sv \
+               $SRC/EncryptPipelined.sv \
+               $SRC/EncryptionRound.sv \
+               $SRC/EncryptionInitialRound.sv \
+               $SRC/EncryptionFinalRound.sv \
+               $SRC/SubBytes.sv \
+               $SRC/ShiftRows.sv \
+               $SRC/MixColumns.sv \
+               $SRC/MixColumn.sv \
+               $SRC/XTime.sv \
+               $SRC/AddRoundKey.sv \
+               $TB/GcmModeTB/new/GcmModeTestBench.sv \
+               -w gcm_mode_all.v
+          iverilog -g2012 -o sim_gcm_mode gcm_mode_all.v
+          vvp sim_gcm_mode | tee gcm_mode_out.log
+          grep -q "PASSED" gcm_mode_out.log
