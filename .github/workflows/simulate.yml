@@ -272,3 +272,22 @@ jobs:
           iverilog -g2012 -o sim_ctr ctr_all.v
           vvp sim_ctr | tee ctr_out.log
           grep -q "PASSED" ctr_out.log
+
+      - name: GFMult128 TB
+        run: |
+          sv2v $SRC/GFMult128.sv \
+               $TB/GFMult128TB/new/GFMult128TestBench.sv \
+               -w gf128_all.v
+          iverilog -g2012 -o sim_gf128 gf128_all.v
+          vvp sim_gf128 | tee gf128_out.log
+          grep -q "PASSED" gf128_out.log
+
+      - name: GHashEngine TB
+        run: |
+          sv2v $SRC/GFMult128.sv \
+               $SRC/GHashEngine.sv \
+               $TB/GHashEngineTB/new/GHashEngineTestBench.sv \
+               -w ghash_all.v
+          iverilog -g2012 -o sim_ghash ghash_all.v
+          vvp sim_ghash | tee ghash_out.log
+          grep -q "PASSED" ghash_out.log
