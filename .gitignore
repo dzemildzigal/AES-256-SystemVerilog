@@ -13,6 +13,7 @@
 *.gen/
 *.log
 *.jou
+*.dmp
 *bd/
 
 # Vivado logs and journals

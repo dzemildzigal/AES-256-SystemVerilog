@@ -92,7 +92,7 @@
   <FileSets Version="1" Minor="32">
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
       <Filter Type="Srcs"/>
-      <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM.sv">
+      <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM_Stream.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -197,21 +197,21 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM_wrapper.v">
+      <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM_Stream_wrapper.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/bd/aes_gcm/aes_gcm.bd">
+      <File Path="$PSRCDIR/sources_1/bd/aes_gcm_dma/aes_gcm_dma.bd">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PGENDIR/sources_1/bd/aes_gcm/hdl/aes_gcm_wrapper.v">
+      <File Path="$PGENDIR/sources_1/bd/aes_gcm_dma/hdl/aes_gcm_dma_wrapper.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -252,6 +252,38 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/Decrypt.sv">
         <FileInfo RelPath="Decrypt.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM_wrapper.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/bd/aes_gcm/aes_gcm.bd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PGENDIR/sources_1/bd/aes_gcm/hdl/aes_gcm_wrapper.v">
+        <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -406,7 +438,7 @@
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="aes_gcm_wrapper"/>
+        <Option Name="TopModule" Val="aes_gcm_dma_wrapper"/>
       </Config>
     </FileSet>
     <FileSet Name="constrs_1" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">
@@ -916,62 +948,56 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="aes_roundtrip_auto_pc_0_synth_1" Type="Ft3:Synth" SrcSet="aes_roundtrip_auto_pc_0" Part="xc7z020clg400-1" ConstrsSet="aes_roundtrip_auto_pc_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/aes_roundtrip_auto_pc_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_roundtrip_auto_pc_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_roundtrip_auto_pc_0_synth_1" ParallelReportGen="true">
+    <Run Id="aes_roundtrip_auto_pc_0_synth_1" Type="Ft3:Synth" SrcSet="aes_roundtrip_auto_pc_0" Part="xc7z020clg400-1" ConstrsSet="aes_roundtrip_auto_pc_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_roundtrip_auto_pc_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_roundtrip_auto_pc_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2024"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2024"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="aes_roundtrip_rst_ps7_100M_0_synth_1" Type="Ft3:Synth" SrcSet="aes_roundtrip_rst_ps7_100M_0" Part="xc7z020clg400-1" ConstrsSet="aes_roundtrip_rst_ps7_100M_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/aes_roundtrip_rst_ps7_100M_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_roundtrip_rst_ps7_100M_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_roundtrip_rst_ps7_100M_0_synth_1" ParallelReportGen="true">
+    <Run Id="aes_roundtrip_rst_ps7_100M_0_synth_1" Type="Ft3:Synth" SrcSet="aes_roundtrip_rst_ps7_100M_0" Part="xc7z020clg400-1" ConstrsSet="aes_roundtrip_rst_ps7_100M_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_roundtrip_rst_ps7_100M_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_roundtrip_rst_ps7_100M_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2024"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2024"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="aes_roundtrip_aes_roundtrip_0_0_synth_1" Type="Ft3:Synth" SrcSet="aes_roundtrip_aes_roundtrip_0_0" Part="xc7z020clg400-1" ConstrsSet="aes_roundtrip_aes_roundtrip_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/aes_roundtrip_aes_roundtrip_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_roundtrip_aes_roundtrip_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_roundtrip_aes_roundtrip_0_0_synth_1" ParallelReportGen="true">
+    <Run Id="aes_roundtrip_aes_roundtrip_0_0_synth_1" Type="Ft3:Synth" SrcSet="aes_roundtrip_aes_roundtrip_0_0" Part="xc7z020clg400-1" ConstrsSet="aes_roundtrip_aes_roundtrip_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_roundtrip_aes_roundtrip_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_roundtrip_aes_roundtrip_0_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2024"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2024"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="aes_roundtrip_ps7_0_synth_1" Type="Ft3:Synth" SrcSet="aes_roundtrip_ps7_0" Part="xc7z020clg400-1" ConstrsSet="aes_roundtrip_ps7_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/aes_roundtrip_ps7_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_roundtrip_ps7_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_roundtrip_ps7_0_synth_1" ParallelReportGen="true">
+    <Run Id="aes_roundtrip_ps7_0_synth_1" Type="Ft3:Synth" SrcSet="aes_roundtrip_ps7_0" Part="xc7z020clg400-1" ConstrsSet="aes_roundtrip_ps7_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_roundtrip_ps7_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_roundtrip_ps7_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2024"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2024"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="aes_ctr_ps7_0_synth_1" Type="Ft3:Synth" SrcSet="aes_ctr_ps7_0" Part="xc7z020clg400-1" ConstrsSet="aes_ctr_ps7_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/aes_ctr_ps7_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_ctr_ps7_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_ctr_ps7_0_synth_1" ParallelReportGen="true">
+    <Run Id="aes_ctr_ps7_0_synth_1" Type="Ft3:Synth" SrcSet="aes_ctr_ps7_0" Part="xc7z020clg400-1" ConstrsSet="aes_ctr_ps7_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_ctr_ps7_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_ctr_ps7_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2024"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2024"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="aes_ctr_aes_ctr_0_0_synth_1" Type="Ft3:Synth" SrcSet="aes_ctr_aes_ctr_0_0" Part="xc7z020clg400-1" ConstrsSet="aes_ctr_aes_ctr_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/aes_ctr_aes_ctr_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_ctr_aes_ctr_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_ctr_aes_ctr_0_0_synth_1" ParallelReportGen="true">
+    <Run Id="aes_ctr_aes_ctr_0_0_synth_1" Type="Ft3:Synth" SrcSet="aes_ctr_aes_ctr_0_0" Part="xc7z020clg400-1" ConstrsSet="aes_ctr_aes_ctr_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/aes_ctr_aes_ctr_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/aes_ctr_aes_ctr_0_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2024"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2024"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
