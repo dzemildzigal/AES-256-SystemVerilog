@@ -16,6 +16,59 @@ This README is the "continue from here" guide for build, test, and deployment.
 - DMA transfer limit issue: fixed by widening DMA length width.
 - Stream byte-order mismatch: fixed in RTL, native output now verified.
 
+## Latest Measured Results (2026-04-10)
+
+### Python Validation Output Summary
+
+Functional test (4 blocks):
+
+- PASS
+- DMA elapsed: 0.001116 s
+- Host session elapsed: 0.009680 s
+- Session cycles: 424822
+- Stream cycles: 33
+
+Streaming stress test (4096 blocks, 65536 bytes):
+
+- PASS
+- DMA elapsed: 0.001021 s
+- Host session elapsed: 0.008641 s
+- Session cycles: 358911
+- Stream cycles: 8215
+- Effective host+DMA throughput: 61.23 MiB/s
+- Effective end-to-end throughput (full host session): 7.23 MiB/s
+- PL-cycle throughput (session window): 17.41 MiB/s
+- PL-cycle throughput (true stream window): 760.80 MiB/s
+- Session cycles/block: 87.625
+- Stream cycles/block: 2.006
+
+Overhead split (reported by test script):
+
+- Host orchestration outside PL session: 5.052 ms (58.47%)
+- PL session overhead outside stream window: 3.507 ms (40.58%)
+- Pure stream datapath window: 0.082 ms (0.95%)
+- Stream share inside PL session window: 2.29%
+
+### Easy Interpretation
+
+- Correctness is good: both functional and stress tests pass with native byte order.
+- Hardware datapath is fast: true stream-window throughput is 760.80 MiB/s.
+- Theoretical ceiling is 1525.88 MiB/s at 100 MHz, so measured stream datapath is about 49.9% of theoretical.
+- Most wall-time is not pure stream compute. The largest contributor is host-side orchestration, followed by non-stream work inside the PL session window.
+- End-to-end application throughput is therefore much lower than pure datapath throughput, which is expected in this architecture.
+
+### Timing/Power/Utilization Snapshot
+
+Latest implementation metrics reported:
+
+- WNS: +0.234 ns
+- TNS: 0.000 ns
+- WHS: +0.034 ns
+- THS: 0.000 ns
+- TPWS: 0.000 ns
+- Total on-chip power: 2.304 W
+- Utilization: 41291 LUTs, 14596 FFs, 17 BRAMs, 0 URAMs, 0 DSPs
+
 ## What Was Changed Recently
 
 ### 1) Stream datapath wrapper improvements

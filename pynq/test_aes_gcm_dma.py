@@ -340,7 +340,7 @@ def run_gcm_encrypt_session(
     nonce: bytes,
     aad: bytes,
     pt: bytes,
-) -> Tuple[bytes, bytes, float, int, int]:
+) -> Tuple[bytes, bytes, float, float, int, int]:
     if len(aad) % 16 != 0:
         raise ValueError("AAD length must be 16-byte aligned for this RTL")
     if len(pt) % 16 != 0:
@@ -351,6 +351,8 @@ def run_gcm_encrypt_session(
     print(f"  nonce: {nonce.hex()}")
     print(f"  aad bytes: {len(aad)}")
     print(f"  pt  bytes: {len(pt)}")
+
+    session_host_t0 = time.perf_counter()
 
     _write_key(key)
     _write_nonce(nonce)
@@ -371,14 +373,16 @@ def run_gcm_encrypt_session(
     stream_cycles = aes.read(STREAM_CYCLES_REG)
     _ = _read_ghash_if_valid()
     _assert_no_drops()
+    session_host_elapsed = time.perf_counter() - session_host_t0
 
     print(f"  ct:  {ct.hex()[:96]}{'...' if len(ct) > 48 else ''}")
     print(f"  tag: {tag.hex()}")
     print(f"  dma elapsed: {elapsed:.6f} s")
+    print(f"  host session elapsed: {session_host_elapsed:.6f} s")
     print(f"  session cycles (PL): {session_cycles}")
     print(f"  stream cycles  (PL): {stream_cycles}")
 
-    return ct, tag, elapsed, session_cycles, stream_cycles
+    return ct, tag, elapsed, session_host_elapsed, session_cycles, stream_cycles
 
 
 def software_ref_check(key: bytes, nonce: bytes, aad: bytes, pt: bytes, ct_hw: bytes, tag_hw: bytes) -> None:
@@ -463,8 +467,9 @@ def run() -> None:
         "f69f2445df4f9b17ad2b417be66c3710"
     )
 
-    ct_hw, tag_hw, _, cyc1, stream_cyc1 = run_gcm_encrypt_session("Functional 4-block", key, nonce, aad, pt)
+    ct_hw, tag_hw, _, host_elapsed1, cyc1, stream_cyc1 = run_gcm_encrypt_session("Functional 4-block", key, nonce, aad, pt)
     software_ref_check(key, nonce, aad, pt, ct_hw, tag_hw)
+    print(f"  Functional host session elapsed: {host_elapsed1:.6f} s")
     print(f"  Functional session cycles: {cyc1}")
     print(f"  Functional stream cycles:  {stream_cyc1}")
     print("  Functional test: PASS\n")
@@ -489,14 +494,15 @@ def run() -> None:
     aad2 = os.urandom(16)
     pt2 = os.urandom(big_blocks * 16)
 
-    ct2, tag2, elapsed, cycles2, stream_cycles2 = run_gcm_encrypt_session(
+    ct2, tag2, dma_elapsed, host_session_elapsed, cycles2, stream_cycles2 = run_gcm_encrypt_session(
         f"Streaming stress DMA ({big_blocks} blocks)", key2, nonce2, aad2, pt2
     )
 
     software_ref_check(key2, nonce2, aad2, pt2, ct2, tag2)
 
     bytes_total = len(pt2)
-    host_mib_s = (bytes_total / elapsed) / (1024 * 1024)
+    host_mib_s = (bytes_total / dma_elapsed) / (1024 * 1024)
+    host_full_mib_s = (bytes_total / host_session_elapsed) / (1024 * 1024)
 
     if cycles2 == 0:
         raise RuntimeError("Session cycle counter returned 0; invalid hardware timing result")
@@ -508,6 +514,7 @@ def run() -> None:
 
     core_mib_s_stream = None
     stream_cycles_per_block = None
+    stream_elapsed = None
     if stream_cycles2 > 0:
         stream_elapsed = stream_cycles2 / core_clk_hz
         core_mib_s_stream = (bytes_total / stream_elapsed) / (1024 * 1024)
@@ -517,11 +524,30 @@ def run() -> None:
 
     print("  Streaming DMA test: PASS")
     print(f"  Effective host+DMA throughput: {host_mib_s:.2f} MiB/s")
+    print(f"  Effective end-to-end throughput (full host session): {host_full_mib_s:.2f} MiB/s")
     print(f"  PL-cycle throughput (session window): {core_mib_s_session:.2f} MiB/s")
     print(f"  Session cycles/block (session start -> tag): {session_cycles_per_block:.3f}")
     if core_mib_s_stream is not None and stream_cycles_per_block is not None:
         print(f"  PL-cycle throughput (true stream window): {core_mib_s_stream:.2f} MiB/s")
         print(f"  Stream cycles/block (first PT beat -> tag): {stream_cycles_per_block:.3f}")
+
+        if stream_elapsed is not None and host_session_elapsed >= session_elapsed:
+            host_overhead_s = host_session_elapsed - session_elapsed
+            session_overhead_s = max(session_elapsed - stream_elapsed, 0.0)
+            pure_stream_s = min(stream_elapsed, session_elapsed)
+
+            host_overhead_pct = (host_overhead_s / host_session_elapsed) * 100.0
+            session_overhead_pct = (session_overhead_s / host_session_elapsed) * 100.0
+            pure_stream_pct = (pure_stream_s / host_session_elapsed) * 100.0
+            stream_share_session_pct = (pure_stream_s / session_elapsed) * 100.0 if session_elapsed > 0 else 0.0
+
+            print("  Overhead split (of full host session wall time):")
+            print(f"    Host orchestration outside PL session: {host_overhead_s * 1e3:.3f} ms ({host_overhead_pct:.2f}%)")
+            print(f"    PL session overhead outside stream window: {session_overhead_s * 1e3:.3f} ms ({session_overhead_pct:.2f}%)")
+            print(f"    Pure stream datapath window: {pure_stream_s * 1e3:.3f} ms ({pure_stream_pct:.2f}%)")
+            print(f"  Stream share inside PL session window: {stream_share_session_pct:.2f}%")
+        else:
+            print("  [warn] Could not compute additive overhead split from current timing windows")
     else:
         print("  [warn] STREAM_CYCLES register returned 0; true stream-window metric unavailable")
     print(f"  Theoretical core throughput @100MHz: {core_theoretical_mib_s:.2f} MiB/s")

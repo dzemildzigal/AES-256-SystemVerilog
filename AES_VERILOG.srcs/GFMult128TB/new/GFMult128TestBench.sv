@@ -109,7 +109,7 @@ module GFMult128TestBench;
         rst = 1;
         repeat (2) @(posedge clk);
         rst = 0;
-        @(posedge clk);
+        @(negedge clk);
 
         // Test 1: Known GHASH vector (single multiply)
         // X = 0388dace60b6a392f328c2b971b2fe78

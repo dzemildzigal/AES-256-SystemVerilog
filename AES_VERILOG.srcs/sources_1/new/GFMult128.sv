@@ -113,13 +113,8 @@ module GFMult128(
             stage2_valid <= 1'b0;
         end
         else begin
-            logic [0:255] first64;
-
-            first64 = gf_mul_ghash_first64(in_a, in_b);
-
             stage1_x     <= in_a;
-            stage1_z     <= first64[0:127];
-            stage1_v     <= first64[128:255];
+            {stage1_z, stage1_v} <= gf_mul_ghash_first64(in_a, in_b);
             stage1_valid <= start_i;
 
             stage2_res   <= gf_mul_ghash_second64(stage1_x, stage1_z, stage1_v);
