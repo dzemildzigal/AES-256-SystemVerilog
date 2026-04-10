@@ -66,6 +66,7 @@
 //   0x90   TAG2          R     latched tag[64:95]
 //   0x94   TAG3          R     latched tag[96:127]
 //   0x98   CYCLES        R     latched session cycle count (start_session -> tag_valid)
+//   0x9C   STREAM_CYCLES R     latched stream cycle count (first PT beat -> tag_valid)
 //////////////////////////////////////////////////////////////////////////////////
 
 module AXI_AES_GCM_Stream #(
@@ -310,6 +311,9 @@ module AXI_AES_GCM_Stream #(
     reg [0:127] ghash_latched;
     reg [0:127] tag_latched;
     reg [0:31]  session_cycles_latched;
+    reg         stream_cycles_active;
+    reg [0:31]  stream_cycles_live;
+    reg [0:31]  stream_cycles_latched;
 
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -325,6 +329,9 @@ module AXI_AES_GCM_Stream #(
             ghash_latched       <= '0;
             tag_latched         <= '0;
             session_cycles_latched <= '0;
+            stream_cycles_active   <= 1'b0;
+            stream_cycles_live     <= '0;
+            stream_cycles_latched  <= '0;
         end
         else begin
             if (start_session_pulse) begin
@@ -336,6 +343,9 @@ module AXI_AES_GCM_Stream #(
                 pt_drop_sticky      <= 1'b0;
                 session_drop_sticky <= 1'b0;
                 session_cycles_valid_sticky <= 1'b0;
+                stream_cycles_active   <= 1'b0;
+                stream_cycles_live     <= '0;
+                stream_cycles_latched  <= '0;
             end
 
             if (pt_valid_mux) begin
@@ -362,6 +372,23 @@ module AXI_AES_GCM_Stream #(
             if (session_cycles_valid) begin
                 session_cycles_valid_sticky <= 1'b1;
                 session_cycles_latched      <= session_cycles;
+            end
+
+            if (!start_session_pulse) begin
+                // Count datapath cycles only from first accepted stream PT beat to tag_valid.
+                if (!stream_cycles_active) begin
+                    if (stream_mode_reg && pt_stream_accept) begin
+                        stream_cycles_active <= 1'b1;
+                        stream_cycles_live   <= 32'd1;
+                    end
+                end
+                else if (tag_valid) begin
+                    stream_cycles_latched <= stream_cycles_live + 32'd1;
+                    stream_cycles_active  <= 1'b0;
+                end
+                else begin
+                    stream_cycles_live <= stream_cycles_live + 32'd1;
+                end
             end
 
             if (cmd_push_aad && !aad_ready)
@@ -642,6 +669,7 @@ module AXI_AES_GCM_Stream #(
             6'd36: rd_mux = tag_latched[64  +:32];
             6'd37: rd_mux = tag_latched[96  +:32];
             6'd38: rd_mux = session_cycles_latched;
+            6'd39: rd_mux = stream_cycles_latched;
 
             default: rd_mux = 32'd0;
         endcase

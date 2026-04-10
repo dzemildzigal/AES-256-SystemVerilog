@@ -52,6 +52,7 @@ CT_BASE = 0x68
 GHASH_BASE = 0x78
 TAG_BASE = 0x88
 CYCLES_REG = 0x98
+STREAM_CYCLES_REG = 0x9C
 
 # CTRL bits
 CTRL_PUSH_PT = 1 << 0
@@ -339,7 +340,7 @@ def run_gcm_encrypt_session(
     nonce: bytes,
     aad: bytes,
     pt: bytes,
-) -> Tuple[bytes, bytes, float, int]:
+) -> Tuple[bytes, bytes, float, int, int]:
     if len(aad) % 16 != 0:
         raise ValueError("AAD length must be 16-byte aligned for this RTL")
     if len(pt) % 16 != 0:
@@ -367,6 +368,7 @@ def run_gcm_encrypt_session(
     ct, elapsed = _stream_pt_collect_ct_dma(pt)
     tag = _wait_tag()
     session_cycles = _wait_session_cycles()
+    stream_cycles = aes.read(STREAM_CYCLES_REG)
     _ = _read_ghash_if_valid()
     _assert_no_drops()
 
@@ -374,8 +376,9 @@ def run_gcm_encrypt_session(
     print(f"  tag: {tag.hex()}")
     print(f"  dma elapsed: {elapsed:.6f} s")
     print(f"  session cycles (PL): {session_cycles}")
+    print(f"  stream cycles  (PL): {stream_cycles}")
 
-    return ct, tag, elapsed, session_cycles
+    return ct, tag, elapsed, session_cycles, stream_cycles
 
 
 def software_ref_check(key: bytes, nonce: bytes, aad: bytes, pt: bytes, ct_hw: bytes, tag_hw: bytes) -> None:
@@ -460,9 +463,10 @@ def run() -> None:
         "f69f2445df4f9b17ad2b417be66c3710"
     )
 
-    ct_hw, tag_hw, _, cyc1 = run_gcm_encrypt_session("Functional 4-block", key, nonce, aad, pt)
+    ct_hw, tag_hw, _, cyc1, stream_cyc1 = run_gcm_encrypt_session("Functional 4-block", key, nonce, aad, pt)
     software_ref_check(key, nonce, aad, pt, ct_hw, tag_hw)
     print(f"  Functional session cycles: {cyc1}")
+    print(f"  Functional stream cycles:  {stream_cyc1}")
     print("  Functional test: PASS\n")
 
     target_big_blocks = 4096  # 4096 * 16 = 65536 bytes
@@ -485,7 +489,7 @@ def run() -> None:
     aad2 = os.urandom(16)
     pt2 = os.urandom(big_blocks * 16)
 
-    ct2, tag2, elapsed, cycles2 = run_gcm_encrypt_session(
+    ct2, tag2, elapsed, cycles2, stream_cycles2 = run_gcm_encrypt_session(
         f"Streaming stress DMA ({big_blocks} blocks)", key2, nonce2, aad2, pt2
     )
 
@@ -498,15 +502,28 @@ def run() -> None:
         raise RuntimeError("Session cycle counter returned 0; invalid hardware timing result")
 
     core_clk_hz = 100_000_000.0
-    core_elapsed = cycles2 / core_clk_hz
-    core_mib_s_measured = (bytes_total / core_elapsed) / (1024 * 1024)
-    cycles_per_block = cycles2 / big_blocks
+    session_elapsed = cycles2 / core_clk_hz
+    core_mib_s_session = (bytes_total / session_elapsed) / (1024 * 1024)
+    session_cycles_per_block = cycles2 / big_blocks
+
+    core_mib_s_stream = None
+    stream_cycles_per_block = None
+    if stream_cycles2 > 0:
+        stream_elapsed = stream_cycles2 / core_clk_hz
+        core_mib_s_stream = (bytes_total / stream_elapsed) / (1024 * 1024)
+        stream_cycles_per_block = stream_cycles2 / big_blocks
+
     core_theoretical_mib_s = (16.0 * 100_000_000.0) / (1024.0 * 1024.0)
 
     print("  Streaming DMA test: PASS")
     print(f"  Effective host+DMA throughput: {host_mib_s:.2f} MiB/s")
-    print(f"  PL-cycle measured throughput: {core_mib_s_measured:.2f} MiB/s")
-    print(f"  PL cycles/block (session average): {cycles_per_block:.3f}")
+    print(f"  PL-cycle throughput (session window): {core_mib_s_session:.2f} MiB/s")
+    print(f"  Session cycles/block (session start -> tag): {session_cycles_per_block:.3f}")
+    if core_mib_s_stream is not None and stream_cycles_per_block is not None:
+        print(f"  PL-cycle throughput (true stream window): {core_mib_s_stream:.2f} MiB/s")
+        print(f"  Stream cycles/block (first PT beat -> tag): {stream_cycles_per_block:.3f}")
+    else:
+        print("  [warn] STREAM_CYCLES register returned 0; true stream-window metric unavailable")
     print(f"  Theoretical core throughput @100MHz: {core_theoretical_mib_s:.2f} MiB/s")
     print()
 
