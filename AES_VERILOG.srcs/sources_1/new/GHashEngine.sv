@@ -14,6 +14,8 @@
 // - Inputs are assumed 128-bit block aligned (caller zero-pads final block).
 // - aad_len_bits_i / ct_len_bits_i carry the true bit lengths.
 // - Supports streaming with separate AAD and CT channels.
+// - Uses a single 1-cycle-latency GFMult128 with result forwarding
+//   to achieve 1 block per cycle throughput.
 //////////////////////////////////////////////////////////////////////////////////
 
 module GHashEngine #(
@@ -59,20 +61,12 @@ module GHashEngine #(
         PH_DONE = 2'b11
     } phase_t;
 
-    typedef enum logic [1:0] {
-        PREP_IDLE      = 2'd0,
-        PREP_H2_LAUNCH = 2'd1,
-        PREP_H2_WAIT   = 2'd2,
-        PREP_READY     = 2'd3
-    } prep_t;
-
     // ----------------------------------------------------------------
     // Session registers
     // ----------------------------------------------------------------
     phase_t       phase;
-    prep_t        prep_state;
 
-    logic [0:127] h1_reg, h2_reg;
+    logic [0:127] h_reg;
     logic [0:127] tag_mask_reg;
     logic [0:63]  aad_len_bits_reg;
     logic [0:63]  ct_len_bits_reg;
@@ -93,51 +87,35 @@ module GHashEngine #(
     logic [PTR_W-1:0] rd_ptr;
     logic [PTR_W:0]   fifo_count;
 
-    localparam logic [PTR_W-1:0] PTR_INC1 = 1;
-    localparam logic [PTR_W-1:0] PTR_INC2 = 2;
-    // ----------------------------------------------------------------
-    // Precompute H power with one GF multiplier: H^2
-    // ----------------------------------------------------------------
-    logic         pre_start;
-    logic [0:127] pre_a;
-    logic [0:127] pre_b;
-    wire          pre_valid;
-    wire [0:127]  pre_out;
+    // Combinational FIFO read port.
+    wire [0:127]  fifo_head = fifo_mem[rd_ptr];
 
-    GFMult128 pre_mul(
+    // ----------------------------------------------------------------
+    // Single GF(2^128) multiplier (1-cycle latency)
+    // ----------------------------------------------------------------
+    wire [0:127]  mul_out;
+    wire          mul_valid;
+
+    // Forwarding: use just-completed result instead of stale y_acc.
+    wire          mul_completing = mul_valid && busy_o;
+    wire [0:127]  y_fwd = mul_completing ? mul_out : y_acc;
+
+    // Can we launch a multiply this cycle?
+    wire          can_process = busy_o && !done_emitted && (fifo_count > 0);
+
+    // Combinational drive to multiplier (enables 1-block/cycle forwarding).
+    wire [0:127]  mul_a = y_fwd ^ fifo_head;
+    wire [0:127]  mul_b = h_reg;
+
+    GFMult128 mul(
         .clk(clk),
         .rst(rst),
-        .start_i(pre_start),
-        .in_a(pre_a),
-        .in_b(pre_b),
-        .out_o(pre_out),
-        .valid_o(pre_valid)
+        .start_i(can_process),
+        .in_a(mul_a),
+        .in_b(mul_b),
+        .out_o(mul_out),
+        .valid_o(mul_valid)
     );
-
-    // ----------------------------------------------------------------
-    // 2-lane GHASH batch multipliers (area-reduced)
-    // ----------------------------------------------------------------
-    logic         lane_start;
-    logic [0:127] lane_a0, lane_a1;
-    logic [0:127] lane_b0, lane_b1;
-
-    wire          lane_v0, lane_v1;
-    wire [0:127]  lane_o0, lane_o1;
-
-    GFMult128 lane0(
-        .clk(clk), .rst(rst), .start_i(lane_start),
-        .in_a(lane_a0), .in_b(lane_b0), .out_o(lane_o0), .valid_o(lane_v0)
-    );
-
-    GFMult128 lane1(
-        .clk(clk), .rst(rst), .start_i(lane_start),
-        .in_a(lane_a1), .in_b(lane_b1), .out_o(lane_o1), .valid_o(lane_v1)
-    );
-
-    logic       batch_busy;
-
-    wire lane_done = batch_busy && lane_v0;
-    wire [0:127] lane_xor = lane_o0 ^ lane_o1;
 
     // ----------------------------------------------------------------
     // Ready signals
@@ -153,10 +131,8 @@ module GHashEngine #(
         if (rst) begin
             busy_o             <= 1'b0;
             phase              <= PH_IDLE;
-            prep_state         <= PREP_IDLE;
 
-            h1_reg             <= '0;
-            h2_reg             <= '0;
+            h_reg              <= '0;
             tag_mask_reg       <= '0;
             aad_len_bits_reg   <= '0;
             ct_len_bits_reg    <= '0;
@@ -171,17 +147,6 @@ module GHashEngine #(
             rd_ptr             <= '0;
             fifo_count         <= '0;
 
-            pre_start          <= 1'b0;
-            pre_a              <= '0;
-            pre_b              <= '0;
-
-            lane_start         <= 1'b0;
-            lane_a0            <= '0;
-            lane_a1            <= '0;
-            lane_b0            <= '0;
-            lane_b1            <= '0;
-            batch_busy         <= 1'b0;
-
             ghash_out_o        <= '0;
             ghash_valid_o      <= 1'b0;
             tag_out_o          <= '0;
@@ -190,30 +155,22 @@ module GHashEngine #(
         else begin
             logic         do_enq;
             logic [0:127] enq_data;
-            logic         do_batch;
-            logic [2:0]   batch_size_sel;
             int           count_next;
 
             // 1-cycle pulse defaults
-            pre_start     <= 1'b0;
-            lane_start    <= 1'b0;
             ghash_valid_o <= 1'b0;
             tag_valid_o   <= 1'b0;
 
             do_enq        = 1'b0;
             enq_data      = '0;
-            do_batch      = 1'b0;
-            batch_size_sel= 3'd0;
 
             // Start a new session only when idle.
             if (start_i && ready_o) begin
                 busy_o             <= 1'b1;
                 phase              <= (aad_len_bits_i != 64'd0) ? PH_AAD :
                                      ((ct_len_bits_i != 64'd0) ? PH_CT : PH_DONE);
-                prep_state         <= PREP_H2_LAUNCH;
 
-                h1_reg             <= h_i;
-                h2_reg             <= '0;
+                h_reg              <= h_i;
                 tag_mask_reg       <= tag_mask_i;
                 aad_len_bits_reg   <= aad_len_bits_i;
                 ct_len_bits_reg    <= ct_len_bits_i;
@@ -227,32 +184,13 @@ module GHashEngine #(
                 wr_ptr             <= '0;
                 rd_ptr             <= '0;
                 fifo_count         <= '0;
-
-                batch_busy         <= 1'b0;
             end
             else if (busy_o) begin
                 // ----------------------------------------------------
-                // H-power precompute scheduler
+                // Update y_acc when multiply completes
                 // ----------------------------------------------------
-                case (prep_state)
-                    PREP_H2_LAUNCH: begin
-                        pre_a      <= h1_reg;
-                        pre_b      <= h1_reg;
-                        pre_start  <= 1'b1;
-                        prep_state <= PREP_H2_WAIT;
-                    end
-
-                    PREP_H2_WAIT: begin
-                        if (pre_valid) begin
-                            h2_reg     <= pre_out;
-                            prep_state <= PREP_READY;
-                        end
-                    end
-
-                    default: begin
-                        // PREP_IDLE / PREP_READY: no action
-                    end
-                endcase
+                if (mul_completing)
+                    y_acc <= mul_out;
 
                 // ----------------------------------------------------
                 // Ingest AAD/CT stream into FIFO (plus length block)
@@ -292,55 +230,10 @@ module GHashEngine #(
                 end
 
                 // ----------------------------------------------------
-                // Launch next GHASH batch when powers are ready
+                // Advance FIFO read pointer on multiply launch
                 // ----------------------------------------------------
-                if ((prep_state == PREP_READY) && !batch_busy) begin
-                    if (fifo_count >= 2)
-                        batch_size_sel = 3'd2;
-                    else if (all_input_enqueued && (fifo_count != 0))
-                        batch_size_sel = fifo_count[2:0];
-                    else
-                        batch_size_sel = 3'd0;
-
-                    if (batch_size_sel != 3'd0)
-                        do_batch = 1'b1;
-                end
-
-                if (do_batch) begin
-                    logic [0:127] b0, b1;
-                    b0 = fifo_mem[rd_ptr];
-                    b1 = fifo_mem[rd_ptr + PTR_INC1];
-
-                    // Default unused lanes to zero.
-                    lane_a0 <= '0; lane_b0 <= h1_reg;
-                    lane_a1 <= '0; lane_b1 <= h1_reg;
-
-                    case (batch_size_sel)
-                        3'd1: begin
-                            lane_a0 <= y_acc ^ b0; lane_b0 <= h1_reg;
-                        end
-                        default: begin // 2
-                            lane_a0 <= y_acc ^ b0; lane_b0 <= h2_reg;
-                            lane_a1 <= b1;         lane_b1 <= h1_reg;
-                        end
-                    endcase
-
-                    lane_start        <= 1'b1;
-                    batch_busy        <= 1'b1;
-
-                    case (batch_size_sel)
-                        3'd1: rd_ptr <= rd_ptr + PTR_INC1;
-                        default: rd_ptr <= rd_ptr + PTR_INC2;
-                    endcase
-                end
-
-                // ----------------------------------------------------
-                // Batch completion updates Y accumulator
-                // ----------------------------------------------------
-                if (lane_done) begin
-                    y_acc      <= lane_xor;
-                    batch_busy <= 1'b0;
-                end
+                if (can_process)
+                    rd_ptr <= rd_ptr + {{(PTR_W-1){1'b0}}, 1'b1};
 
                 // ----------------------------------------------------
                 // FIFO count accounting
@@ -348,15 +241,15 @@ module GHashEngine #(
                 count_next = fifo_count;
                 if (do_enq)
                     count_next = count_next + 1;
-                if (do_batch)
-                    count_next = count_next - batch_size_sel;
+                if (can_process)
+                    count_next = count_next - 1;
                 fifo_count <= count_next[PTR_W:0];
 
                 // ----------------------------------------------------
                 // Session complete: emit GHASH + TAG pulse
                 // ----------------------------------------------------
-                if ((prep_state == PREP_READY) && all_input_enqueued
-                    && (fifo_count == 0) && !batch_busy && !done_emitted) begin
+                if (all_input_enqueued && (fifo_count == 0)
+                    && !mul_valid && !done_emitted) begin
                     ghash_out_o   <= y_acc;
                     tag_out_o     <= y_acc ^ tag_mask_reg;
                     ghash_valid_o <= 1'b1;
@@ -364,7 +257,6 @@ module GHashEngine #(
                     done_emitted  <= 1'b1;
                     busy_o        <= 1'b0;
                     phase         <= PH_IDLE;
-                    prep_state    <= PREP_IDLE;
                 end
             end
         end
