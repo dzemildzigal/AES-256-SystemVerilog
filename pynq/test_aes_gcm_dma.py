@@ -520,7 +520,10 @@ def run() -> None:
         core_mib_s_stream = (bytes_total / stream_elapsed) / (1024 * 1024)
         stream_cycles_per_block = stream_cycles2 / big_blocks
 
-    core_theoretical_mib_s = (16.0 * 100_000_000.0) / (1024.0 * 1024.0)
+    core_bytes_per_cycle = 16.0  # 128-bit core datapath
+    hp_port_bytes_per_cycle = 8.0  # Zynq-7000 HP port effective width
+    core_theoretical_mib_s = (core_bytes_per_cycle * core_clk_hz) / (1024.0 * 1024.0)
+    hp_port_theoretical_mib_s = (hp_port_bytes_per_cycle * core_clk_hz) / (1024.0 * 1024.0)
 
     print("  Streaming DMA test: PASS")
     print(f"  Effective host+DMA throughput: {host_mib_s:.2f} MiB/s")
@@ -530,6 +533,10 @@ def run() -> None:
     if core_mib_s_stream is not None and stream_cycles_per_block is not None:
         print(f"  PL-cycle throughput (true stream window): {core_mib_s_stream:.2f} MiB/s")
         print(f"  Stream cycles/block (first PT beat -> tag): {stream_cycles_per_block:.3f}")
+        core_eff_pct = (core_mib_s_stream / core_theoretical_mib_s) * 100.0
+        hp_eff_pct = (core_mib_s_stream / hp_port_theoretical_mib_s) * 100.0
+        print(f"  Utilization vs 128-bit core ceiling: {core_eff_pct:.2f}%")
+        print(f"  Utilization vs PS HP-port ceiling: {hp_eff_pct:.2f}%")
 
         if stream_elapsed is not None and host_session_elapsed >= session_elapsed:
             host_overhead_s = host_session_elapsed - session_elapsed
@@ -551,6 +558,7 @@ def run() -> None:
     else:
         print("  [warn] STREAM_CYCLES register returned 0; true stream-window metric unavailable")
     print(f"  Theoretical core throughput @100MHz: {core_theoretical_mib_s:.2f} MiB/s")
+    print(f"  Theoretical PS HP-port throughput @100MHz: {hp_port_theoretical_mib_s:.2f} MiB/s")
     print()
 
     print("--- Zeroize ---")
