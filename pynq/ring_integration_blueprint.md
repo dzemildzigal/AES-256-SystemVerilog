@@ -2,6 +2,14 @@
 
 This file explains, in implementation order, what to change in this repository so the current AES-GCM PL core can be used in the OS-VideoSDR ring flow.
 
+If the immediate goal is minimum-complexity bring-up at 10-15 fps, start with the two-buffer contract first:
+
+- `pynq/ping_pong_frame_contract.md`
+
+Matching PS C loop template for that phase:
+
+- `OS-VideoSDR/pynq/ps_shim/src/ping_pong_udp_tx_example.c`
+
 ## 1) What the current PL build is today
 
 The current deployed build path is the DMA stream encrypt path:
@@ -148,8 +156,8 @@ This script should:
 Milestone 1 (minimal risk):
 
 - Keep GcmMode.sv unchanged.
-- Implement TX direction ring path only in AXI_AES_GCM_Ring.sv.
-- Verify descriptor movement + encryption + IRQ.
+- Implement and validate two-buffer ping-pong handoff first (see ping_pong_frame_contract.md).
+- Then implement TX direction ring path in AXI_AES_GCM_Ring.sv.
 
 Milestone 2:
 

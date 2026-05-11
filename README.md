@@ -136,6 +136,7 @@ On this specific board (Zynq-7020, HP0 only), the memory wall is the fundamental
 Ring-integration implementation blueprint for OS-VideoSDR:
 
 - `pynq/ring_integration_blueprint.md`
+- `pynq/ping_pong_frame_contract.md` (phase-1 two-buffer path for 10-15 fps bring-up)
 AES_VERILOG.srcs/sources_1/new/
 ├── GcmMode.sv              ← Top-level session scheduler
 ├── GHashEngine.sv          ← GHASH accumulation engine
