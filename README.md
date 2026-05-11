@@ -132,6 +132,10 @@ On this specific board (Zynq-7020, HP0 only), the memory wall is the fundamental
 ## Project File Map
 
 ```
+
+Ring-integration implementation blueprint for OS-VideoSDR:
+
+- `pynq/ring_integration_blueprint.md`
 AES_VERILOG.srcs/sources_1/new/
 ├── GcmMode.sv              ← Top-level session scheduler
 ├── GHashEngine.sv          ← GHASH accumulation engine
