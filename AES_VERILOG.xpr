@@ -4,7 +4,7 @@
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.                   -->
 <!-- Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.   -->
 
-<Project Product="Vivado" Version="7" Minor="67" Path="C:/Users/dzemi/Desktop/AES-256-SystemVerilog/AES_VERILOG.xpr">
+<Project Product="Vivado" Version="7" Minor="67" Path="C:/Users/dzemi/Desktop/PROJECTS/AES-256-SystemVerilog/AES_VERILOG.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="f5174e2f6d3f44fd979d2cde71f2176c"/>
@@ -45,7 +45,7 @@
     <Option Name="SimulatorGccVersionActiveHdl" Val="9.3.0"/>
     <Option Name="SimulatorLanguage" Val="Verilog"/>
     <Option Name="BoardPart" Val="tul.com.tw:pynq-z2:part0:1.0"/>
-    <Option Name="BoardPartRepoPaths" Val="$PPRDIR/../../AppData/Roaming/Xilinx/Vivado/2024.1/xhub/board_store/xilinx_board_store"/>
+    <Option Name="BoardPartRepoPaths" Val="$PPRDIR/../../../AppData/Roaming/Xilinx/Vivado/2024.1/xhub/board_store/xilinx_board_store"/>
     <Option Name="ActiveSimSet" Val="EncryptTB"/>
     <Option Name="DefaultLib" Val="xil_defaultlib"/>
     <Option Name="ProjectType" Val="Default"/>
@@ -92,8 +92,37 @@
   <FileSets Version="1" Minor="32">
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
       <Filter Type="Srcs"/>
+      <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM_PingPong.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM_PingPong_wrapper.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/bd/aes_gcm_ping_pong/aes_gcm_ping_pong.bd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PGENDIR/sources_1/bd/aes_gcm_ping_pong/hdl/aes_gcm_ping_pong_wrapper.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM_Stream.sv">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -101,6 +130,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/AddRoundKey.sv">
         <FileInfo RelPath="AddRoundKey.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -108,6 +138,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/EncryptPipelined.sv">
         <FileInfo RelPath="EncryptPipelined.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -115,6 +146,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/EncryptionFinalRound.sv">
         <FileInfo RelPath="EncryptionFinalRound.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -122,6 +154,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/EncryptionInitialRound.sv">
         <FileInfo RelPath="EncryptionInitialRound.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -129,6 +162,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/EncryptionRound.sv">
         <FileInfo RelPath="EncryptionRound.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -136,6 +170,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/GFMult128.sv">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -143,6 +178,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/GHashEngine.sv">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -150,6 +186,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/GcmMode.sv">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -157,6 +194,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/KeyExpansion.sv">
         <FileInfo RelPath="KeyExpansion.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -164,6 +202,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/MixColumn.sv">
         <FileInfo RelPath="MixColumn.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -171,6 +210,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/MixColumns.sv">
         <FileInfo RelPath="MixColumns.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -178,6 +218,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/ShiftRows.sv">
         <FileInfo RelPath="ShiftRows.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -185,6 +226,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/SubBytes.sv">
         <FileInfo RelPath="SubBytes.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -192,6 +234,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/XTime.sv">
         <FileInfo RelPath="XTime.sv">
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -199,6 +242,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/AXI_AES_GCM_Stream_wrapper.v">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -206,6 +250,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/bd/aes_gcm_dma/aes_gcm_dma.bd">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -213,6 +258,7 @@
       </File>
       <File Path="$PGENDIR/sources_1/bd/aes_gcm_dma/hdl/aes_gcm_dma_wrapper.v">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -438,7 +484,7 @@
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="aes_gcm_dma_wrapper"/>
+        <Option Name="TopModule" Val="aes_gcm_ping_pong_wrapper"/>
       </Config>
     </FileSet>
     <FileSet Name="constrs_1" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">

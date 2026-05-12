@@ -131,23 +131,27 @@ On this specific board (Zynq-7020, HP0 only), the memory wall is the fundamental
 
 ## Project File Map
 
-```
-
-Ring-integration implementation blueprint for OS-VideoSDR:
+Planning and handoff docs:
 
 - `pynq/ring_integration_blueprint.md`
 - `pynq/ping_pong_frame_contract.md` (phase-1 two-buffer path for 10-15 fps bring-up)
+
+```text
 AES_VERILOG.srcs/sources_1/new/
-├── GcmMode.sv              ← Top-level session scheduler
-├── GHashEngine.sv          ← GHASH accumulation engine
-├── GFMult128.sv            ← GF(2^128) multiplier (1-cycle latency)
-├── KeyExpansion.sv         ← AES-256 key schedule (4 words/cycle)
-├── EncryptPipelined.sv     ← 15-stage AES-256 encrypt pipeline
-├── AXI_AES_GCM_Stream.sv  ← AXI4-Lite + AXI4-Stream wrapper + CT FIFO
+├── GcmMode.sv                        ← Top-level session scheduler
+├── GHashEngine.sv                    ← GHASH accumulation engine
+├── GFMult128.sv                      ← GF(2^128) multiplier (1-cycle latency)
+├── KeyExpansion.sv                   ← AES-256 key schedule (4 words/cycle)
+├── EncryptPipelined.sv               ← 15-stage AES-256 encrypt pipeline
+├── AXI_AES_GCM_Stream.sv             ← AXI4-Lite + AXI4-Stream wrapper + CT FIFO
+├── AXI_AES_GCM_PingPong.sv           ← Phase-1 ping-pong AXI-Lite control plane
+└── AXI_AES_GCM_PingPong_wrapper.v    ← Verilog module-reference wrapper
 
 pynq/
-├── build_bd_gcm_dma.tcl   ← Vivado block design automation script
-├── test_aes_gcm_dma.py    ← Board validation + throughput benchmark
+├── build_bd_gcm_dma.tcl              ← Existing AES DMA benchmark BD
+├── build_bd_gcm_ping_pong.tcl        ← New phase-1 ping-pong control BD
+├── test_aes_gcm_dma.py               ← Existing AES DMA benchmark test
+└── test_ping_pong_ctrl.py            ← New ping-pong control-plane smoke test
 ```
 
 ---

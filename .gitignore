@@ -47,3 +47,7 @@ Thumbs.db
 .DS_Store
 *.swp
 *~
+
+# Python artifacts (PYNQ test utilities)
+__pycache__/
+*.py[cod]

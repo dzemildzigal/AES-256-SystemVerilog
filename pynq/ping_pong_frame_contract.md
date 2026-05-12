@@ -9,6 +9,25 @@ Goal for this phase:
 - support sustained 10 fps and 15 fps operation,
 - preserve a clean upgrade path to chunked/ring queue later.
 
+## Implementation Status (2026-05-11)
+
+Implemented now:
+
+- `AES_VERILOG.srcs/sources_1/new/AXI_AES_GCM_PingPong.sv`
+   - map0 AXI-Lite register bank
+   - ping-pong ownership control state
+   - synthetic producer cadence for control-plane smoke testing
+- `AES_VERILOG.srcs/sources_1/new/AXI_AES_GCM_PingPong_wrapper.v`
+- `pynq/build_bd_gcm_ping_pong.tcl`
+- `pynq/test_ping_pong_ctrl.py`
+- `OS-VideoSDR/pynq/ps_shim/src/ping_pong_udp_tx_example.c` (PS consumer template)
+
+Next implementation slice:
+
+- replace synthetic producer cadence with real frame-capture + AES + DDR writer datapath,
+- expose and validate map1 data aperture for buffer0/buffer1 payload reads,
+- keep the same map0 register contract for software continuity.
+
 ## Why This Replaces 8k x 4k For Now
 
 The earlier 8192 x 4096 geometry was a stress-test queue profile. It is not required for this first bring-up.
