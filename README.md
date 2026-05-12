@@ -144,8 +144,8 @@ AES_VERILOG.srcs/sources_1/new/
 ├── KeyExpansion.sv                   ← AES-256 key schedule (4 words/cycle)
 ├── EncryptPipelined.sv               ← 15-stage AES-256 encrypt pipeline
 ├── AXI_AES_GCM_Stream.sv             ← AXI4-Lite + AXI4-Stream wrapper + CT FIFO
-├── AXI_AES_GCM_PingPong.sv           ← Phase-1 ping-pong AXI-Lite control plane
-└── AXI_AES_GCM_PingPong_wrapper.v    ← Verilog module-reference wrapper
+├── AXI_PingPong_Ctrl.sv              ← Phase-1 ping-pong AXI-Lite control plane
+└── AXI_PingPong_Ctrl_wrapper.v       ← Verilog module-reference wrapper
 
 pynq/
 ├── build_bd_gcm_dma.tcl              ← Existing AES DMA benchmark BD

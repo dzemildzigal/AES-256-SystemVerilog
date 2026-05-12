@@ -13,11 +13,11 @@ Goal for this phase:
 
 Implemented now:
 
-- `AES_VERILOG.srcs/sources_1/new/AXI_AES_GCM_PingPong.sv`
+- `AES_VERILOG.srcs/sources_1/new/AXI_PingPong_Ctrl.sv`
    - map0 AXI-Lite register bank
    - ping-pong ownership control state
    - synthetic producer cadence for control-plane smoke testing
-- `AES_VERILOG.srcs/sources_1/new/AXI_AES_GCM_PingPong_wrapper.v`
+- `AES_VERILOG.srcs/sources_1/new/AXI_PingPong_Ctrl_wrapper.v`
 - `pynq/build_bd_gcm_ping_pong.tcl`
 - `pynq/test_ping_pong_ctrl.py`
 - `OS-VideoSDR/pynq/ps_shim/src/ping_pong_udp_tx_example.c` (PS consumer template)

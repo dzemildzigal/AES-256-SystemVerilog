@@ -24,7 +24,7 @@
 //   0x0038 IRQ_STATUS       RW1C [0]
 //////////////////////////////////////////////////////////////////////////////////
 
-module AXI_AES_GCM_PingPong #(
+module AXI_PingPong_Ctrl #(
     parameter C_S_AXI_DATA_WIDTH = 32,
     parameter C_S_AXI_ADDR_WIDTH = 8,
     parameter [31:0] VERSION_VALUE = 32'h0001_0000,

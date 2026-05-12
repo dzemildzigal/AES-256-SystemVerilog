@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
-// Verilog wrapper for AXI_AES_GCM_PingPong (SystemVerilog).
+// Verilog wrapper for AXI_PingPong_Ctrl (SystemVerilog).
 // Vivado block-design module references require a plain .v top file.
 
-module AXI_AES_GCM_PingPong_wrapper #(
+module AXI_PingPong_Ctrl_wrapper #(
     parameter C_S_AXI_DATA_WIDTH = 32,
     parameter C_S_AXI_ADDR_WIDTH = 8
 )(
@@ -31,7 +31,7 @@ module AXI_AES_GCM_PingPong_wrapper #(
     output wire                                irq
 );
 
-    AXI_AES_GCM_PingPong #(
+    AXI_PingPong_Ctrl #(
         .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
         .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH)
     ) u_axi_pingpong (

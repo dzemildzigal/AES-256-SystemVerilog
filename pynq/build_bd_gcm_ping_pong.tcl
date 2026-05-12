@@ -10,7 +10,7 @@
 #  DDR frame-writer path integration is added in the next implementation slice.
 # ──────────────────────────────────────────────────────────────
 
-set PP_MODULE  "AXI_AES_GCM_PingPong_wrapper"
+set PP_MODULE  "AXI_PingPong_Ctrl_wrapper"
 set PP_INST    "aes_pingpong_0"
 set BD_NAME    "aes_gcm_ping_pong"
 
@@ -88,8 +88,8 @@ set_property source_mgmt_mode All [current_project]
 
 set rtl_dir "AES_VERILOG.srcs/sources_1/new"
 set pp_sources [list \
-    "$rtl_dir/AXI_AES_GCM_PingPong_wrapper.v" \
-    "$rtl_dir/AXI_AES_GCM_PingPong.sv" \
+    "$rtl_dir/AXI_PingPong_Ctrl_wrapper.v" \
+    "$rtl_dir/AXI_PingPong_Ctrl.sv" \
 ]
 
 foreach f $pp_sources {
