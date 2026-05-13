@@ -150,6 +150,7 @@ AES_VERILOG.srcs/sources_1/new/
 pynq/
 ├── build_bd_gcm_dma.tcl              ← Existing AES DMA benchmark BD
 ├── build_bd_gcm_ping_pong.tcl        ← Ping-pong BD with AES stream source + MM2S DMA
+├── preflight_allocator_test.py       ← CMA allocator preflight for stream-test stability
 ├── test_aes_gcm_dma.py               ← Existing AES DMA benchmark test
 ├── test_ping_pong_ctrl.py            ← Ping-pong control-plane smoke test
 ├── test_ping_pong_writer_ddr.py      ← Deterministic DDR writer smoke/integrity test
@@ -195,6 +196,45 @@ Expected output at the end:
 ```
 ALL TESTS PASSED - native byte order correct; AES-256 GCM DMA path is operational on FPGA
 ```
+
+---
+
+## PYNQ Stability Notes (CMA Allocator)
+
+### Symptom
+
+On some PYNQ images, the board may freeze during stream-test bring-up right after:
+
+```text
+Allocating DDR buffers...
+```
+
+### Root Cause (Observed)
+
+The freeze is not in AES or DMA logic. It is an allocator/CMA edge case triggered by tiny contiguous allocations after overlay load.
+
+### Current Mitigation
+
+`test_ping_pong_writer_aes_stream.py` now uses padded allocations (larger than payload) and limits DMA transfer length explicitly to the real payload bytes.
+
+### Preflight Check (Recommended)
+
+Run this before stream tests:
+
+```bash
+timeout -k 5 45s python3 -u preflight_allocator_test.py
+```
+
+If your board keeps repo folder structure on target, run:
+
+```bash
+timeout -k 5 45s python3 -u pynq/preflight_allocator_test.py
+```
+
+Interpretation:
+
+- `PREFLIGHT PASS` means allocator behavior is stable for the current session.
+- `PREFLIGHT WARNING` means tiny-allocation path appears risky; keep padded allocations and avoid tiny CMA buffers.
 
 ---
 
