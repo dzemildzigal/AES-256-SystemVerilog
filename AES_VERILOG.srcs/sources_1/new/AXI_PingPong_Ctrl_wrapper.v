@@ -43,6 +43,12 @@ module AXI_PingPong_Ctrl_wrapper #(
     input  wire                                M_AXI_BVALID,
     output wire                                M_AXI_BREADY,
 
+    input  wire [127:0]                        S_AXIS_SRC_TDATA,
+    input  wire [15:0]                         S_AXIS_SRC_TKEEP,
+    input  wire                                S_AXIS_SRC_TLAST,
+    input  wire                                S_AXIS_SRC_TVALID,
+    output wire                                S_AXIS_SRC_TREADY,
+
     output wire                                irq
 );
 
@@ -85,6 +91,11 @@ module AXI_PingPong_Ctrl_wrapper #(
         .M_AXI_BRESP   (M_AXI_BRESP),
         .M_AXI_BVALID  (M_AXI_BVALID),
         .M_AXI_BREADY  (M_AXI_BREADY),
+        .S_AXIS_SRC_TDATA  (S_AXIS_SRC_TDATA),
+        .S_AXIS_SRC_TKEEP  (S_AXIS_SRC_TKEEP),
+        .S_AXIS_SRC_TLAST  (S_AXIS_SRC_TLAST),
+        .S_AXIS_SRC_TVALID (S_AXIS_SRC_TVALID),
+        .S_AXIS_SRC_TREADY (S_AXIS_SRC_TREADY),
         .irq           (irq)
     );
 

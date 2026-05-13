@@ -144,15 +144,16 @@ AES_VERILOG.srcs/sources_1/new/
 ├── KeyExpansion.sv                   ← AES-256 key schedule (4 words/cycle)
 ├── EncryptPipelined.sv               ← 15-stage AES-256 encrypt pipeline
 ├── AXI_AES_GCM_Stream.sv             ← AXI4-Lite + AXI4-Stream wrapper + CT FIFO
-├── AXI_PingPong_Ctrl.sv              ← Phase-1 ping-pong AXI-Lite control plane
+├── AXI_PingPong_Ctrl.sv              ← Ping-pong control + DDR writer (deterministic/AXIS source)
 └── AXI_PingPong_Ctrl_wrapper.v       ← Verilog module-reference wrapper
 
 pynq/
 ├── build_bd_gcm_dma.tcl              ← Existing AES DMA benchmark BD
-├── build_bd_gcm_ping_pong.tcl        ← New phase-1 ping-pong control BD
+├── build_bd_gcm_ping_pong.tcl        ← Ping-pong BD with AES stream source + MM2S DMA
 ├── test_aes_gcm_dma.py               ← Existing AES DMA benchmark test
 ├── test_ping_pong_ctrl.py            ← Ping-pong control-plane smoke test
-└── test_ping_pong_writer_ddr.py      ← Deterministic DDR writer smoke/integrity test
+├── test_ping_pong_writer_ddr.py      ← Deterministic DDR writer smoke/integrity test
+└── test_ping_pong_writer_aes_stream.py ← AES stream -> DDR writer vector test
 ```
 
 ---

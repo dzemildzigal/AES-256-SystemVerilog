@@ -30,6 +30,7 @@
 //   0x0054 WRITER_STATUS      RO    [0] busy [1] fault [2] writer_enable
 //   0x0058 WRITER_ERROR_COUNT RO
 //   0x005C WRITER_CMD         RW1C  [0] clear_fault [1] clear_error_count
+//   0x0060 WRITER_SRC_SEL      RW    [0] 0=deterministic pattern, 1=AXI-Stream source
 //////////////////////////////////////////////////////////////////////////////////
 
 module AXI_PingPong_Ctrl #(
@@ -83,6 +84,13 @@ module AXI_PingPong_Ctrl #(
     input  wire                                M_AXI_BVALID,
     output wire                                M_AXI_BREADY,
 
+    // AXI4-Stream source input (e.g. AES M_AXIS_CT)
+    input  wire [127:0]                        S_AXIS_SRC_TDATA,
+    input  wire [15:0]                         S_AXIS_SRC_TKEEP,
+    input  wire                                S_AXIS_SRC_TLAST,
+    input  wire                                S_AXIS_SRC_TVALID,
+    output wire                                S_AXIS_SRC_TREADY,
+
     output wire                                irq
 );
 
@@ -92,12 +100,13 @@ module AXI_PingPong_Ctrl #(
     localparam [31:0] WRITER_MAX_BURST_BYTES_U32 = WRITER_MAX_BURST_BEATS * 8;
 
     localparam [2:0] WR_IDLE     = 3'd0;
-    localparam [2:0] WR_PREP     = 3'd1;
-    localparam [2:0] WR_AW       = 3'd2;
-    localparam [2:0] WR_W        = 3'd3;
-    localparam [2:0] WR_B        = 3'd4;
-    localparam [2:0] WR_COMPLETE = 3'd5;
-    localparam [2:0] WR_ERROR    = 3'd6;
+    localparam [2:0] WR_FETCH    = 3'd1;
+    localparam [2:0] WR_PREP     = 3'd2;
+    localparam [2:0] WR_AW       = 3'd3;
+    localparam [2:0] WR_W        = 3'd4;
+    localparam [2:0] WR_B        = 3'd5;
+    localparam [2:0] WR_COMPLETE = 3'd6;
+    localparam [2:0] WR_ERROR    = 3'd7;
 
     // AXI-Lite handshake registers
     reg                            axi_awready;
@@ -156,6 +165,7 @@ module AXI_PingPong_Ctrl #(
 
     // Deterministic writer configuration/status
     reg         writer_enable;
+    reg         writer_src_stream;
     reg [63:0]  buf0_base_addr;
     reg [63:0]  buf1_base_addr;
     reg         writer_busy;
@@ -176,6 +186,18 @@ module AXI_PingPong_Ctrl #(
     reg [7:0]   burst_beats_total;
     reg [7:0]   burst_beats_sent;
     reg [7:0]   burst_last_strobe;
+
+    // AXI-Stream to 64-bit write-word packing state
+    reg [127:0] stream_hold_data;
+    reg [15:0]  stream_hold_keep;
+    reg         stream_hold_last;
+    reg         stream_hold_valid;
+    reg         stream_hold_hi_pending;
+
+    reg [63:0]  stream_word_data;
+    reg [7:0]   stream_word_strobe;
+    reg         stream_word_last;
+    reg         stream_word_valid;
 
     wire [31:0] active_frame_bytes =
         (frame_bytes_cfg != 32'd0) ? frame_bytes_cfg : FRAME_BYTES_DEFAULT;
@@ -201,6 +223,20 @@ module AXI_PingPong_Ctrl #(
             ? prep_burst_bytes[10:3]
             : (prep_burst_bytes[10:3] + 8'd1);
 
+    wire source_stream_mode = writer_src_stream;
+    wire [7:0] stream_strobe_clamped =
+        (writer_bytes_remaining < 32'd8)
+            ? (stream_word_strobe & strobe_mask(writer_bytes_remaining[2:0]))
+            : stream_word_strobe;
+
+    wire [3:0] stream_strobe_bytes = byte_count8(stream_strobe_clamped);
+
+    wire stream_fetch_ready =
+        control_enable && writer_enable && source_stream_mode &&
+        (writer_state == WR_FETCH) && !stream_hold_valid && !stream_word_valid;
+
+    assign S_AXIS_SRC_TREADY = stream_fetch_ready;
+
     assign irq = irq_enable_reg[0] & irq_status_reg[0];
 
     function automatic [7:0] strobe_mask;
@@ -225,6 +261,14 @@ module AXI_PingPong_Ctrl #(
         input [31:0] word_index;
         begin
             pattern_word = {frame_id, word_index};
+        end
+    endfunction
+
+    function automatic [3:0] byte_count8;
+        input [7:0] strobe;
+        begin
+            byte_count8 = strobe[0] + strobe[1] + strobe[2] + strobe[3] +
+                          strobe[4] + strobe[5] + strobe[6] + strobe[7];
         end
     endfunction
 
@@ -277,6 +321,7 @@ module AXI_PingPong_Ctrl #(
             irq_status_reg         <= 32'd0;
 
             writer_enable          <= 1'b0;
+            writer_src_stream      <= 1'b0;
             buf0_base_addr         <= 64'd0;
             buf1_base_addr         <= 64'd0;
             writer_busy            <= 1'b0;
@@ -296,6 +341,16 @@ module AXI_PingPong_Ctrl #(
             burst_beats_total      <= 8'd0;
             burst_beats_sent       <= 8'd0;
             burst_last_strobe      <= 8'hFF;
+
+            stream_hold_data       <= 128'd0;
+            stream_hold_keep       <= 16'd0;
+            stream_hold_last       <= 1'b0;
+            stream_hold_valid      <= 1'b0;
+            stream_hold_hi_pending <= 1'b0;
+            stream_word_data       <= 64'd0;
+            stream_word_strobe     <= 8'h00;
+            stream_word_last       <= 1'b0;
+            stream_word_valid      <= 1'b0;
 
             m_axi_awaddr           <= 32'd0;
             m_axi_awlen            <= 8'd0;
@@ -339,6 +394,16 @@ module AXI_PingPong_Ctrl #(
                             burst_beats_sent       <= 8'd0;
                             burst_last_strobe      <= 8'hFF;
 
+                            stream_hold_data       <= 128'd0;
+                            stream_hold_keep       <= 16'd0;
+                            stream_hold_last       <= 1'b0;
+                            stream_hold_valid      <= 1'b0;
+                            stream_hold_hi_pending <= 1'b0;
+                            stream_word_data       <= 64'd0;
+                            stream_word_strobe     <= 8'h00;
+                            stream_word_last       <= 1'b0;
+                            stream_word_valid      <= 1'b0;
+
                             m_axi_awaddr           <= 32'd0;
                             m_axi_awlen            <= 8'd0;
                             m_axi_awvalid          <= 1'b0;
@@ -368,6 +433,10 @@ module AXI_PingPong_Ctrl #(
 
                     6'd16: begin // WRITER_ENABLE
                         writer_enable <= S_AXI_WDATA[0];
+                    end
+
+                    6'd24: begin // WRITER_SRC_SEL
+                        writer_src_stream <= S_AXI_WDATA[0];
                     end
 
                     6'd17: begin // BUF0_ADDR_LO
@@ -405,6 +474,15 @@ module AXI_PingPong_Ctrl #(
 
                     case (writer_state)
                         WR_IDLE: begin
+                            m_axi_awvalid          <= 1'b0;
+                            m_axi_wvalid           <= 1'b0;
+                            m_axi_bready           <= 1'b0;
+                            m_axi_wlast            <= 1'b0;
+                            m_axi_wstrb            <= 8'hFF;
+                            stream_hold_valid      <= 1'b0;
+                            stream_hold_hi_pending <= 1'b0;
+                            stream_word_valid      <= 1'b0;
+
                             if ((write_index == 1'b0 && ready_mask[0]) ||
                                 (write_index == 1'b1 && ready_mask[1])) begin
                                 drop_count <= drop_count + 32'd1;
@@ -422,7 +500,78 @@ module AXI_PingPong_Ctrl #(
                                 writer_bytes_remaining <= active_frame_bytes;
                                 writer_word_index      <= 32'd0;
                                 writer_busy            <= 1'b1;
-                                writer_state           <= WR_PREP;
+                                writer_state           <= source_stream_mode ? WR_FETCH : WR_PREP;
+                            end
+                        end
+
+                        WR_FETCH: begin
+                            m_axi_awvalid <= 1'b0;
+                            m_axi_wvalid  <= 1'b0;
+                            m_axi_bready  <= 1'b0;
+                            m_axi_wlast   <= 1'b0;
+                            m_axi_wstrb   <= 8'hFF;
+
+                            if (!source_stream_mode) begin
+                                writer_state <= WR_PREP;
+                            end
+                            else if (writer_bytes_remaining == 32'd0) begin
+                                writer_state <= WR_COMPLETE;
+                            end
+                            else if (stream_word_valid) begin
+                                writer_state <= WR_PREP;
+                            end
+                            else if (stream_hold_valid) begin
+                                if (stream_hold_hi_pending) begin
+                                    stream_word_data       <= stream_hold_data[127:64];
+                                    stream_word_strobe     <= stream_hold_keep[15:8];
+                                    stream_word_last       <= stream_hold_last;
+                                    stream_word_valid      <= 1'b1;
+                                    stream_hold_valid      <= 1'b0;
+                                    stream_hold_hi_pending <= 1'b0;
+                                end
+                                else if (stream_hold_keep[7:0] != 8'h00) begin
+                                    stream_word_data   <= stream_hold_data[63:0];
+                                    stream_word_strobe <= stream_hold_keep[7:0];
+                                    stream_word_last   <= stream_hold_last && (stream_hold_keep[15:8] == 8'h00);
+                                    stream_word_valid  <= 1'b1;
+
+                                    if (stream_hold_keep[15:8] != 8'h00) begin
+                                        stream_hold_hi_pending <= 1'b1;
+                                    end
+                                    else begin
+                                        stream_hold_valid      <= 1'b0;
+                                        stream_hold_hi_pending <= 1'b0;
+                                    end
+                                end
+                                else if (stream_hold_keep[15:8] != 8'h00) begin
+                                    stream_word_data       <= stream_hold_data[127:64];
+                                    stream_word_strobe     <= stream_hold_keep[15:8];
+                                    stream_word_last       <= stream_hold_last;
+                                    stream_word_valid      <= 1'b1;
+                                    stream_hold_valid      <= 1'b0;
+                                    stream_hold_hi_pending <= 1'b0;
+                                end
+                                else begin
+                                    writer_fault       <= 1'b1;
+                                    writer_error_count <= writer_error_count + 32'd1;
+                                    writer_busy        <= 1'b0;
+                                    writer_state       <= WR_ERROR;
+                                end
+                            end
+                            else if (S_AXIS_SRC_TVALID && S_AXIS_SRC_TREADY) begin
+                                if (S_AXIS_SRC_TKEEP == 16'h0000) begin
+                                    writer_fault       <= 1'b1;
+                                    writer_error_count <= writer_error_count + 32'd1;
+                                    writer_busy        <= 1'b0;
+                                    writer_state       <= WR_ERROR;
+                                end
+                                else begin
+                                    stream_hold_data       <= S_AXIS_SRC_TDATA;
+                                    stream_hold_keep       <= S_AXIS_SRC_TKEEP;
+                                    stream_hold_last       <= S_AXIS_SRC_TLAST;
+                                    stream_hold_valid      <= 1'b1;
+                                    stream_hold_hi_pending <= 1'b0;
+                                end
                             end
                         end
 
@@ -430,15 +579,36 @@ module AXI_PingPong_Ctrl #(
                             if (writer_bytes_remaining == 32'd0) begin
                                 writer_state <= WR_COMPLETE;
                             end
+                            else if (source_stream_mode && !stream_word_valid) begin
+                                writer_state <= WR_FETCH;
+                            end
+                            else if (source_stream_mode && (stream_strobe_bytes == 4'd0)) begin
+                                writer_fault       <= 1'b1;
+                                writer_error_count <= writer_error_count + 32'd1;
+                                writer_busy        <= 1'b0;
+                                writer_state       <= WR_ERROR;
+                            end
                             else begin
-                                burst_bytes_total <= prep_burst_bytes;
-                                burst_beats_total <= prep_burst_beats;
-                                burst_beats_sent  <= 8'd0;
-                                burst_last_strobe <= strobe_mask(prep_burst_bytes[2:0]);
+                                if (source_stream_mode) begin
+                                    burst_bytes_total <= {28'd0, stream_strobe_bytes};
+                                    burst_beats_total <= 8'd1;
+                                    burst_beats_sent  <= 8'd0;
+                                    burst_last_strobe <= stream_strobe_clamped;
 
-                                m_axi_awaddr  <= writer_addr_curr;
-                                m_axi_awlen   <= prep_burst_beats - 8'd1;
-                                m_axi_awvalid <= 1'b1;
+                                    m_axi_awaddr  <= writer_addr_curr;
+                                    m_axi_awlen   <= 8'd0;
+                                    m_axi_awvalid <= 1'b1;
+                                end
+                                else begin
+                                    burst_bytes_total <= prep_burst_bytes;
+                                    burst_beats_total <= prep_burst_beats;
+                                    burst_beats_sent  <= 8'd0;
+                                    burst_last_strobe <= strobe_mask(prep_burst_bytes[2:0]);
+
+                                    m_axi_awaddr  <= writer_addr_curr;
+                                    m_axi_awlen   <= prep_burst_beats - 8'd1;
+                                    m_axi_awvalid <= 1'b1;
+                                end
 
                                 writer_state <= WR_AW;
                             end
@@ -448,15 +618,23 @@ module AXI_PingPong_Ctrl #(
                             if (m_axi_awvalid && M_AXI_AWREADY) begin
                                 m_axi_awvalid <= 1'b0;
                                 m_axi_wvalid  <= 1'b1;
-                                m_axi_wdata   <= pattern_word(producer_frame_id, writer_word_index);
 
-                                if (burst_beats_total == 8'd1) begin
+                                if (source_stream_mode) begin
+                                    m_axi_wdata <= stream_word_data;
                                     m_axi_wlast <= 1'b1;
                                     m_axi_wstrb <= burst_last_strobe;
                                 end
                                 else begin
-                                    m_axi_wlast <= 1'b0;
-                                    m_axi_wstrb <= 8'hFF;
+                                    m_axi_wdata <= pattern_word(producer_frame_id, writer_word_index);
+
+                                    if (burst_beats_total == 8'd1) begin
+                                        m_axi_wlast <= 1'b1;
+                                        m_axi_wstrb <= burst_last_strobe;
+                                    end
+                                    else begin
+                                        m_axi_wlast <= 1'b0;
+                                        m_axi_wstrb <= 8'hFF;
+                                    end
                                 end
 
                                 writer_state <= WR_W;
@@ -468,7 +646,15 @@ module AXI_PingPong_Ctrl #(
                                 writer_addr_curr  <= writer_addr_curr + 32'd8;
                                 writer_word_index <= writer_word_index + 32'd1;
 
-                                if ((burst_beats_sent + 8'd1) >= burst_beats_total) begin
+                                if (source_stream_mode) begin
+                                    m_axi_wvalid      <= 1'b0;
+                                    m_axi_wlast       <= 1'b0;
+                                    m_axi_wstrb       <= 8'hFF;
+                                    m_axi_bready      <= 1'b1;
+                                    stream_word_valid <= 1'b0;
+                                    writer_state      <= WR_B;
+                                end
+                                else if ((burst_beats_sent + 8'd1) >= burst_beats_total) begin
                                     m_axi_wvalid <= 1'b0;
                                     m_axi_wlast  <= 1'b0;
                                     m_axi_wstrb  <= 8'hFF;
@@ -501,6 +687,22 @@ module AXI_PingPong_Ctrl #(
                                     writer_busy        <= 1'b0;
                                     writer_state       <= WR_ERROR;
                                 end
+                                else if (source_stream_mode) begin
+                                    if (stream_word_last && (writer_bytes_remaining > burst_bytes_total)) begin
+                                        writer_fault       <= 1'b1;
+                                        writer_error_count <= writer_error_count + 32'd1;
+                                        writer_busy        <= 1'b0;
+                                        writer_state       <= WR_ERROR;
+                                    end
+                                    else if (writer_bytes_remaining > burst_bytes_total) begin
+                                        writer_bytes_remaining <= writer_bytes_remaining - burst_bytes_total;
+                                        writer_state           <= WR_FETCH;
+                                    end
+                                    else begin
+                                        writer_bytes_remaining <= 32'd0;
+                                        writer_state           <= WR_COMPLETE;
+                                    end
+                                end
                                 else if (writer_bytes_remaining > burst_bytes_total) begin
                                     writer_bytes_remaining <= writer_bytes_remaining - burst_bytes_total;
                                     writer_state           <= WR_PREP;
@@ -513,7 +715,10 @@ module AXI_PingPong_Ctrl #(
                         end
 
                         WR_COMPLETE: begin
-                            writer_busy <= 1'b0;
+                            writer_busy            <= 1'b0;
+                            stream_hold_valid      <= 1'b0;
+                            stream_hold_hi_pending <= 1'b0;
+                            stream_word_valid      <= 1'b0;
 
                             if (writer_target_index == 1'b0) begin
                                 frame_id_buf0    <= producer_frame_id;
@@ -537,12 +742,15 @@ module AXI_PingPong_Ctrl #(
                         end
 
                         WR_ERROR: begin
-                            writer_busy <= 1'b0;
-                            m_axi_awvalid <= 1'b0;
-                            m_axi_wvalid  <= 1'b0;
-                            m_axi_bready  <= 1'b0;
-                            m_axi_wlast   <= 1'b0;
-                            m_axi_wstrb   <= 8'hFF;
+                            writer_busy            <= 1'b0;
+                            m_axi_awvalid          <= 1'b0;
+                            m_axi_wvalid           <= 1'b0;
+                            m_axi_bready           <= 1'b0;
+                            m_axi_wlast            <= 1'b0;
+                            m_axi_wstrb            <= 8'hFF;
+                            stream_hold_valid      <= 1'b0;
+                            stream_hold_hi_pending <= 1'b0;
+                            stream_word_valid      <= 1'b0;
 
                             if (!writer_fault) begin
                                 writer_state <= WR_IDLE;
@@ -556,14 +764,17 @@ module AXI_PingPong_Ctrl #(
                 end
                 else begin
                     // Synthetic producer cadence for control-plane bring-up.
-                    // Deterministic writer mode is enabled via WRITER_ENABLE.
-                    writer_state <= WR_IDLE;
-                    writer_busy  <= 1'b0;
-                    m_axi_awvalid <= 1'b0;
-                    m_axi_wvalid  <= 1'b0;
-                    m_axi_bready  <= 1'b0;
-                    m_axi_wlast   <= 1'b0;
-                    m_axi_wstrb   <= 8'hFF;
+                    // Writer mode is enabled via WRITER_ENABLE.
+                    writer_state           <= WR_IDLE;
+                    writer_busy            <= 1'b0;
+                    m_axi_awvalid          <= 1'b0;
+                    m_axi_wvalid           <= 1'b0;
+                    m_axi_bready           <= 1'b0;
+                    m_axi_wlast            <= 1'b0;
+                    m_axi_wstrb            <= 8'hFF;
+                    stream_hold_valid      <= 1'b0;
+                    stream_hold_hi_pending <= 1'b0;
+                    stream_word_valid      <= 1'b0;
 
                     if (frame_period_counter >= (FRAME_PERIOD_CYCLES - 32'd1)) begin
                         frame_period_counter <= 32'd0;
@@ -598,14 +809,17 @@ module AXI_PingPong_Ctrl #(
                 end
             end
             else begin
-                frame_period_counter <= 32'd0;
-                writer_state <= WR_IDLE;
-                writer_busy  <= 1'b0;
-                m_axi_awvalid <= 1'b0;
-                m_axi_wvalid  <= 1'b0;
-                m_axi_bready  <= 1'b0;
-                m_axi_wlast   <= 1'b0;
-                m_axi_wstrb   <= 8'hFF;
+                frame_period_counter   <= 32'd0;
+                writer_state           <= WR_IDLE;
+                writer_busy            <= 1'b0;
+                m_axi_awvalid          <= 1'b0;
+                m_axi_wvalid           <= 1'b0;
+                m_axi_bready           <= 1'b0;
+                m_axi_wlast            <= 1'b0;
+                m_axi_wstrb            <= 8'hFF;
+                stream_hold_valid      <= 1'b0;
+                stream_hold_hi_pending <= 1'b0;
+                stream_word_valid      <= 1'b0;
             end
         end
     end
@@ -652,6 +866,7 @@ module AXI_PingPong_Ctrl #(
             6'd21: rd_mux = {29'd0, writer_enable, writer_fault, writer_busy};        // 0x54
             6'd22: rd_mux = writer_error_count;                                       // 0x58
             6'd23: rd_mux = 32'd0;                                                    // 0x5C command register
+            6'd24: rd_mux = {31'd0, writer_src_stream};                               // 0x60
             default: rd_mux = 32'd0;
         endcase
     end

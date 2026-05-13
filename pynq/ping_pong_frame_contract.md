@@ -9,7 +9,7 @@ Goal for this phase:
 - support sustained 10 fps and 15 fps operation,
 - preserve a clean upgrade path to chunked/ring queue later.
 
-## Implementation Status (2026-05-11)
+## Implementation Status (2026-05-13)
 
 Implemented now:
 
@@ -18,15 +18,21 @@ Implemented now:
    - ping-pong ownership control state
    - synthetic producer cadence for control-plane smoke testing (default mode)
    - deterministic AXI4 master DDR writer mode (first writer slice)
+   - AXI-Stream writer source mode (`WRITER_SRC_SEL=1`) for AES CT stream ingestion
 - `AES_VERILOG.srcs/sources_1/new/AXI_PingPong_Ctrl_wrapper.v`
 - `pynq/build_bd_gcm_ping_pong.tcl`
+   - integrated stream path: DMA MM2S -> `AXI_AES_GCM_Stream_wrapper` -> `AXI_PingPong_Ctrl_wrapper`
+   - shared GP0 AXI-Lite control for ping-pong, AES stream core, and DMA
+   - shared HP0 memory path for DMA MM2S reads and ping-pong AXI master writes
 - `pynq/test_ping_pong_ctrl.py`
+- `pynq/test_ping_pong_writer_ddr.py`
+- `pynq/test_ping_pong_writer_aes_stream.py`
 - `OS-VideoSDR/pynq/ps_shim/src/ping_pong_udp_tx_example.c` (PS consumer template)
 
 Next implementation slices:
 
-- switch deterministic writer input from pattern generator to real frame-capture + AES stream input,
 - expose and validate map1 data aperture for PS-visible payload reads,
+- run paced 10/15 fps soak with DROP_COUNT delta tracking,
 - keep the same map0 register contract for software continuity.
 
 ## Why This Replaces 8k x 4k For Now
@@ -91,11 +97,13 @@ Use 32-bit registers, little-endian, offsets from control base.
 | 0x0054 | WRITER_STATUS | RO | bit0 busy, bit1 fault, bit2 writer_enable |
 | 0x0058 | WRITER_ERROR_COUNT | RO | deterministic writer AXI error counter |
 | 0x005C | WRITER_CMD | RW1C | bit0 clear_fault, bit1 clear_error_count |
+| 0x0060 | WRITER_SRC_SEL | RW | bit0 source select: 0=deterministic pattern, 1=AXI-Stream input |
 
 Notes:
 
 - RW1C means write 1 to clear.
-- deterministic writer mode is off by default (`WRITER_ENABLE=0`) so existing control-plane smoke tests remain valid.
+- writer mode is off by default (`WRITER_ENABLE=0`) so existing control-plane smoke tests remain valid.
+- source select defaults to deterministic pattern (`WRITER_SRC_SEL=0`).
 - If interrupts are not wired in first bitstream, PS can poll READY_MASK.
 
 ## DDR Data Aperture
