@@ -53,6 +53,7 @@ READY_BUF0 = 1 << 0
 READY_BUF1 = 1 << 1
 
 VERSION_EXPECTED = 0x00010000
+TARGET_FRAMES = 64
 
 
 def wait_until(cond, timeout_s: float, what: str) -> None:
@@ -64,6 +65,10 @@ def wait_until(cond, timeout_s: float, what: str) -> None:
 
 def split_u64(v: int) -> tuple[int, int]:
     return v & 0xFFFFFFFF, (v >> 32) & 0xFFFFFFFF
+
+
+def u32_delta(end: int, start: int) -> int:
+    return (end - start) & 0xFFFFFFFF
 
 
 print(f"Loading overlay: {BITSTREAM}")
@@ -110,35 +115,59 @@ wait_until(lambda: (ip.read(REG_READY_MASK) & (READY_BUF0 | READY_BUF1)) != 0, 2
 ready = ip.read(REG_READY_MASK)
 print(f"READY_MASK = 0x{ready:08x}")
 
-if ready & READY_BUF0:
-    produced_buf = buf0
-    consume_mask = READY_BUF0
-    frame_id = ip.read(REG_FRAME_ID_BUF0)
-    valid = ip.read(REG_VALID_BYTES_BUF0)
-    selected = 0
-else:
-    produced_buf = buf1
-    consume_mask = READY_BUF1
-    frame_id = ip.read(REG_FRAME_ID_BUF1)
-    valid = ip.read(REG_VALID_BYTES_BUF1)
-    selected = 1
+drops_start = ip.read(REG_DROP_COUNT)
+print(f"DROP_COUNT start = {drops_start}")
 
-print(f"Produced buffer={selected} frame_id={frame_id} valid_bytes={valid}")
-if valid != frame_bytes:
-    raise RuntimeError(f"VALID_BYTES mismatch: got {valid}, expected {frame_bytes}")
+buf_hits = [0, 0]
+last_frame_id = None
 
-produced_buf.sync_from_device()
-word0 = int(produced_buf[0])
-expected_word0 = ((frame_id & 0xFFFFFFFF) << 32) | 0
-print(f"word0=0x{word0:016x} expected=0x{expected_word0:016x}")
-if word0 != expected_word0:
-    raise RuntimeError("Deterministic pattern mismatch in produced buffer word0")
+for i in range(TARGET_FRAMES):
+    wait_until(lambda: (ip.read(REG_READY_MASK) & (READY_BUF0 | READY_BUF1)) != 0, 2.5, "produced frame")
+    ready = ip.read(REG_READY_MASK)
 
-# Consume and ensure producer can continue.
-ip.write(REG_CONSUMED_MASK, consume_mask)
-wait_until(lambda: (ip.read(REG_READY_MASK) & consume_mask) == 0, 1.5, "consumed ready bit clear")
+    if ready & READY_BUF0:
+        produced_buf = buf0
+        consume_mask = READY_BUF0
+        frame_id = ip.read(REG_FRAME_ID_BUF0)
+        valid = ip.read(REG_VALID_BYTES_BUF0)
+        selected = 0
+    else:
+        produced_buf = buf1
+        consume_mask = READY_BUF1
+        frame_id = ip.read(REG_FRAME_ID_BUF1)
+        valid = ip.read(REG_VALID_BYTES_BUF1)
+        selected = 1
 
-wait_until(lambda: (ip.read(REG_READY_MASK) & (READY_BUF0 | READY_BUF1)) != 0, 2.5, "next produced frame")
+    if valid != frame_bytes:
+        raise RuntimeError(f"VALID_BYTES mismatch on iter {i}: got {valid}, expected {frame_bytes}")
+
+    produced_buf.sync_from_device()
+    word0 = int(produced_buf[0])
+    expected_word0 = ((frame_id & 0xFFFFFFFF) << 32) | 0
+    if word0 != expected_word0:
+        raise RuntimeError(
+            f"Deterministic pattern mismatch on iter {i}: "
+            f"word0=0x{word0:016x} expected=0x{expected_word0:016x}"
+        )
+
+    if i == 0:
+        print(f"Produced buffer={selected} frame_id={frame_id} valid_bytes={valid}")
+        print(f"word0=0x{word0:016x} expected=0x{expected_word0:016x}")
+    elif (i + 1) % 16 == 0:
+        print(f"Progress: consumed {i + 1}/{TARGET_FRAMES} frames (latest buffer={selected}, frame_id={frame_id})")
+
+    ip.write(REG_CONSUMED_MASK, consume_mask)
+    wait_until(lambda: (ip.read(REG_READY_MASK) & consume_mask) == 0, 1.5, "consumed ready bit clear")
+
+    buf_hits[selected] += 1
+    last_frame_id = frame_id
+
+drops_end_active = ip.read(REG_DROP_COUNT)
+drop_delta = u32_delta(drops_end_active, drops_start)
+
+# Freeze producer before final status capture so counters represent this window.
+ip.write(REG_CONTROL, 0)
+wait_until(lambda: (ip.read(REG_WRITER_STATUS) & 0x1) == 0, 1.5, "writer busy clear")
 
 status = ip.read(REG_STATUS)
 writer_status = ip.read(REG_WRITER_STATUS)
@@ -149,6 +178,10 @@ write_index = ip.read(REG_WRITE_INDEX)
 print(
     f"STATUS=0x{status:08x} WRITER_STATUS=0x{writer_status:08x} "
     f"WRITE_INDEX={write_index} DROP_COUNT={drops} WRITER_ERROR_COUNT={writer_errors}"
+)
+print(
+    f"Consumed frames={TARGET_FRAMES} buf0_hits={buf_hits[0]} buf1_hits={buf_hits[1]} "
+    f"last_frame_id={last_frame_id} DROP_DELTA={drop_delta}"
 )
 
 if writer_status & 0x2:
