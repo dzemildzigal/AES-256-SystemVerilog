@@ -16,16 +16,17 @@ Implemented now:
 - `AES_VERILOG.srcs/sources_1/new/AXI_PingPong_Ctrl.sv`
    - map0 AXI-Lite register bank
    - ping-pong ownership control state
-   - synthetic producer cadence for control-plane smoke testing
+   - synthetic producer cadence for control-plane smoke testing (default mode)
+   - deterministic AXI4 master DDR writer mode (first writer slice)
 - `AES_VERILOG.srcs/sources_1/new/AXI_PingPong_Ctrl_wrapper.v`
 - `pynq/build_bd_gcm_ping_pong.tcl`
 - `pynq/test_ping_pong_ctrl.py`
 - `OS-VideoSDR/pynq/ps_shim/src/ping_pong_udp_tx_example.c` (PS consumer template)
 
-Next implementation slice:
+Next implementation slices:
 
-- replace synthetic producer cadence with real frame-capture + AES + DDR writer datapath,
-- expose and validate map1 data aperture for buffer0/buffer1 payload reads,
+- switch deterministic writer input from pattern generator to real frame-capture + AES stream input,
+- expose and validate map1 data aperture for PS-visible payload reads,
 - keep the same map0 register contract for software continuity.
 
 ## Why This Replaces 8k x 4k For Now
@@ -82,10 +83,19 @@ Use 32-bit registers, little-endian, offsets from control base.
 | 0x0030 | DROP_COUNT | RO | frames dropped due no free buffer |
 | 0x0034 | IRQ_ENABLE | RW | bit0 frame ready IRQ enable |
 | 0x0038 | IRQ_STATUS | RW1C | bit0 frame ready IRQ pending |
+| 0x0040 | WRITER_ENABLE | RW | bit0 deterministic DDR writer mode enable |
+| 0x0044 | BUF0_ADDR_LO | RW | DDR base address low word for buffer0 |
+| 0x0048 | BUF0_ADDR_HI | RW | DDR base address high word for buffer0 |
+| 0x004C | BUF1_ADDR_LO | RW | DDR base address low word for buffer1 |
+| 0x0050 | BUF1_ADDR_HI | RW | DDR base address high word for buffer1 |
+| 0x0054 | WRITER_STATUS | RO | bit0 busy, bit1 fault, bit2 writer_enable |
+| 0x0058 | WRITER_ERROR_COUNT | RO | deterministic writer AXI error counter |
+| 0x005C | WRITER_CMD | RW1C | bit0 clear_fault, bit1 clear_error_count |
 
 Notes:
 
 - RW1C means write 1 to clear.
+- deterministic writer mode is off by default (`WRITER_ENABLE=0`) so existing control-plane smoke tests remain valid.
 - If interrupts are not wired in first bitstream, PS can poll READY_MASK.
 
 ## DDR Data Aperture

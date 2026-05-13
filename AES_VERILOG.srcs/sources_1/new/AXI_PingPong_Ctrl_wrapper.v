@@ -28,6 +28,21 @@ module AXI_PingPong_Ctrl_wrapper #(
     output wire                                S_AXI_RVALID,
     input  wire                                S_AXI_RREADY,
 
+    output wire [31:0]                         M_AXI_AWADDR,
+    output wire [7:0]                          M_AXI_AWLEN,
+    output wire [2:0]                          M_AXI_AWSIZE,
+    output wire [1:0]                          M_AXI_AWBURST,
+    output wire                                M_AXI_AWVALID,
+    input  wire                                M_AXI_AWREADY,
+    output wire [63:0]                         M_AXI_WDATA,
+    output wire [7:0]                          M_AXI_WSTRB,
+    output wire                                M_AXI_WLAST,
+    output wire                                M_AXI_WVALID,
+    input  wire                                M_AXI_WREADY,
+    input  wire [1:0]                          M_AXI_BRESP,
+    input  wire                                M_AXI_BVALID,
+    output wire                                M_AXI_BREADY,
+
     output wire                                irq
 );
 
@@ -56,6 +71,20 @@ module AXI_PingPong_Ctrl_wrapper #(
         .S_AXI_RRESP   (S_AXI_RRESP),
         .S_AXI_RVALID  (S_AXI_RVALID),
         .S_AXI_RREADY  (S_AXI_RREADY),
+        .M_AXI_AWADDR  (M_AXI_AWADDR),
+        .M_AXI_AWLEN   (M_AXI_AWLEN),
+        .M_AXI_AWSIZE  (M_AXI_AWSIZE),
+        .M_AXI_AWBURST (M_AXI_AWBURST),
+        .M_AXI_AWVALID (M_AXI_AWVALID),
+        .M_AXI_AWREADY (M_AXI_AWREADY),
+        .M_AXI_WDATA   (M_AXI_WDATA),
+        .M_AXI_WSTRB   (M_AXI_WSTRB),
+        .M_AXI_WLAST   (M_AXI_WLAST),
+        .M_AXI_WVALID  (M_AXI_WVALID),
+        .M_AXI_WREADY  (M_AXI_WREADY),
+        .M_AXI_BRESP   (M_AXI_BRESP),
+        .M_AXI_BVALID  (M_AXI_BVALID),
+        .M_AXI_BREADY  (M_AXI_BREADY),
         .irq           (irq)
     );
 

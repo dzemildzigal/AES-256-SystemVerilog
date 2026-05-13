@@ -151,7 +151,8 @@ pynq/
 ├── build_bd_gcm_dma.tcl              ← Existing AES DMA benchmark BD
 ├── build_bd_gcm_ping_pong.tcl        ← New phase-1 ping-pong control BD
 ├── test_aes_gcm_dma.py               ← Existing AES DMA benchmark test
-└── test_ping_pong_ctrl.py            ← New ping-pong control-plane smoke test
+├── test_ping_pong_ctrl.py            ← Ping-pong control-plane smoke test
+└── test_ping_pong_writer_ddr.py      ← Deterministic DDR writer smoke/integrity test
 ```
 
 ---

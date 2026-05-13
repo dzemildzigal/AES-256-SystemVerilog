@@ -1,13 +1,13 @@
 # ──────────────────────────────────────────────────────────────
 #  build_bd_gcm_ping_pong.tcl  –  Create PYNQ Z2 block design
-#                                for phase-1 ping-pong AXI-Lite control plane.
+#                                for phase-1 ping-pong control + DDR writer path.
 #
 #  Usage (Vivado Tcl console):
 #    open_project AES_VERILOG.xpr
 #    source pynq/build_bd_gcm_ping_pong.tcl
 #
 #  This first implementation slice builds and validates map0 control logic.
-#  DDR frame-writer path integration is added in the next implementation slice.
+#  This version keeps map0 control logic and adds deterministic DDR write path.
 # ──────────────────────────────────────────────────────────────
 
 set PP_MODULE  "AXI_PingPong_Ctrl_wrapper"
@@ -84,6 +84,7 @@ if {[llength $pynq_parts] > 0} {
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 ps7
 set_property -dict [list \
     CONFIG.PCW_USE_M_AXI_GP0 {1} \
+    CONFIG.PCW_USE_S_AXI_HP0 {1} \
     CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100} \
     CONFIG.PCW_USE_FABRIC_INTERRUPT {0} \
 ] [get_bd_cells ps7]
@@ -112,21 +113,129 @@ update_compile_order -fileset sources_1
 create_bd_cell -type module -reference $PP_MODULE $PP_INST
 
 # ── 5. Run automation + connect AXI-Lite control ───────────
+set pp_s_axi_path "/${PP_INST}/S_AXI"
+if {[llength [get_bd_intf_pins -quiet $pp_s_axi_path]] == 0} {
+    set pp_s_axi_path "/${PP_INST}/s_axi"
+}
+set pp_s_axi_pin [get_bd_intf_pins -quiet $pp_s_axi_path]
+if {[llength $pp_s_axi_pin] == 0} {
+    error "Unable to resolve AXI-Lite slave interface for $PP_INST"
+}
+
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 \
     -config {make_external "FIXED_IO, DDR" Master "Disable" Slave "Disable"} \
     [get_bd_cells ps7]
 
-apply_bd_automation -rule xilinx.com:bd_rule:axi4 \
-    -config {
-        Clk_master {/ps7/FCLK_CLK0 (100 MHz)}
-        Clk_slave  {Auto}
-        Clk_xbar   {Auto}
-        Master     {/ps7/M_AXI_GP0}
-        Slave      {/$PP_INST/s_axi}
-        ddr_seg    {Auto}
-        intc_ip    {New AXI Interconnect}
-        master_apm {0}
-    } [get_bd_intf_pins $PP_INST/s_axi]
+set ps_fclk0_pin       [get_bd_pins ps7/FCLK_CLK0]
+set ps_fclk_resetn_pin [get_bd_pins ps7/FCLK_RESET0_N]
+
+set axi4_cfg [list \
+    Clk_master {/ps7/FCLK_CLK0 (100 MHz)} \
+    Clk_slave  {Auto} \
+    Clk_xbar   {Auto} \
+    Master     {/ps7/M_AXI_GP0} \
+    Slave      $pp_s_axi_path \
+    ddr_seg    {Auto} \
+    intc_ip    {New AXI Interconnect} \
+    master_apm {0} \
+]
+
+if {[catch {
+    apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config $axi4_cfg $pp_s_axi_pin
+} axi_auto_err]} {
+    puts "WARNING: AXI automation for $pp_s_axi_path failed: $axi_auto_err"
+    puts "WARNING: Falling back to explicit GP0 control interconnect wiring."
+
+    set ctrl_ic_name "gp0_ctrl_ic"
+    if {[llength [get_bd_cells -quiet $ctrl_ic_name]] == 0} {
+        create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 $ctrl_ic_name
+        set_property -dict [list \
+            CONFIG.NUM_MI {1} \
+            CONFIG.NUM_SI {1} \
+        ] [get_bd_cells $ctrl_ic_name]
+    }
+
+    connect_bd_intf_net [get_bd_intf_pins ps7/M_AXI_GP0] [get_bd_intf_pins ${ctrl_ic_name}/S00_AXI]
+    connect_bd_intf_net [get_bd_intf_pins ${ctrl_ic_name}/M00_AXI] $pp_s_axi_pin
+
+    foreach p [list \
+        [get_bd_pins ${ctrl_ic_name}/ACLK] \
+        [get_bd_pins ${ctrl_ic_name}/S00_ACLK] \
+        [get_bd_pins ${ctrl_ic_name}/M00_ACLK] \
+    ] {
+        if {[llength [get_bd_nets -quiet -of_objects $p]] == 0} {
+            connect_bd_net $ps_fclk0_pin $p
+        }
+    }
+
+    foreach p [list \
+        [get_bd_pins ${ctrl_ic_name}/ARESETN] \
+        [get_bd_pins ${ctrl_ic_name}/S00_ARESETN] \
+        [get_bd_pins ${ctrl_ic_name}/M00_ARESETN] \
+    ] {
+        if {[llength [get_bd_nets -quiet -of_objects $p]] == 0} {
+            connect_bd_net $ps_fclk_resetn_pin $p
+        }
+    }
+
+    set pp_aclk_pin [get_bd_pins -quiet ${PP_INST}/S_AXI_ACLK]
+    if {[llength $pp_aclk_pin] == 0} {
+        set pp_aclk_pin [get_bd_pins ${PP_INST}/s_axi_aclk]
+    }
+    if {[llength [get_bd_nets -quiet -of_objects $pp_aclk_pin]] == 0} {
+        connect_bd_net $ps_fclk0_pin $pp_aclk_pin
+    }
+
+    set pp_aresetn_pin [get_bd_pins -quiet ${PP_INST}/S_AXI_ARESETN]
+    if {[llength $pp_aresetn_pin] == 0} {
+        set pp_aresetn_pin [get_bd_pins ${PP_INST}/s_axi_aresetn]
+    }
+    if {[llength [get_bd_nets -quiet -of_objects $pp_aresetn_pin]] == 0} {
+        connect_bd_net $ps_fclk_resetn_pin $pp_aresetn_pin
+    }
+}
+
+# DDR write path: $PP_INST/M_AXI -> hp0_mem_ic -> ps7/S_AXI_HP0
+set pp_m_axi_pin [get_bd_intf_pins -quiet $PP_INST/m_axi]
+if {[llength $pp_m_axi_pin] == 0} {
+    set pp_m_axi_pin [get_bd_intf_pins $PP_INST/M_AXI]
+}
+
+create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 hp0_mem_ic
+set_property -dict [list \
+    CONFIG.NUM_MI {1} \
+    CONFIG.NUM_SI {1} \
+] [get_bd_cells hp0_mem_ic]
+
+connect_bd_intf_net $pp_m_axi_pin [get_bd_intf_pins hp0_mem_ic/S00_AXI]
+connect_bd_intf_net [get_bd_intf_pins hp0_mem_ic/M00_AXI] [get_bd_intf_pins ps7/S_AXI_HP0]
+
+set ps_hp0_aclk_pin [get_bd_pins ps7/S_AXI_HP0_ACLK]
+if {[llength [get_bd_nets -quiet -of_objects $ps_hp0_aclk_pin]] == 0} {
+    connect_bd_net $ps_fclk0_pin $ps_hp0_aclk_pin
+}
+
+foreach p [list \
+    [get_bd_pins hp0_mem_ic/ACLK] \
+    [get_bd_pins hp0_mem_ic/S00_ACLK] \
+    [get_bd_pins hp0_mem_ic/M00_ACLK] \
+] {
+    if {[llength [get_bd_nets -quiet -of_objects $p]] == 0} {
+        connect_bd_net $ps_fclk0_pin $p
+    }
+}
+
+foreach p [list \
+    [get_bd_pins hp0_mem_ic/ARESETN] \
+    [get_bd_pins hp0_mem_ic/S00_ARESETN] \
+    [get_bd_pins hp0_mem_ic/M00_ARESETN] \
+] {
+    if {[llength [get_bd_nets -quiet -of_objects $p]] == 0} {
+        connect_bd_net $ps_fclk_resetn_pin $p
+    }
+}
+
+assign_bd_address
 
 # ── 6. Validate and save ─────────────────────────────────────
 regenerate_bd_layout
