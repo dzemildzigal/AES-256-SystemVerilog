@@ -150,11 +150,13 @@ AES_VERILOG.srcs/sources_1/new/
 pynq/
 ├── build_bd_gcm_dma.tcl              ← Existing AES DMA benchmark BD
 ├── build_bd_gcm_ping_pong.tcl        ← Ping-pong BD with AES stream source + MM2S DMA
+├── build_bd_hdmi_gcm_ping_pong.tcl   ← HDMI-round scaffold BD script (isolated name, TODO HDMI IP wiring)
 ├── preflight_allocator_test.py       ← CMA allocator preflight for stream-test stability
 ├── test_aes_gcm_dma.py               ← Existing AES DMA benchmark test
 ├── test_ping_pong_ctrl.py            ← Ping-pong control-plane smoke test
 ├── test_ping_pong_writer_ddr.py      ← Deterministic DDR writer smoke/integrity test
-└── test_ping_pong_writer_aes_stream.py ← AES stream -> DDR writer vector test
+├── test_ping_pong_writer_aes_stream.py ← AES stream -> DDR writer vector test
+└── test_ping_pong_ps_decrypt_hdmi_out.py ← DDR ciphertext -> PS decrypt -> optional HDMI out render
 ```
 
 ---
