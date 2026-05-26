@@ -1,5 +1,22 @@
 # AES-256 GCM Hardware Accelerator
 
+## Repository Scope (May 2026 Reset)
+
+This repository now has a single responsibility: reusable AES-256-GCM hardware IP.
+
+Included here:
+- AES/GCM RTL cores and wrappers
+- Core Vivado build scripts for AES overlays
+- Core correctness and performance validation
+
+Explicitly out of scope:
+- HDMI/video ingest and output pipelines
+- Ping-pong frame transport controllers
+- PS Ethernet streaming runtime
+- PC decrypt/display applications
+
+Those system-integration responsibilities live in OS-VideoSDR.
+
 A fully pipelined AES-256-GCM encryption core implemented in SystemVerilog, running on the **Zynq-7020 FPGA** (PYNQ-Z2 board). Plaintext enters over DMA, ciphertext and authentication tag come back, all at hardware speed.
 
 ---
@@ -131,11 +148,6 @@ On this specific board (Zynq-7020, HP0 only), the memory wall is the fundamental
 
 ## Project File Map
 
-Planning and handoff docs:
-
-- `pynq/ring_integration_blueprint.md`
-- `pynq/ping_pong_frame_contract.md` (phase-1 two-buffer path for 10-15 fps bring-up)
-
 ```text
 AES_VERILOG.srcs/sources_1/new/
 ├── GcmMode.sv                        ← Top-level session scheduler
@@ -144,19 +156,14 @@ AES_VERILOG.srcs/sources_1/new/
 ├── KeyExpansion.sv                   ← AES-256 key schedule (4 words/cycle)
 ├── EncryptPipelined.sv               ← 15-stage AES-256 encrypt pipeline
 ├── AXI_AES_GCM_Stream.sv             ← AXI4-Lite + AXI4-Stream wrapper + CT FIFO
-├── AXI_PingPong_Ctrl.sv              ← Ping-pong control + DDR writer (deterministic/AXIS source)
-└── AXI_PingPong_Ctrl_wrapper.v       ← Verilog module-reference wrapper
+└── AXI_AES_GCM_Stream_wrapper.v      ← Verilog module-reference wrapper
 
 pynq/
 ├── build_bd_gcm_dma.tcl              ← Existing AES DMA benchmark BD
-├── build_bd_gcm_ping_pong.tcl        ← Ping-pong BD with AES stream source + MM2S DMA
-├── build_bd_hdmi_gcm_ping_pong.tcl   ← HDMI-round scaffold BD script (isolated name, TODO HDMI IP wiring)
-├── preflight_allocator_test.py       ← CMA allocator preflight for stream-test stability
 ├── test_aes_gcm_dma.py               ← Existing AES DMA benchmark test
-├── test_ping_pong_ctrl.py            ← Ping-pong control-plane smoke test
-├── test_ping_pong_writer_ddr.py      ← Deterministic DDR writer smoke/integrity test
-├── test_ping_pong_writer_aes_stream.py ← AES stream -> DDR writer vector test
-└── test_ping_pong_ps_decrypt_hdmi_out.py ← DDR ciphertext -> PS decrypt -> optional HDMI out render
+├── test_aes_gcm.py                   ← AES-GCM correctness vectors
+├── test_aes_ctr.py                   ← AES-CTR correctness vectors
+└── test_aes.py                       ← core smoke tests
 ```
 
 ---
@@ -198,45 +205,6 @@ Expected output at the end:
 ```
 ALL TESTS PASSED - native byte order correct; AES-256 GCM DMA path is operational on FPGA
 ```
-
----
-
-## PYNQ Stability Notes (CMA Allocator)
-
-### Symptom
-
-On some PYNQ images, the board may freeze during stream-test bring-up right after:
-
-```text
-Allocating DDR buffers...
-```
-
-### Root Cause (Observed)
-
-The freeze is not in AES or DMA logic. It is an allocator/CMA edge case triggered by tiny contiguous allocations after overlay load.
-
-### Current Mitigation
-
-`test_ping_pong_writer_aes_stream.py` now uses padded allocations (larger than payload) and limits DMA transfer length explicitly to the real payload bytes.
-
-### Preflight Check (Recommended)
-
-Run this before stream tests:
-
-```bash
-timeout -k 5 45s python3 -u preflight_allocator_test.py
-```
-
-If your board keeps repo folder structure on target, run:
-
-```bash
-timeout -k 5 45s python3 -u pynq/preflight_allocator_test.py
-```
-
-Interpretation:
-
-- `PREFLIGHT PASS` means allocator behavior is stable for the current session.
-- `PREFLIGHT WARNING` means tiny-allocation path appears risky; keep padded allocations and avoid tiny CMA buffers.
 
 ---
 
