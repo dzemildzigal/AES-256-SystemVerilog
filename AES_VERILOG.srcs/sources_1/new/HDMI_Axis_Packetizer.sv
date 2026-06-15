@@ -1,8 +1,4 @@
 module HDMI_Axis_Packetizer #(
-    parameter int unsigned SESSION_ID = 32'h0000_0001,
-    parameter int unsigned STREAM_ID = 16'h0001,
-    parameter int unsigned PAYLOAD_TYPE = 8'd1,
-    parameter int unsigned KEY_ID = 8'd0,
     parameter int unsigned MAX_PAYLOAD_BYTES = 1200
 ) (
     input  logic         aclk,
@@ -13,6 +9,14 @@ module HDMI_Axis_Packetizer #(
     output logic         s_axis_video_tready,
     input  logic         s_axis_video_tlast,
     input  logic         s_axis_video_tuser,
+
+    input  logic [31:0]  cfg_session_id,
+    input  logic [15:0]  cfg_stream_id,
+    input  logic [7:0]   cfg_payload_type,
+    input  logic [7:0]   cfg_key_id,
+    input  logic [15:0]  cfg_payload_bytes,
+    input  logic [63:0]  cfg_nonce_counter,
+    input  logic         cfg_enable,
 
     output logic [127:0] m_axis_pkt_tdata,
     output logic [15:0]  m_axis_pkt_tkeep,
@@ -37,7 +41,6 @@ module HDMI_Axis_Packetizer #(
     logic [10:0]  payload_idx;
     logic [31:0]  frame_id;
     logic [15:0]  segment_id;
-    logic [63:0]  nonce_counter;
     logic         packet_started;
     logic         saw_frame_start;
 
@@ -51,8 +54,12 @@ module HDMI_Axis_Packetizer #(
 
     function automatic logic [7:0] header_byte(
         input logic [7:0] idx,
+        input logic [31:0] session_id,
+        input logic [15:0] stream_id,
         input logic [31:0] f_id,
         input logic [15:0] s_id,
+        input logic [7:0] payload_type,
+        input logic [7:0] key_id,
         input logic [63:0] nonce,
         input logic [15:0] payload_len
     );
@@ -64,12 +71,12 @@ module HDMI_Axis_Packetizer #(
                 8'd1:  header_byte = MAGIC[7:0];
                 8'd2:  header_byte = VERSION;
                 8'd3:  header_byte = 8'd0;
-                8'd4:  header_byte = SESSION_ID[31:24];
-                8'd5:  header_byte = SESSION_ID[23:16];
-                8'd6:  header_byte = SESSION_ID[15:8];
-                8'd7:  header_byte = SESSION_ID[7:0];
-                8'd8:  header_byte = STREAM_ID[15:8];
-                8'd9:  header_byte = STREAM_ID[7:0];
+                8'd4:  header_byte = session_id[31:24];
+                8'd5:  header_byte = session_id[23:16];
+                8'd6:  header_byte = session_id[15:8];
+                8'd7:  header_byte = session_id[7:0];
+                8'd8:  header_byte = stream_id[15:8];
+                8'd9:  header_byte = stream_id[7:0];
                 8'd10: header_byte = f_id[31:24];
                 8'd11: header_byte = f_id[23:16];
                 8'd12: header_byte = f_id[15:8];
@@ -86,8 +93,8 @@ module HDMI_Axis_Packetizer #(
                 8'd23: header_byte = ts[23:16];
                 8'd24: header_byte = ts[15:8];
                 8'd25: header_byte = ts[7:0];
-                8'd26: header_byte = PAYLOAD_TYPE[7:0];
-                8'd27: header_byte = KEY_ID[7:0];
+                8'd26: header_byte = payload_type;
+                8'd27: header_byte = key_id;
                 8'd28: header_byte = payload_len[15:8];
                 8'd29: header_byte = payload_len[7:0];
                 8'd30: header_byte = nonce[63:56];
@@ -118,7 +125,6 @@ module HDMI_Axis_Packetizer #(
             payload_idx         <= '0;
             frame_id            <= '0;
             segment_id          <= '0;
-            nonce_counter       <= '0;
             packet_started      <= 1'b0;
             saw_frame_start     <= 1'b0;
             pixel_buf           <= '0;
@@ -147,7 +153,17 @@ module HDMI_Axis_Packetizer #(
             if (!m_axis_pkt_tvalid) begin
                 if (state == ST_HEADER) begin
                     emit_valid = 1'b1;
-                    emit_byte  = header_byte(header_idx, frame_id, segment_id, nonce_counter, MAX_PAYLOAD_BYTES[15:0]);
+                    emit_byte  = header_byte(
+                        header_idx,
+                        cfg_session_id,
+                        cfg_stream_id,
+                        frame_id,
+                        segment_id,
+                        cfg_payload_type,
+                        cfg_key_id,
+                        cfg_nonce_counter,
+                        (cfg_payload_bytes == 16'd0) ? MAX_PAYLOAD_BYTES[15:0] : cfg_payload_bytes
+                    );
                     if (header_idx == HEADER_BYTES-1) begin
                         state      <= ST_PAYLOAD;
                         header_idx <= '0;
@@ -179,11 +195,10 @@ module HDMI_Axis_Packetizer #(
                             pixel_byte_idx <= pixel_byte_idx + 1'b1;
                         end
 
-                        if (payload_idx == MAX_PAYLOAD_BYTES-1) begin
+                        if (payload_idx == ((cfg_payload_bytes == 16'd0) ? MAX_PAYLOAD_BYTES[15:0] : cfg_payload_bytes)-1) begin
                             emit_last   = 1'b1;
                             state       <= ST_HEADER;
                             payload_idx <= '0;
-                            nonce_counter <= nonce_counter + 1'b1;
 
                             if (saw_frame_start) begin
                                 if (packet_started) begin
@@ -224,6 +239,6 @@ module HDMI_Axis_Packetizer #(
         end
     end
 
-    assign s_axis_video_tready = (state == ST_PAYLOAD) && !pixel_valid && !m_axis_pkt_tvalid;
+    assign s_axis_video_tready = cfg_enable && (state == ST_PAYLOAD) && !pixel_valid && !m_axis_pkt_tvalid;
 
 endmodule

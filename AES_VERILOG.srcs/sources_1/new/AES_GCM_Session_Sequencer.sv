@@ -1,0 +1,564 @@
+module AES_GCM_Session_Sequencer #(
+    parameter int unsigned C_AXI_ADDR_WIDTH = 8,
+    parameter int unsigned C_AXI_DATA_WIDTH = 32,
+    parameter logic [31:0] DEFAULT_SESSION_ID = 32'h0000_0001,
+    parameter logic [15:0] DEFAULT_STREAM_ID = 16'h0001,
+    parameter logic [7:0]  DEFAULT_PAYLOAD_TYPE = 8'd1,
+    parameter logic [7:0]  DEFAULT_KEY_ID = 8'd1,
+    parameter logic [31:0] DEFAULT_NONCE_DOMAIN = 32'h0000_0001,
+    parameter logic [63:0] DEFAULT_NONCE_SEED = 64'd1,
+    parameter logic [15:0] DEFAULT_PAYLOAD_BYTES = 16'd1200,
+    parameter logic [15:0] HEADER_BYTES = 16'd40
+) (
+    input  logic         aclk,
+    input  logic         aresetn,
+
+    input  logic [127:0] s_axis_tdata,
+    input  logic [15:0]  s_axis_tkeep,
+    input  logic         s_axis_tvalid,
+    output logic         s_axis_tready,
+    input  logic         s_axis_tlast,
+
+    output logic [127:0] m_axis_tdata,
+    output logic [15:0]  m_axis_tkeep,
+    output logic         m_axis_tvalid,
+    input  logic         m_axis_tready,
+    output logic         m_axis_tlast,
+
+    // AXI-Lite slave for PS configuration.
+    input  logic [C_AXI_ADDR_WIDTH-1:0] S_AXI_AWADDR,
+    input  logic [2:0]                  S_AXI_AWPROT,
+    input  logic                        S_AXI_AWVALID,
+    output logic                        S_AXI_AWREADY,
+    input  logic [C_AXI_DATA_WIDTH-1:0] S_AXI_WDATA,
+    input  logic [3:0]                  S_AXI_WSTRB,
+    input  logic                        S_AXI_WVALID,
+    output logic                        S_AXI_WREADY,
+    output logic [1:0]                  S_AXI_BRESP,
+    output logic                        S_AXI_BVALID,
+    input  logic                        S_AXI_BREADY,
+    input  logic [C_AXI_ADDR_WIDTH-1:0] S_AXI_ARADDR,
+    input  logic [2:0]                  S_AXI_ARPROT,
+    input  logic                        S_AXI_ARVALID,
+    output logic                        S_AXI_ARREADY,
+    output logic [C_AXI_DATA_WIDTH-1:0] S_AXI_RDATA,
+    output logic [1:0]                  S_AXI_RRESP,
+    output logic                        S_AXI_RVALID,
+    input  logic                        S_AXI_RREADY,
+
+    // AXI-Lite master to aes_gcm_0/S_AXI.
+    output logic [C_AXI_ADDR_WIDTH-1:0] M_AXI_AWADDR,
+    output logic [2:0]                  M_AXI_AWPROT,
+    output logic                        M_AXI_AWVALID,
+    input  logic                        M_AXI_AWREADY,
+    output logic [C_AXI_DATA_WIDTH-1:0] M_AXI_WDATA,
+    output logic [3:0]                  M_AXI_WSTRB,
+    output logic                        M_AXI_WVALID,
+    input  logic                        M_AXI_WREADY,
+    input  logic [1:0]                  M_AXI_BRESP,
+    input  logic                        M_AXI_BVALID,
+    output logic                        M_AXI_BREADY,
+    output logic [C_AXI_ADDR_WIDTH-1:0] M_AXI_ARADDR,
+    output logic [2:0]                  M_AXI_ARPROT,
+    output logic                        M_AXI_ARVALID,
+    input  logic                        M_AXI_ARREADY,
+    input  logic [C_AXI_DATA_WIDTH-1:0] M_AXI_RDATA,
+    input  logic [1:0]                  M_AXI_RRESP,
+    input  logic                        M_AXI_RVALID,
+    output logic                        M_AXI_RREADY,
+
+    // Runtime config outputs to packetizer.
+    output logic [31:0] cfg_session_id,
+    output logic [15:0] cfg_stream_id,
+    output logic [7:0]  cfg_payload_type,
+    output logic [7:0]  cfg_key_id,
+    output logic [15:0] cfg_payload_bytes,
+    output logic [63:0] cfg_nonce_counter,
+    output logic        cfg_enable,
+
+    output logic [63:0] nonce_counter_out,
+    output logic        seq_busy
+);
+
+    // AES register addresses.
+    localparam logic [7:0] AES_REG_CTRL        = 8'h00;
+    localparam logic [7:0] AES_REG_STATUS      = 8'h04;
+    localparam logic [7:0] AES_REG_KEY0        = 8'h08;
+    localparam logic [7:0] AES_REG_NONCE0      = 8'h28;
+    localparam logic [7:0] AES_REG_NONCE1      = 8'h2C;
+    localparam logic [7:0] AES_REG_NONCE2      = 8'h30;
+    localparam logic [7:0] AES_REG_AAD_LEN_HI  = 8'h34;
+    localparam logic [7:0] AES_REG_AAD_LEN_LO  = 8'h38;
+    localparam logic [7:0] AES_REG_PT_LEN_HI   = 8'h3C;
+    localparam logic [7:0] AES_REG_PT_LEN_LO   = 8'h40;
+
+    // Sequencer AXI-Lite register map.
+    localparam logic [7:0] REG_CTRL          = 8'h00;
+    localparam logic [7:0] REG_STATUS        = 8'h04;
+    localparam logic [7:0] REG_SESSION_ID    = 8'h08;
+    localparam logic [7:0] REG_STREAM_PAYLOAD= 8'h0C;
+    localparam logic [7:0] REG_NONCE_DOMAIN  = 8'h10;
+    localparam logic [7:0] REG_NONCE_SEED_HI = 8'h14;
+    localparam logic [7:0] REG_NONCE_SEED_LO = 8'h18;
+    localparam logic [7:0] REG_PAYLOAD_BYTES = 8'h1C;
+    localparam logic [7:0] REG_KEY0          = 8'h20;
+    localparam logic [7:0] REG_KEY1          = 8'h24;
+    localparam logic [7:0] REG_KEY2          = 8'h28;
+    localparam logic [7:0] REG_KEY3          = 8'h2C;
+    localparam logic [7:0] REG_KEY4          = 8'h30;
+    localparam logic [7:0] REG_KEY5          = 8'h34;
+    localparam logic [7:0] REG_KEY6          = 8'h38;
+    localparam logic [7:0] REG_KEY7          = 8'h3C;
+    localparam logic [7:0] REG_NONCE_CUR_HI  = 8'h40;
+    localparam logic [7:0] REG_NONCE_CUR_LO  = 8'h44;
+
+    // Sequencer control bits.
+    localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
+    localparam logic [31:0] CTRL_LOAD_KEY_REQ    = 32'h0000_0002;
+    localparam logic [31:0] CTRL_APPLY_NONCE_SEED= 32'h0000_0004;
+    localparam logic [31:0] CTRL_FORCE_KEY_DIRTY = 32'h0000_0008;
+
+    // AES CTRL bits.
+    localparam logic [31:0] AES_CTRL_LOAD_KEY     = 32'h0000_0002;
+    localparam logic [31:0] AES_CTRL_START_SESSION= 32'h0000_0004;
+    localparam logic [31:0] AES_CTRL_SET_STREAM   = 32'h0000_0080;
+
+    // AES STATUS bits.
+    localparam logic [31:0] AES_STATUS_KEYS_READY = 32'h0000_000F;
+    localparam logic [31:0] AES_STATUS_SESSION_RDY= 32'h0000_0010;
+    localparam logic [31:0] AES_STATUS_H_VALID    = 32'h0000_0100;
+
+    typedef enum logic [4:0] {
+        ST_IDLE            = 5'd0,
+        ST_W_KEY0          = 5'd1,
+        ST_W_KEY1          = 5'd2,
+        ST_W_KEY2          = 5'd3,
+        ST_W_KEY3          = 5'd4,
+        ST_W_KEY4          = 5'd5,
+        ST_W_KEY5          = 5'd6,
+        ST_W_KEY6          = 5'd7,
+        ST_W_KEY7          = 5'd8,
+        ST_W_LOAD_KEY      = 5'd9,
+        ST_POLL_KEYS       = 5'd10,
+        ST_W_NONCE0        = 5'd11,
+        ST_W_NONCE1        = 5'd12,
+        ST_W_NONCE2        = 5'd13,
+        ST_W_AAD_HI        = 5'd14,
+        ST_W_AAD_LO        = 5'd15,
+        ST_W_PT_HI         = 5'd16,
+        ST_W_PT_LO         = 5'd17,
+        ST_W_SET_STREAM    = 5'd18,
+        ST_W_START_SESS    = 5'd19,
+        ST_POLL_SESSION    = 5'd20,
+        ST_PASS            = 5'd21
+    } state_t;
+
+    state_t state;
+    logic [63:0] nonce_ctr;
+
+    logic [31:0] reg_ctrl;
+    logic [31:0] reg_session_id;
+    logic [15:0] reg_stream_id;
+    logic [7:0]  reg_payload_type;
+    logic [7:0]  reg_key_id;
+    logic [31:0] reg_nonce_domain;
+    logic [63:0] reg_nonce_seed;
+    logic [15:0] reg_payload_bytes;
+    logic [31:0] reg_key_word [0:7];
+    logic        key_dirty;
+
+    logic [31:0] aes_status_last;
+
+    logic slv_aw_seen;
+    logic [C_AXI_ADDR_WIDTH-1:0] slv_awaddr;
+
+    logic mst_wr_pending;
+    logic mst_wr_done;
+    logic [C_AXI_ADDR_WIDTH-1:0] mst_wr_addr;
+    logic [C_AXI_DATA_WIDTH-1:0] mst_wr_data;
+    logic mst_wr_launch;
+
+    logic mst_rd_pending;
+    logic mst_rd_done;
+
+    logic s_axi_wr_fire;
+    logic s_axi_wr_ctrl;
+    logic s_axi_wr_key;
+    logic req_apply_nonce_seed;
+    logic req_key_dirty;
+
+    assign nonce_counter_out = nonce_ctr;
+    assign cfg_session_id = reg_session_id;
+    assign cfg_stream_id = reg_stream_id;
+    assign cfg_payload_type = reg_payload_type;
+    assign cfg_key_id = reg_key_id;
+    assign cfg_payload_bytes = reg_payload_bytes;
+    assign cfg_nonce_counter = nonce_ctr;
+    assign cfg_enable = reg_ctrl[0];
+    assign seq_busy = (state != ST_IDLE) && (state != ST_PASS);
+
+    assign s_axi_wr_fire = S_AXI_WREADY && S_AXI_WVALID;
+    assign s_axi_wr_ctrl = s_axi_wr_fire && (slv_awaddr[7:0] == REG_CTRL);
+    assign s_axi_wr_key  = s_axi_wr_fire && (slv_awaddr[7:0] >= REG_KEY0) && (slv_awaddr[7:0] <= REG_KEY7);
+    assign req_apply_nonce_seed = s_axi_wr_ctrl && ((S_AXI_WDATA & CTRL_APPLY_NONCE_SEED) != 32'd0);
+    assign req_key_dirty =
+        (s_axi_wr_ctrl && (((S_AXI_WDATA & CTRL_FORCE_KEY_DIRTY) != 32'd0) || ((S_AXI_WDATA & CTRL_LOAD_KEY_REQ) != 32'd0))) ||
+        s_axi_wr_key;
+
+    // Pass-through: only when in ST_PASS or ST_WAIT_LAST
+    assign m_axis_tdata  = s_axis_tdata;
+    assign m_axis_tkeep  = s_axis_tkeep;
+    assign m_axis_tlast  = s_axis_tlast;
+    assign m_axis_tvalid = (state == ST_PASS) ? s_axis_tvalid : 1'b0;
+    assign s_axis_tready = (state == ST_PASS) ? m_axis_tready : 1'b0;
+
+    // AXI-Lite slave: PS configuration path.
+    always_ff @(posedge aclk) begin
+        if (!aresetn) begin
+            slv_aw_seen       <= 1'b0;
+            slv_awaddr        <= '0;
+            S_AXI_AWREADY     <= 1'b1;
+            S_AXI_WREADY      <= 1'b0;
+            S_AXI_BRESP       <= 2'b00;
+            S_AXI_BVALID      <= 1'b0;
+            S_AXI_ARREADY     <= 1'b1;
+            S_AXI_RRESP       <= 2'b00;
+            S_AXI_RVALID      <= 1'b0;
+            S_AXI_RDATA       <= '0;
+
+            reg_ctrl          <= CTRL_ENABLE;
+            reg_session_id    <= DEFAULT_SESSION_ID;
+            reg_stream_id     <= DEFAULT_STREAM_ID;
+            reg_payload_type  <= DEFAULT_PAYLOAD_TYPE;
+            reg_key_id        <= DEFAULT_KEY_ID;
+            reg_nonce_domain  <= DEFAULT_NONCE_DOMAIN;
+            reg_nonce_seed    <= DEFAULT_NONCE_SEED;
+            reg_payload_bytes <= DEFAULT_PAYLOAD_BYTES;
+            reg_key_word[0]   <= 32'h00000000;
+            reg_key_word[1]   <= 32'h00000000;
+            reg_key_word[2]   <= 32'h00000000;
+            reg_key_word[3]   <= 32'h00000000;
+            reg_key_word[4]   <= 32'h00000000;
+            reg_key_word[5]   <= 32'h00000000;
+            reg_key_word[6]   <= 32'h00000000;
+            reg_key_word[7]   <= 32'h00000000;
+        end else begin
+            if (S_AXI_AWREADY && S_AXI_AWVALID) begin
+                slv_aw_seen   <= 1'b1;
+                slv_awaddr    <= S_AXI_AWADDR;
+                S_AXI_AWREADY <= 1'b0;
+                S_AXI_WREADY  <= 1'b1;
+            end
+
+            if (S_AXI_WREADY && S_AXI_WVALID) begin
+                case (slv_awaddr[7:0])
+                    REG_CTRL: begin
+                        reg_ctrl[0] <= S_AXI_WDATA[0];
+                    end
+                    REG_SESSION_ID: reg_session_id <= S_AXI_WDATA;
+                    REG_STREAM_PAYLOAD: begin
+                        reg_stream_id    <= S_AXI_WDATA[15:0];
+                        reg_payload_type <= S_AXI_WDATA[23:16];
+                        reg_key_id       <= S_AXI_WDATA[31:24];
+                    end
+                    REG_NONCE_DOMAIN: reg_nonce_domain <= S_AXI_WDATA;
+                    REG_NONCE_SEED_HI: reg_nonce_seed[63:32] <= S_AXI_WDATA;
+                    REG_NONCE_SEED_LO: reg_nonce_seed[31:0] <= S_AXI_WDATA;
+                    REG_PAYLOAD_BYTES: reg_payload_bytes <= (S_AXI_WDATA[15:0] == 16'd0) ? DEFAULT_PAYLOAD_BYTES : S_AXI_WDATA[15:0];
+                    REG_KEY0: reg_key_word[0] <= S_AXI_WDATA;
+                    REG_KEY1: reg_key_word[1] <= S_AXI_WDATA;
+                    REG_KEY2: reg_key_word[2] <= S_AXI_WDATA;
+                    REG_KEY3: reg_key_word[3] <= S_AXI_WDATA;
+                    REG_KEY4: reg_key_word[4] <= S_AXI_WDATA;
+                    REG_KEY5: reg_key_word[5] <= S_AXI_WDATA;
+                    REG_KEY6: reg_key_word[6] <= S_AXI_WDATA;
+                    REG_KEY7: reg_key_word[7] <= S_AXI_WDATA;
+                    default: begin end
+                endcase
+
+                S_AXI_WREADY  <= 1'b0;
+                S_AXI_BVALID  <= 1'b1;
+                S_AXI_AWREADY <= 1'b1;
+                slv_aw_seen   <= 1'b0;
+            end
+
+            if (S_AXI_BVALID && S_AXI_BREADY) begin
+                S_AXI_BVALID <= 1'b0;
+            end
+
+            if (S_AXI_ARREADY && S_AXI_ARVALID) begin
+                case (S_AXI_ARADDR[7:0])
+                    REG_CTRL: S_AXI_RDATA <= reg_ctrl;
+                    REG_STATUS: S_AXI_RDATA <= {
+                        12'd0,
+                        aes_status_last[19:16],
+                        3'd0,
+                        key_dirty,
+                        seq_busy,
+                        cfg_enable,
+                        aes_status_last[12:0]
+                    };
+                    REG_SESSION_ID: S_AXI_RDATA <= reg_session_id;
+                    REG_STREAM_PAYLOAD: S_AXI_RDATA <= {reg_key_id, reg_payload_type, reg_stream_id};
+                    REG_NONCE_DOMAIN: S_AXI_RDATA <= reg_nonce_domain;
+                    REG_NONCE_SEED_HI: S_AXI_RDATA <= reg_nonce_seed[63:32];
+                    REG_NONCE_SEED_LO: S_AXI_RDATA <= reg_nonce_seed[31:0];
+                    REG_PAYLOAD_BYTES: S_AXI_RDATA <= {16'd0, reg_payload_bytes};
+                    REG_KEY0: S_AXI_RDATA <= reg_key_word[0];
+                    REG_KEY1: S_AXI_RDATA <= reg_key_word[1];
+                    REG_KEY2: S_AXI_RDATA <= reg_key_word[2];
+                    REG_KEY3: S_AXI_RDATA <= reg_key_word[3];
+                    REG_KEY4: S_AXI_RDATA <= reg_key_word[4];
+                    REG_KEY5: S_AXI_RDATA <= reg_key_word[5];
+                    REG_KEY6: S_AXI_RDATA <= reg_key_word[6];
+                    REG_KEY7: S_AXI_RDATA <= reg_key_word[7];
+                    REG_NONCE_CUR_HI: S_AXI_RDATA <= nonce_ctr[63:32];
+                    REG_NONCE_CUR_LO: S_AXI_RDATA <= nonce_ctr[31:0];
+                    default: S_AXI_RDATA <= 32'h00000000;
+                endcase
+                S_AXI_RVALID  <= 1'b1;
+                S_AXI_ARREADY <= 1'b0;
+            end
+
+            if (S_AXI_RVALID && S_AXI_RREADY) begin
+                S_AXI_RVALID  <= 1'b0;
+                S_AXI_ARREADY <= 1'b1;
+            end
+        end
+    end
+
+    // AXI-Lite master write channel to AES.
+    always_ff @(posedge aclk) begin
+        if (!aresetn) begin
+            M_AXI_AWADDR    <= '0;
+            M_AXI_AWPROT    <= 3'b000;
+            M_AXI_AWVALID   <= 1'b0;
+            M_AXI_WDATA     <= '0;
+            M_AXI_WSTRB     <= 4'hF;
+            M_AXI_WVALID    <= 1'b0;
+            M_AXI_BREADY    <= 1'b0;
+            mst_wr_pending   <= 1'b0;
+            mst_wr_done      <= 1'b0;
+        end else begin
+            mst_wr_done <= 1'b0;
+            if (mst_wr_launch && !mst_wr_pending) begin
+                M_AXI_AWADDR  <= mst_wr_addr;
+                M_AXI_AWVALID <= 1'b1;
+                M_AXI_WDATA   <= mst_wr_data;
+                M_AXI_WVALID  <= 1'b1;
+                M_AXI_BREADY  <= 1'b1;
+                mst_wr_pending <= 1'b1;
+            end else begin
+                if (M_AXI_AWVALID && M_AXI_AWREADY) M_AXI_AWVALID <= 1'b0;
+                if (M_AXI_WVALID && M_AXI_WREADY)   M_AXI_WVALID <= 1'b0;
+                if (M_AXI_BVALID && M_AXI_BREADY) begin
+                    M_AXI_BREADY  <= 1'b0;
+                    mst_wr_pending <= 1'b0;
+                    mst_wr_done    <= 1'b1;
+                end
+            end
+        end
+    end
+
+    // AXI-Lite master read channel from AES STATUS.
+    always_ff @(posedge aclk) begin
+        if (!aresetn) begin
+            M_AXI_ARADDR    <= AES_REG_STATUS;
+            M_AXI_ARPROT    <= 3'b000;
+            M_AXI_ARVALID   <= 1'b0;
+            M_AXI_RREADY    <= 1'b0;
+            mst_rd_pending  <= 1'b0;
+            mst_rd_done     <= 1'b0;
+        end else begin
+            mst_rd_done <= 1'b0;
+
+            if (!mst_rd_pending && state == ST_POLL_KEYS) begin
+                M_AXI_ARADDR   <= AES_REG_STATUS;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
+            end else if (!mst_rd_pending && state == ST_POLL_SESSION) begin
+                M_AXI_ARADDR   <= AES_REG_STATUS;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
+            end else begin
+                if (M_AXI_ARVALID && M_AXI_ARREADY) begin
+                    M_AXI_ARVALID <= 1'b0;
+                end
+                if (M_AXI_RVALID && M_AXI_RREADY) begin
+                    aes_status_last <= M_AXI_RDATA;
+                    M_AXI_RREADY    <= 1'b0;
+                    mst_rd_pending  <= 1'b0;
+                    mst_rd_done     <= 1'b1;
+                end
+            end
+        end
+    end
+
+    // Main FSM.
+    always_ff @(posedge aclk) begin
+        if (!aresetn) begin
+            state       <= ST_IDLE;
+            nonce_ctr   <= DEFAULT_NONCE_SEED;
+            key_dirty   <= 1'b1;
+            mst_wr_addr <= '0;
+            mst_wr_data <= '0;
+            mst_wr_launch <= 1'b0;
+        end else begin
+            mst_wr_launch <= 1'b0;
+
+            if (req_apply_nonce_seed) begin
+                nonce_ctr <= reg_nonce_seed;
+            end
+            if (req_key_dirty) begin
+                key_dirty <= 1'b1;
+            end
+
+            case (state)
+
+                ST_IDLE: begin
+                    if (!cfg_enable) begin
+                        state <= ST_IDLE;
+                    end else if (key_dirty) begin
+                        state <= ST_W_KEY0;
+                    end else if (s_axis_tvalid) begin
+                        state <= ST_W_NONCE0;
+                    end
+                end
+
+                ST_W_KEY0: begin
+                    mst_wr_addr   <= AES_REG_KEY0;
+                    mst_wr_data   <= reg_key_word[0];
+                    mst_wr_launch <= 1'b1;
+                    state         <= ST_W_KEY1;
+                end
+
+                ST_W_KEY1: begin if (mst_wr_done) begin mst_wr_addr <= AES_REG_KEY0 + 8'h04; mst_wr_data <= reg_key_word[1]; mst_wr_launch <= 1'b1; state <= ST_W_KEY2; end end
+                ST_W_KEY2: begin if (mst_wr_done) begin mst_wr_addr <= AES_REG_KEY0 + 8'h08; mst_wr_data <= reg_key_word[2]; mst_wr_launch <= 1'b1; state <= ST_W_KEY3; end end
+                ST_W_KEY3: begin if (mst_wr_done) begin mst_wr_addr <= AES_REG_KEY0 + 8'h0C; mst_wr_data <= reg_key_word[3]; mst_wr_launch <= 1'b1; state <= ST_W_KEY4; end end
+                ST_W_KEY4: begin if (mst_wr_done) begin mst_wr_addr <= AES_REG_KEY0 + 8'h10; mst_wr_data <= reg_key_word[4]; mst_wr_launch <= 1'b1; state <= ST_W_KEY5; end end
+                ST_W_KEY5: begin if (mst_wr_done) begin mst_wr_addr <= AES_REG_KEY0 + 8'h14; mst_wr_data <= reg_key_word[5]; mst_wr_launch <= 1'b1; state <= ST_W_KEY6; end end
+                ST_W_KEY6: begin if (mst_wr_done) begin mst_wr_addr <= AES_REG_KEY0 + 8'h18; mst_wr_data <= reg_key_word[6]; mst_wr_launch <= 1'b1; state <= ST_W_KEY7; end end
+                ST_W_KEY7: begin if (mst_wr_done) begin mst_wr_addr <= AES_REG_KEY0 + 8'h1C; mst_wr_data <= reg_key_word[7]; mst_wr_launch <= 1'b1; state <= ST_W_LOAD_KEY; end end
+
+                ST_W_LOAD_KEY: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_CTRL;
+                        mst_wr_data   <= AES_CTRL_LOAD_KEY;
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_POLL_KEYS;
+                    end
+                end
+
+                ST_POLL_KEYS: begin
+                    if (mst_rd_done) begin
+                        if (((aes_status_last & AES_STATUS_KEYS_READY) == AES_STATUS_KEYS_READY) &&
+                            ((aes_status_last & AES_STATUS_H_VALID) != 32'd0)) begin
+                            key_dirty <= 1'b0;
+                            state <= ST_IDLE;
+                        end
+                    end
+                end
+
+                ST_W_NONCE0: begin
+                    mst_wr_addr   <= AES_REG_NONCE0;
+                    mst_wr_data   <= reg_nonce_domain;
+                    mst_wr_launch <= 1'b1;
+                    state         <= ST_W_NONCE1;
+                end
+
+                ST_W_NONCE1: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_NONCE1;
+                        mst_wr_data   <= nonce_ctr[63:32];
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_W_NONCE2;
+                    end
+                end
+
+                ST_W_NONCE2: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_NONCE2;
+                        mst_wr_data   <= nonce_ctr[31:0];
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_W_AAD_HI;
+                    end
+                end
+
+                ST_W_AAD_HI: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_AAD_LEN_HI;
+                        mst_wr_data   <= 32'd0;
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_W_AAD_LO;
+                    end
+                end
+
+                ST_W_AAD_LO: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_AAD_LEN_LO;
+                        mst_wr_data   <= 32'd0;
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_W_PT_HI;
+                    end
+                end
+
+                ST_W_PT_HI: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_PT_LEN_HI;
+                        mst_wr_data   <= (((HEADER_BYTES + reg_payload_bytes) * 8) >> 32);
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_W_PT_LO;
+                    end
+                end
+
+                ST_W_PT_LO: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_PT_LEN_LO;
+                        mst_wr_data   <= (((HEADER_BYTES + reg_payload_bytes) * 8) & 32'hFFFF_FFFF);
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_W_SET_STREAM;
+                    end
+                end
+
+                ST_W_SET_STREAM: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_CTRL;
+                        mst_wr_data   <= AES_CTRL_SET_STREAM;
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_W_START_SESS;
+                    end
+                end
+
+                ST_W_START_SESS: begin
+                    if (mst_wr_done) begin
+                        mst_wr_addr   <= AES_REG_CTRL;
+                        mst_wr_data   <= AES_CTRL_START_SESSION;
+                        mst_wr_launch <= 1'b1;
+                        state         <= ST_POLL_SESSION;
+                    end
+                end
+
+                ST_POLL_SESSION: begin
+                    if (mst_rd_done) begin
+                        if ((aes_status_last & AES_STATUS_SESSION_RDY) != 32'd0) begin
+                            state <= ST_PASS;
+                        end
+                    end
+                end
+
+                ST_PASS: begin
+                    if (s_axis_tvalid && m_axis_tready && s_axis_tlast) begin
+                        state     <= ST_IDLE;
+                        nonce_ctr <= nonce_ctr + 1'b1;
+                    end
+                end
+
+                default: state <= ST_IDLE;
+
+            endcase
+        end
+    end
+
+endmodule

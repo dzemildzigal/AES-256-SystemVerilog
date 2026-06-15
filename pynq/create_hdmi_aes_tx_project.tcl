@@ -42,6 +42,9 @@ proc resolve_pynq_base_dir {} {
 proc add_hdmi_aes_tx_sources {repo_root} {
     set rtl_dir [file join $repo_root "AES_VERILOG.srcs" "sources_1" "new"]
     set rtl_sources [list \
+        [file join $rtl_dir "AES_GCM_Session_Sequencer_wrapper.v"] \
+        [file join $rtl_dir "AES_GCM_Session_Sequencer.sv"] \
+        [file join $rtl_dir "HDMI_Axis_Packetizer_wrapper.v"] \
         [file join $rtl_dir "HDMI_Axis_Packetizer.sv"] \
         [file join $rtl_dir "AXI_AES_GCM_Stream_wrapper.v"] \
         [file join $rtl_dir "AXI_AES_GCM_Stream.sv"] \
