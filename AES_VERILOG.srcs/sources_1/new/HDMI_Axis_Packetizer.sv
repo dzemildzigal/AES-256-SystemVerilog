@@ -31,8 +31,10 @@ module HDMI_Axis_Packetizer #(
     localparam int unsigned HEADER_BYTES = 40;
 
     typedef enum logic [1:0] {
-        ST_HEADER  = 2'd0,
-        ST_PAYLOAD = 2'd1
+        ST_ARM     = 2'd0,   // ponytail: wait for first real frame (tuser) before packetizing;
+                             // prevents a boot-time session starting with no video (see aresetn block)
+        ST_HEADER  = 2'd1,
+        ST_PAYLOAD = 2'd2
     } state_t;
 
     state_t state;
@@ -84,7 +86,10 @@ module HDMI_Axis_Packetizer #(
                 8'd14: header_byte = s_id[15:8];
                 8'd15: header_byte = s_id[7:0];
                 8'd16: header_byte = 8'd0;
-                8'd17: header_byte = 8'd0;
+                8'd17: header_byte = 8'd1;  // ponytail: segment_count=1 (packet granularity for now).
+                                            // Real per-video-frame segment_count needs a new
+                                            // cfg_segment_count input from the sequencer;
+                                            // deferred until transport/crypto is proven end-to-end.
                 8'd18: header_byte = ts[63:56];
                 8'd19: header_byte = ts[55:48];
                 8'd20: header_byte = ts[47:40];
@@ -120,7 +125,7 @@ module HDMI_Axis_Packetizer #(
         logic         emit_last;
 
         if (!aresetn) begin
-            state               <= ST_HEADER;
+            state               <= ST_ARM;
             header_idx          <= '0;
             payload_idx         <= '0;
             frame_id            <= '0;
@@ -151,7 +156,14 @@ module HDMI_Axis_Packetizer #(
             emit_byte       = 8'd0;
 
             if (!m_axis_pkt_tvalid) begin
-                if (state == ST_HEADER) begin
+                if (state == ST_ARM) begin
+                    if (cfg_enable && s_axis_video_tvalid && s_axis_video_tuser) begin
+                        state <= ST_HEADER;
+                    end
+                    // s_axis_video_tready is 0 here (existing assign only asserts it in
+                    // ST_PAYLOAD), so this beat is only observed, not consumed. It gets
+                    // captured for real once ST_PAYLOAD starts.
+                end else if (state == ST_HEADER) begin
                     emit_valid = 1'b1;
                     emit_byte  = header_byte(
                         header_idx,

@@ -37,7 +37,6 @@ vivado*.backup.log
 *.rpt
 
 # Build outputs
-*.bit
 *.bin
 *.ltx
 *.mmi

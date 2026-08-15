@@ -420,6 +420,11 @@ module AES_GCM_Session_Sequencer #(
                 ST_IDLE: begin
                     if (!cfg_enable) begin
                         state <= ST_IDLE;
+                    end else if (key_dirty && ((aes_status_last & AES_STATUS_KEYS_READY) == AES_STATUS_KEYS_READY)) begin
+                        // Defensive recovery: if software restarted while AES already has a valid
+                        // key schedule, avoid getting stuck re-entering the key-load path forever.
+                        key_dirty <= 1'b0;
+                        state <= ST_IDLE;
                     end else if (key_dirty) begin
                         state <= ST_W_KEY0;
                     end else if (s_axis_tvalid) begin
@@ -453,8 +458,7 @@ module AES_GCM_Session_Sequencer #(
 
                 ST_POLL_KEYS: begin
                     if (mst_rd_done) begin
-                        if (((aes_status_last & AES_STATUS_KEYS_READY) == AES_STATUS_KEYS_READY) &&
-                            ((aes_status_last & AES_STATUS_H_VALID) != 32'd0)) begin
+                        if ((aes_status_last & AES_STATUS_KEYS_READY) == AES_STATUS_KEYS_READY) begin
                             key_dirty <= 1'b0;
                             state <= ST_IDLE;
                         end

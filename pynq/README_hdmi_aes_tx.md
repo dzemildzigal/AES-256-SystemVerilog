@@ -2,6 +2,14 @@
 
 This document is the build contract for the dedicated PYNQ-Z2 HDMI -> AES -> Ethernet TX hardware effort.
 
+**Status note (post-scaffold):** the block design now has the real HDMI chain wired in
+(dvi2rgb -> color_swap -> v_vid_in_axi4s -> CDC FIFO -> `hdmi_packetizer_0` -> `aes_seq_0` ->
+`aes_gcm_0` -> `frame_writer_0`, with IRQs routed to PS7). The "Scope Of This Scaffold" and
+"What The BD Scaffold Creates" sections below describe the *original* placeholder state
+(`pkt_pt_axis_in`) and are kept for history. Do not treat them as the current state; treat
+the build script (`build_bd_hdmi_aes_tx.tcl`) as the source of truth, since it is
+regenerated fresh every time it runs.
+
 The goal of this project is not to mutate the validated `AES_VERILOG.xpr` DMA benchmark path in place. Instead, it bootstraps a separate Vivado project named `HDMI_AES_TX` and a separate block design named `hdmi_aes_tx` so HDMI/video work, packetization work, and timing-closure risk stay isolated from the known-good AES DMA baseline.
 
 ## Scope Of This Scaffold
@@ -43,7 +51,30 @@ The Vivado catalog must also expose these HDMI-relevant IP blocks:
 - `xilinx.com:ip:v_vid_in_axi4s:5.0`
 - `xilinx.com:ip:v_tc:6.2`
 
-## How To Start In Vivado
+## How To Rebuild (recommended: one-shot script)
+
+`pynq/rebuild_hdmi_aes_tx.tcl` does the whole thing: open/create the project, source
+(build) the BD from scratch, run synth+impl+bitgen, and export `hdmi_aes_tx.bit/.hwh` to
+`pynq/output/`. This is the current recommended path, not the manual steps below.
+
+**From the Vivado Tcl console** (interactive, first/most common way to run it):
+
+```tcl
+cd C:/Users/dzemi/Desktop/PROJECTS/AES-256-SystemVerilog
+source pynq/rebuild_hdmi_aes_tx.tcl
+```
+
+**Headless, from a shell, no GUI** (same script, no Vivado window needed):
+
+```bash
+vivado -mode batch -source pynq/rebuild_hdmi_aes_tx.tcl
+```
+
+`PYNQ_Z2_BASE_DIR` is already set inside the script
+(`C:/Users/dzemi/Desktop/PROJECTS/PYNQ/boards/Pynq-Z2/base` on this machine); edit that
+line in the script if the PYNQ board-files checkout ever moves.
+
+## How To Start In Vivado (manual, step-by-step - what the one-shot script runs)
 
 From the `AES-256-SystemVerilog` repository root in Vivado Tcl console:
 
@@ -52,6 +83,10 @@ source pynq/create_hdmi_aes_tx_project.tcl
 set ::env(PYNQ_Z2_BASE_DIR) <path-to-PYNQ>/boards/Pynq-Z2/base
 source pynq/build_bd_hdmi_aes_tx.tcl
 ```
+
+This only builds the BD. It does not run synthesis/implementation/bitgen or export
+artifacts - use the one-shot script above for that, or run `reset_run impl_1;
+launch_runs impl_1 -to_step write_bitstream` manually afterward.
 
 ## What The BD Scaffold Creates
 
