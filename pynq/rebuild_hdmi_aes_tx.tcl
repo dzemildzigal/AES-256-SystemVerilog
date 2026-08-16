@@ -2,8 +2,9 @@
 #  rebuild_hdmi_aes_tx.tcl
 #
 #  One-shot script: create/open the HDMI_AES_TX project, build the
-#  hdmi_aes_tx block design from scratch, build the bitstream, and
-#  export the .bit/.hwh pair to pynq/output/.
+#  hdmi_aes_tx block design from scratch, build the bitstream via the RUN
+#  system (it performs BD output generation + top resolution correctly),
+#  and export the .bit/.hwh pair to pynq/output/.
 #
 #  Run from the Vivado Tcl console:
 #    cd C:/Users/dzemi/Desktop/PROJECTS/AES-256-SystemVerilog
@@ -19,12 +20,20 @@ set ::env(PYNQ_Z2_BASE_DIR) "C:/Users/dzemi/Desktop/PROJECTS/PYNQ/boards/Pynq-Z2
 # 1. Open/create the HDMI_AES_TX project, register local RTL sources.
 source pynq/create_hdmi_aes_tx_project.tcl
 
-# 2. Source the BD design - builds it from scratch every time this runs:
-#    HDMI in -> packetizer -> sequencer -> AES -> DDR writer, wires clocks/
-#    resets/IRQs, validates it, saves it, and sets the wrapper as top.
+# 2. Rebuild the BD from scratch (HDMI in -> packetizer -> sequencer -> AES ->
+#    DDR writer, clocks/resets/IRQs, validate, save, wrapper).
 source pynq/build_bd_hdmi_aes_tx.tcl
 
-# 3. Build the bitstream.
+# 3. Build the bitstream through the run system. Reset BOTH runs so nothing
+#    stale is reused, and disable incremental compilation: a stale incremental
+#    checkpoint from an old wrong-top run (AES_GCM_Session_Sequencer_wrapper.dcp
+#    in utils_1/imports/synth_1) makes the run die instantly at launch.
+catch {reset_run synth_1}
+catch {set_property AUTO_INCREMENTAL_CHECKPOINT 0 [get_runs synth_1]}
+catch {set_property INCREMENTAL_CHECKPOINT {} [get_runs synth_1]}
+catch {set_property AUTO_INCREMENTAL_CHECKPOINT 0 [get_runs impl_1]}
+catch {set_property INCREMENTAL_CHECKPOINT {} [get_runs impl_1]}
+catch {file delete -force "HDMI_AES_TX/HDMI_AES_TX.srcs/utils_1/imports/synth_1"}
 reset_run impl_1
 launch_runs impl_1 -to_step write_bitstream -jobs 16
 wait_on_run impl_1
@@ -35,14 +44,14 @@ report_timing_summary -max_paths 20 -file impl_1_timing_final_bitgen.rpt
 # 4. Export artifacts.
 set outdir "pynq/output"
 file mkdir $outdir
-# Use the known, deterministic run output path instead of
-# [get_property BITSTREAM.FILE [current_design]] - that property comes back
-# empty if current_design isn't pinned to the implemented run at this exact
-# point in the session, even though write_bitstream already succeeded on disk.
 set bit_src [file normalize "HDMI_AES_TX/HDMI_AES_TX.runs/impl_1/hdmi_aes_tx_wrapper.bit"]
-set hwh_src [file normalize "HDMI_AES_TX/HDMI_AES_TX.gen/sources_1/bd/hdmi_aes_tx/hw_handoff/hdmi_aes_tx.hwh"]
 if {![file exists $bit_src]} {
-    error "Bitstream not found at $bit_src - check runme.log in HDMI_AES_TX/HDMI_AES_TX.runs/impl_1 for a write_bitstream failure."
+    set found_bits [glob -nocomplain "HDMI_AES_TX/HDMI_AES_TX.runs/impl_1/*.bit"]
+    error "Expected bitstream not found at $bit_src. Found instead: $found_bits - wrong top module was synthesized. Check runme.log for the top used."
+}
+set hwh_src [file normalize "HDMI_AES_TX/HDMI_AES_TX.gen/sources_1/bd/hdmi_aes_tx/hw_handoff/hdmi_aes_tx.hwh"]
+if {![file exists $hwh_src]} {
+    error "HWH not found at $hwh_src"
 }
 set bit_dst [file normalize "$outdir/hdmi_aes_tx.bit"]
 set hwh_dst [file normalize "$outdir/hdmi_aes_tx.hwh"]

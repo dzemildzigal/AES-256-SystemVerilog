@@ -94,49 +94,34 @@ proc ensure_local_constraint_source {repo_root file_name} {
     }
 }
 
-proc remove_existing_bd {bd_name} {
-    # Resolve against the actual project directory: this script runs from the
-    # repo root, but the project (and its .srcs/.gen trees) live one level
-    # down in HDMI_AES_TX/. Plain relative paths silently miss and leave
-    # stale per-cell BD artifacts behind (the cause of [BD 41-84] stale-pin
-    # errors: Vivado resolves old module-reference definitions from them).
+proc reset_bd_in_place {bd_name} {
+    # Rebuild the BD IN PLACE instead of deleting/recreating the .bd file.
+    # Deleting the .bd and its generated dirs breaks automatic hierarchy
+    # tracking in Vivado 2024.1: the project then has an empty compile order
+    # and silently auto-swaps the top module (filemgmt 20-742), synthesizing a
+    # bare RTL module as top. Keep the project's .bd association intact, strip
+    # the design contents, and rebuild below.
+    #
+    # Only the mref cache is deleted: it caches module-reference port lists,
+    # and a stale copy makes freshly added wrapper ports invisible on the
+    # cells ([BD 41-84]). It is regenerated on demand.
     set _proj_dir [file normalize [get_property DIRECTORY [current_project]]]
-    set bd_src_dir [file normalize [file join $_proj_dir "HDMI_AES_TX.srcs" "sources_1" "bd" ${bd_name}]]
-    set bd_gen_dir [file normalize [file join $_proj_dir "HDMI_AES_TX.gen" "sources_1" "bd" ${bd_name}]]
-    set bd_src_file [file join $bd_src_dir "${bd_name}.bd"]
-    set bd_gen_file [file join $bd_gen_dir "${bd_name}.bd"]
+    set _bd_gen_dir [file normalize [file join $_proj_dir "HDMI_AES_TX.gen" "sources_1" "bd" ${bd_name}]]
+    catch {file delete -force [file join [file dirname $_bd_gen_dir] "mref"]}
 
-    set existing_bd [get_bd_designs -quiet $bd_name]
-    set existing_bd_files [get_files -quiet "*/${bd_name}.bd"]
-
-    set current_bd ""
-    catch {set current_bd [current_bd_design -quiet]}
-    if {$current_bd eq $bd_name} {
-        catch {close_bd_design $current_bd}
+    set _bd_files [get_files -quiet "*/${bd_name}.bd"]
+    if {[llength $_bd_files] > 0} {
+        puts "INFO: resetting existing BD in place: [lindex $_bd_files 0]"
+        open_bd_design [lindex $_bd_files 0]
+        foreach n [get_bd_intf_nets -quiet *]   { catch {delete_bd_objs [get_bd_intf_nets $n]} }
+        foreach n [get_bd_nets -quiet *]        { catch {delete_bd_objs [get_bd_nets $n]} }
+        foreach c [get_bd_cells -quiet *]       { catch {delete_bd_objs [get_bd_cells $c]} }
+        foreach p [get_bd_ports -quiet *]       { catch {delete_bd_objs [get_bd_ports $p]} }
+        foreach p [get_bd_intf_ports -quiet *]  { catch {delete_bd_objs [get_bd_intf_ports $p]} }
+    } else {
+        puts "INFO: creating new BD: $bd_name"
+        create_bd_design $bd_name
     }
-
-    foreach d $existing_bd {
-        catch {close_bd_design $d}
-    }
-
-    if {[llength $existing_bd_files] > 0} {
-        catch {remove_files $existing_bd_files}
-    }
-
-    catch {file delete -force $bd_src_file}
-    catch {file delete -force $bd_gen_file}
-    catch {file delete -force $bd_gen_dir}
-    # Delete the whole BD source dir, not just the .bd: every BD regeneration
-    # appends new numbered per-cell ip/ subdirs (hdmi_aes_tx_<cell>_0_N). These
-    # accumulate stale module-reference artifacts, and Vivado resolves the OLD
-    # module definition from them, so freshly added wrapper ports never appear
-    # on the cells ([BD 41-84]).
-    catch {file delete -force $bd_src_dir}
-    # The mref cache holds generated module-reference definitions (a
-    # component.xml per wrapper with the cached PORT LIST). No other delete
-    # above touches it, and it is the direct source of stale module pins.
-    catch {file delete -force [file join [file dirname $bd_gen_dir] "mref"]}
-    puts "INFO: removed previous BD artifacts: $bd_src_dir $bd_gen_dir"
 }
 
 proc connect_if_unconnected {src dst} {
@@ -201,30 +186,7 @@ if {$pynq_part ne ""} {
     set_property board_part $pynq_part [current_project]
 }
 
-remove_existing_bd $BD_NAME
-
-# Force Vivado to re-analyze the wrapper/module RTL after any edits.
-# remove_files + add_files invalidates the cached module definition that
-# block-design module references use; add_files alone is a no-op when the
-# file is already in the project, and a stale cached definition makes the
-# freshly-created BD cells miss new ports ([BD 41-84] at connect_bd_net).
-foreach _rrfile [list \
-    "AES_VERILOG.srcs/sources_1/new/AES_GCM_Session_Sequencer_wrapper.v" \
-    "AES_VERILOG.srcs/sources_1/new/AES_GCM_Session_Sequencer.sv" \
-    "AES_VERILOG.srcs/sources_1/new/HDMI_Axis_Packetizer_wrapper.v" \
-    "AES_VERILOG.srcs/sources_1/new/HDMI_Axis_Packetizer.sv" \
-    "AES_VERILOG.srcs/sources_1/new/VideoBeatCounter_wrapper.v" \
-    "AES_VERILOG.srcs/sources_1/new/VideoBeatCounter.sv" \
-] {
-    set _rrpath [file normalize [file join $repo_root $_rrfile]]
-    if {[llength [get_files -quiet $_rrpath]] > 0} {
-        remove_files $_rrpath
-    }
-    add_files -norecurse $_rrpath
-}
-update_compile_order -fileset sources_1
-
-create_bd_design $BD_NAME
+reset_bd_in_place $BD_NAME
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 ps7
 set_property -dict [list \
@@ -329,6 +291,14 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_142m
 # while zero AXI4-Stream video beats ever reach the packetizer. Replaces the
 # old permanent hdmi_vidrst_const=0 tie-off, which never reset this IP at all.
 create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_pixelclk
+# proc_sys_reset v5.0 (Vivado 2024.1) defaults C_AUX_RESET_HIGH=1 (active-HIGH,
+# verified in the IP's component.xml). aPixelClkLckd is HIGH while the source is
+# locked, so with the default this block would hold peripheral_reset asserted
+# for as long as a source is connected -> v_vid_in vid_io_in_reset stuck HIGH
+# -> video pipeline permanently dead. Set active-LOW aux so "locked" releases.
+set_property -dict [list \
+    CONFIG.C_AUX_RESET_HIGH {0} \
+] [get_bd_cells rst_pixelclk]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 irq_concat
 set_property CONFIG.NUM_PORTS {3} [get_bd_cells irq_concat]
@@ -415,11 +385,13 @@ connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_enable] [get_bd_pins $PACKETIZER
 connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_video_beat_count]  [get_bd_pins $SEQUENCER_INST/dbg_video_beat_count]
 connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_video_frame_count] [get_bd_pins $SEQUENCER_INST/dbg_video_frame_count]
 
-# Pre-FIFO probe: v_vid_in_axi4s video_out tvalid, counted in its own 142MHz
-# domain. Distinguishes "v_vid_in never produces beats" from "CDC FIFO read
-# side stuck". 64-bit count -> sequencer dbg_prefifo_beats (regs 0x58/0x5C).
-connect_bd_net [get_bd_pins hdmi_axis_cdc_fifo/S_AXIS_tvalid] [get_bd_pins video_beat_counter_0/s_axis_video_tvalid]
-connect_bd_net [get_bd_pins video_beat_counter_0/count] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_beats]
+# NOTE: do NOT tap hdmi_axis_cdc_fifo/S_AXIS_tvalid into a probe here. A BD pin
+# can only sit on one net, so such a tap DISCONNECTS tvalid from the video
+# interface connection and grounds it (BD 41-1271/41-166 warnings), killing
+# the real video path. The packetizer's own counters above are safe (they
+# observe their internal s_axis pins directly). The prefifo probe cell
+# (video_beat_counter_0) remains with its input tied low and reads 0 - left in
+# place to avoid touching sequencer ports again; ignore its register.
 
 if {[llength [get_bd_intf_ports -quiet hdmi_in]] > 0} {
     connect_bd_intf_net [get_bd_intf_ports hdmi_in] [get_bd_intf_pins dvi2rgb_0/TMDS]
@@ -504,10 +476,16 @@ connect_if_unconnected [get_bd_pins rstn_to_rst/Res] [get_bd_pins rst_ps7_142m/e
 connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_ps7_100m/dcm_locked]
 connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_ps7_142m/dcm_locked]
 
-# rst_pixelclk lives in the recovered pixel-clock domain and resets on pixel
-# clock lock acquisition, matching the official PYNQ-Z2 base overlay.
-connect_if_unconnected [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins rst_pixelclk/slowest_sync_clk]
-connect_if_unconnected [get_bd_pins rstn_to_rst/Res] [get_bd_pins rst_pixelclk/ext_reset_in]
+# rst_pixelclk lives in the recovered pixel-clock domain and resets while the
+# pixel clock is NOT locked. proc_sys_reset v5.0 defaults BOTH reset inputs to
+# ACTIVE-HIGH, so:
+#  - ext_reset_in takes rstn_to_rst/Res (the active-high form of
+#    FCLK_RESET0_N). The BD automation had auto-connected the active-LOW
+#    FCLK_RESET0_N directly here, which held the block permanently asserted.
+#  - aux_reset_in takes aPixelClkLckd with C_AUX_RESET_HIGH=0 (set at cell
+#    creation), so "locked" (high) RELEASES the reset instead of asserting it.
+force_connect_bd_net [get_bd_pins rstn_to_rst/Res] [get_bd_pins rst_pixelclk/ext_reset_in]
+force_connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins rst_pixelclk/slowest_sync_clk]
 connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_pixelclk/dcm_locked]
 connect_bd_net [get_bd_pins dvi2rgb_0/aPixelClkLckd] [get_bd_pins rst_pixelclk/aux_reset_in]
 
