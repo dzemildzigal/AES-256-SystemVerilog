@@ -171,6 +171,8 @@ ensure_local_rtl_source $repo_root "AES_GCM_Session_Sequencer_wrapper.v"
 ensure_local_rtl_source $repo_root "AES_GCM_Session_Sequencer.sv"
 ensure_local_rtl_source $repo_root "HDMI_Axis_Packetizer_wrapper.v"
 ensure_local_rtl_source $repo_root "HDMI_Axis_Packetizer.sv"
+ensure_local_rtl_source $repo_root "VideoBeatCounter_wrapper.v"
+ensure_local_rtl_source $repo_root "VideoBeatCounter.sv"
 ensure_local_constraint_source $repo_root "hdmi_aes_tx_pynq_z2.xdc"
 update_compile_order -fileset sources_1
 
@@ -211,6 +213,8 @@ foreach _rrfile [list \
     "AES_VERILOG.srcs/sources_1/new/AES_GCM_Session_Sequencer.sv" \
     "AES_VERILOG.srcs/sources_1/new/HDMI_Axis_Packetizer_wrapper.v" \
     "AES_VERILOG.srcs/sources_1/new/HDMI_Axis_Packetizer.sv" \
+    "AES_VERILOG.srcs/sources_1/new/VideoBeatCounter_wrapper.v" \
+    "AES_VERILOG.srcs/sources_1/new/VideoBeatCounter.sv" \
 ] {
     set _rrpath [file normalize [file join $repo_root $_rrfile]]
     if {[llength [get_files -quiet $_rrpath]] > 0} {
@@ -241,6 +245,7 @@ create_bd_cell -type module -reference $AES_MODULE $AES_INST
 create_bd_cell -type module -reference $WRITER_MODULE $WRITER_INST
 create_bd_cell -type module -reference $PACKETIZER_MODULE $PACKETIZER_INST
 create_bd_cell -type module -reference $SEQUENCER_MODULE $SEQUENCER_INST
+create_bd_cell -type module -reference VideoBeatCounter_wrapper video_beat_counter_0
 
 # Refresh module references from the current RTL on disk. BD module refs
 # cache the analyzed port list; without this, ports added to the wrappers
@@ -410,6 +415,12 @@ connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_enable] [get_bd_pins $PACKETIZER
 connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_video_beat_count]  [get_bd_pins $SEQUENCER_INST/dbg_video_beat_count]
 connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_video_frame_count] [get_bd_pins $SEQUENCER_INST/dbg_video_frame_count]
 
+# Pre-FIFO probe: v_vid_in_axi4s video_out tvalid, counted in its own 142MHz
+# domain. Distinguishes "v_vid_in never produces beats" from "CDC FIFO read
+# side stuck". 64-bit count -> sequencer dbg_prefifo_beats (regs 0x58/0x5C).
+connect_bd_net [get_bd_pins hdmi_axis_cdc_fifo/S_AXIS_tvalid] [get_bd_pins video_beat_counter_0/s_axis_video_tvalid]
+connect_bd_net [get_bd_pins video_beat_counter_0/count] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_beats]
+
 if {[llength [get_bd_intf_ports -quiet hdmi_in]] > 0} {
     connect_bd_intf_net [get_bd_intf_ports hdmi_in] [get_bd_intf_pins dvi2rgb_0/TMDS]
 } else {
@@ -526,6 +537,8 @@ force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins 
 
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins v_vid_in_axi4s_0/aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins hdmi_axis_cdc_fifo/s_axis_aresetn]
+force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins video_beat_counter_0/aresetn]
+connect_bd_net [get_bd_pins ps7/FCLK_CLK1] [get_bd_pins video_beat_counter_0/aclk]
 # vtc_in/resetn now comes from rst_pixelclk (dvi2rgb_0_PixelClk domain, same
 # clock as vtc_in/clk) instead of the 142MHz PS-side reset. This matches the
 # official PYNQ-Z2 base overlay and removes the cross-domain reset entirely

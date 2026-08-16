@@ -85,7 +85,9 @@ module AES_GCM_Session_Sequencer #(
     // read-only AXI-Lite registers so software can see if video beats/frames
     // ever reach the packetizer.
     input  logic [63:0] dbg_video_beat_count,
-    input  logic [63:0] dbg_video_frame_count
+    input  logic [63:0] dbg_video_frame_count,
+    // Pre-FIFO probe counter (video_out tvalid) from video_beat_counter_0.
+    input  logic [63:0] dbg_prefifo_beats
 );
 
     // AES register addresses.
@@ -123,6 +125,8 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_VIDEO_BEAT_COUNT_LO  = 8'h4C;
     localparam logic [7:0] REG_VIDEO_FRAME_COUNT_HI = 8'h50;
     localparam logic [7:0] REG_VIDEO_FRAME_COUNT_LO = 8'h54;
+    localparam logic [7:0] REG_PREFIFO_BEAT_HI = 8'h58;
+    localparam logic [7:0] REG_PREFIFO_BEAT_LO = 8'h5C;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -330,6 +334,8 @@ module AES_GCM_Session_Sequencer #(
                     REG_VIDEO_BEAT_COUNT_LO:  S_AXI_RDATA <= dbg_video_beat_count[31:0];
                     REG_VIDEO_FRAME_COUNT_HI: S_AXI_RDATA <= dbg_video_frame_count[63:32];
                     REG_VIDEO_FRAME_COUNT_LO: S_AXI_RDATA <= dbg_video_frame_count[31:0];
+                    REG_PREFIFO_BEAT_HI: S_AXI_RDATA <= dbg_prefifo_beats[63:32];
+                    REG_PREFIFO_BEAT_LO: S_AXI_RDATA <= dbg_prefifo_beats[31:0];
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;
