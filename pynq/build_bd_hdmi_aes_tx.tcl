@@ -95,9 +95,16 @@ proc ensure_local_constraint_source {repo_root file_name} {
 }
 
 proc remove_existing_bd {bd_name} {
-    set bd_src_file "HDMI_AES_TX.srcs/sources_1/bd/${bd_name}/${bd_name}.bd"
-    set bd_gen_file "HDMI_AES_TX.gen/sources_1/bd/${bd_name}/${bd_name}.bd"
-    set bd_gen_dir  "HDMI_AES_TX.gen/sources_1/bd/${bd_name}"
+    # Resolve against the actual project directory: this script runs from the
+    # repo root, but the project (and its .srcs/.gen trees) live one level
+    # down in HDMI_AES_TX/. Plain relative paths silently miss and leave
+    # stale per-cell BD artifacts behind (the cause of [BD 41-84] stale-pin
+    # errors: Vivado resolves old module-reference definitions from them).
+    set _proj_dir [file normalize [get_property DIRECTORY [current_project]]]
+    set bd_src_dir [file normalize [file join $_proj_dir "HDMI_AES_TX.srcs" "sources_1" "bd" ${bd_name}]]
+    set bd_gen_dir [file normalize [file join $_proj_dir "HDMI_AES_TX.gen" "sources_1" "bd" ${bd_name}]]
+    set bd_src_file [file join $bd_src_dir "${bd_name}.bd"]
+    set bd_gen_file [file join $bd_gen_dir "${bd_name}.bd"]
 
     set existing_bd [get_bd_designs -quiet $bd_name]
     set existing_bd_files [get_files -quiet "*/${bd_name}.bd"]
@@ -119,6 +126,17 @@ proc remove_existing_bd {bd_name} {
     catch {file delete -force $bd_src_file}
     catch {file delete -force $bd_gen_file}
     catch {file delete -force $bd_gen_dir}
+    # Delete the whole BD source dir, not just the .bd: every BD regeneration
+    # appends new numbered per-cell ip/ subdirs (hdmi_aes_tx_<cell>_0_N). These
+    # accumulate stale module-reference artifacts, and Vivado resolves the OLD
+    # module definition from them, so freshly added wrapper ports never appear
+    # on the cells ([BD 41-84]).
+    catch {file delete -force $bd_src_dir}
+    # The mref cache holds generated module-reference definitions (a
+    # component.xml per wrapper with the cached PORT LIST). No other delete
+    # above touches it, and it is the direct source of stale module pins.
+    catch {file delete -force [file join [file dirname $bd_gen_dir] "mref"]}
+    puts "INFO: removed previous BD artifacts: $bd_src_dir $bd_gen_dir"
 }
 
 proc connect_if_unconnected {src dst} {
@@ -182,6 +200,26 @@ if {$pynq_part ne ""} {
 }
 
 remove_existing_bd $BD_NAME
+
+# Force Vivado to re-analyze the wrapper/module RTL after any edits.
+# remove_files + add_files invalidates the cached module definition that
+# block-design module references use; add_files alone is a no-op when the
+# file is already in the project, and a stale cached definition makes the
+# freshly-created BD cells miss new ports ([BD 41-84] at connect_bd_net).
+foreach _rrfile [list \
+    "AES_VERILOG.srcs/sources_1/new/AES_GCM_Session_Sequencer_wrapper.v" \
+    "AES_VERILOG.srcs/sources_1/new/AES_GCM_Session_Sequencer.sv" \
+    "AES_VERILOG.srcs/sources_1/new/HDMI_Axis_Packetizer_wrapper.v" \
+    "AES_VERILOG.srcs/sources_1/new/HDMI_Axis_Packetizer.sv" \
+] {
+    set _rrpath [file normalize [file join $repo_root $_rrfile]]
+    if {[llength [get_files -quiet $_rrpath]] > 0} {
+        remove_files $_rrpath
+    }
+    add_files -norecurse $_rrpath
+}
+update_compile_order -fileset sources_1
+
 create_bd_design $BD_NAME
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 ps7
@@ -203,6 +241,15 @@ create_bd_cell -type module -reference $AES_MODULE $AES_INST
 create_bd_cell -type module -reference $WRITER_MODULE $WRITER_INST
 create_bd_cell -type module -reference $PACKETIZER_MODULE $PACKETIZER_INST
 create_bd_cell -type module -reference $SEQUENCER_MODULE $SEQUENCER_INST
+
+# Refresh module references from the current RTL on disk. BD module refs
+# cache the analyzed port list; without this, ports added to the wrappers
+# after a previous session are missing and connect_bd_net fails with
+# [BD 41-84] "required object is not specified".
+# Pass instance NAMES (documented form), not cell objects: object form
+# returns failure silently in 2024.1.
+set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0]
+puts "INFO: update_module_reference rc=$_mrrc"
 create_bd_cell -type ip -vlnv digilentinc.com:ip:dvi2rgb:1.7 dvi2rgb_0
 set_property -dict [list \
     CONFIG.kAddBUFG {false} \
@@ -358,6 +405,10 @@ connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_key_id] [get_bd_pins $PACKETIZER
 connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_payload_bytes] [get_bd_pins $PACKETIZER_INST/cfg_payload_bytes]
 connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_nonce_counter] [get_bd_pins $PACKETIZER_INST/cfg_nonce_counter]
 connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_enable] [get_bd_pins $PACKETIZER_INST/cfg_enable]
+# Diagnostic counter readback: packetizer -> sequencer (new read-only AXI-Lite
+# registers REG_VIDEO_BEAT_COUNT_* / REG_VIDEO_FRAME_COUNT_* at 0x48-0x54).
+connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_video_beat_count]  [get_bd_pins $SEQUENCER_INST/dbg_video_beat_count]
+connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_video_frame_count] [get_bd_pins $SEQUENCER_INST/dbg_video_frame_count]
 
 if {[llength [get_bd_intf_ports -quiet hdmi_in]] > 0} {
     connect_bd_intf_net [get_bd_intf_ports hdmi_in] [get_bd_intf_pins dvi2rgb_0/TMDS]

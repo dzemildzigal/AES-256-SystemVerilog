@@ -68,7 +68,10 @@ module AES_GCM_Session_Sequencer_wrapper #(
     output wire         cfg_enable,
 
     output wire [63:0]  nonce_counter_out,
-    output wire         seq_busy
+    output wire         seq_busy,
+
+    input  wire [63:0]  dbg_video_beat_count,
+    input  wire [63:0]  dbg_video_frame_count
 );
 
     AES_GCM_Session_Sequencer #(
@@ -139,7 +142,9 @@ module AES_GCM_Session_Sequencer_wrapper #(
         .cfg_enable         (cfg_enable),
 
         .nonce_counter_out  (nonce_counter_out),
-        .seq_busy           (seq_busy)
+        .seq_busy           (seq_busy),
+        .dbg_video_beat_count  (dbg_video_beat_count),
+        .dbg_video_frame_count (dbg_video_frame_count)
     );
 
 endmodule

@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module HDMI_Axis_Packetizer #(
     parameter int unsigned MAX_PAYLOAD_BYTES = 1200
 ) (
@@ -17,6 +19,13 @@ module HDMI_Axis_Packetizer #(
     input  logic [15:0]  cfg_payload_bytes,
     input  logic [63:0]  cfg_nonce_counter,
     input  logic         cfg_enable,
+
+    // Free-running diagnostic counters, read back via aes_seq_0.
+    // beat_count: +1 every clock s_axis_video_tvalid is high (assertion, not
+    // handshake: if data arrives but is never consumed, this still climbs).
+    // frame_count: +1 per accepted start-of-frame (tvalid && tready && tuser).
+    output logic [63:0] dbg_video_beat_count,
+    output logic [63:0] dbg_video_frame_count,
 
     output logic [127:0] m_axis_pkt_tdata,
     output logic [15:0]  m_axis_pkt_tkeep,
@@ -53,6 +62,12 @@ module HDMI_Axis_Packetizer #(
     logic [127:0] pack_data;
     logic [15:0]  pack_keep;
     logic [4:0]   pack_count;
+
+    logic [63:0]  dbg_video_beat_count_r;
+    logic [63:0]  dbg_video_frame_count_r;
+
+    assign dbg_video_beat_count  = dbg_video_beat_count_r;
+    assign dbg_video_frame_count = dbg_video_frame_count_r;
 
     function automatic logic [7:0] header_byte(
         input logic [7:0] idx,
@@ -135,6 +150,8 @@ module HDMI_Axis_Packetizer #(
             pixel_buf           <= '0;
             pixel_byte_idx      <= '0;
             pixel_valid         <= 1'b0;
+            dbg_video_beat_count_r  <= '0;
+            dbg_video_frame_count_r <= '0;
             pack_data           <= '0;
             pack_keep           <= '0;
             pack_count          <= '0;
@@ -143,6 +160,13 @@ module HDMI_Axis_Packetizer #(
             m_axis_pkt_tvalid   <= 1'b0;
             m_axis_pkt_tlast    <= 1'b0;
         end else begin
+            if (s_axis_video_tvalid) begin
+                dbg_video_beat_count_r <= dbg_video_beat_count_r + 1'b1;
+            end
+            if (s_axis_video_tvalid && s_axis_video_tready && s_axis_video_tuser) begin
+                dbg_video_frame_count_r <= dbg_video_frame_count_r + 1'b1;
+            end
+
             if (m_axis_pkt_tvalid && m_axis_pkt_tready) begin
                 m_axis_pkt_tvalid <= 1'b0;
                 m_axis_pkt_tlast  <= 1'b0;

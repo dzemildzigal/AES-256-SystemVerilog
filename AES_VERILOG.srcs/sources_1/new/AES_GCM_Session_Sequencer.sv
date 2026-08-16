@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module AES_GCM_Session_Sequencer #(
     parameter int unsigned C_AXI_ADDR_WIDTH = 8,
     parameter int unsigned C_AXI_DATA_WIDTH = 32,
@@ -77,7 +79,13 @@ module AES_GCM_Session_Sequencer #(
     output logic        cfg_enable,
 
     output logic [63:0] nonce_counter_out,
-    output logic        seq_busy
+    output logic        seq_busy,
+
+    // Free-running diagnostic counters from hdmi_packetizer_0, exposed as
+    // read-only AXI-Lite registers so software can see if video beats/frames
+    // ever reach the packetizer.
+    input  logic [63:0] dbg_video_beat_count,
+    input  logic [63:0] dbg_video_frame_count
 );
 
     // AES register addresses.
@@ -111,6 +119,10 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_KEY7          = 8'h3C;
     localparam logic [7:0] REG_NONCE_CUR_HI  = 8'h40;
     localparam logic [7:0] REG_NONCE_CUR_LO  = 8'h44;
+    localparam logic [7:0] REG_VIDEO_BEAT_COUNT_HI  = 8'h48;
+    localparam logic [7:0] REG_VIDEO_BEAT_COUNT_LO  = 8'h4C;
+    localparam logic [7:0] REG_VIDEO_FRAME_COUNT_HI = 8'h50;
+    localparam logic [7:0] REG_VIDEO_FRAME_COUNT_LO = 8'h54;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -314,6 +326,10 @@ module AES_GCM_Session_Sequencer #(
                     REG_KEY7: S_AXI_RDATA <= reg_key_word[7];
                     REG_NONCE_CUR_HI: S_AXI_RDATA <= nonce_ctr[63:32];
                     REG_NONCE_CUR_LO: S_AXI_RDATA <= nonce_ctr[31:0];
+                    REG_VIDEO_BEAT_COUNT_HI:  S_AXI_RDATA <= dbg_video_beat_count[63:32];
+                    REG_VIDEO_BEAT_COUNT_LO:  S_AXI_RDATA <= dbg_video_beat_count[31:0];
+                    REG_VIDEO_FRAME_COUNT_HI: S_AXI_RDATA <= dbg_video_frame_count[63:32];
+                    REG_VIDEO_FRAME_COUNT_LO: S_AXI_RDATA <= dbg_video_frame_count[31:0];
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;

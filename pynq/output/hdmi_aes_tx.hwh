@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 16 16:36:22 2026" VIVADOVERSION="2024.1.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 16 17:46:37 2026" VIVADOVERSION="2024.1.2">
 
   <SYSTEMINFO ARCH="zynq" BOARD="tul.com.tw:pynq-z2:part0:1.0" DEVICE="7z020" NAME="hdmi_aes_tx" PACKAGE="clg400" SPEEDGRADE="-1"/>
 
@@ -560,6 +560,16 @@
         <PORT DIR="O" LEFT="15" NAME="cfg_stream_id" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_cfg_stream_id">
           <CONNECTIONS>
             <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="cfg_stream_id"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="63" NAME="dbg_video_beat_count" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_dbg_video_beat_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="dbg_video_beat_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="63" NAME="dbg_video_frame_count" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_dbg_video_frame_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="dbg_video_frame_count"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="7" NAME="m_axi_araddr" RIGHT="0" SIGIS="undef" SIGNAME="aes_gcm_0_S_AXI_ARADDR">
@@ -2115,6 +2125,16 @@
         <PORT DIR="I" LEFT="15" NAME="cfg_stream_id" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_cfg_stream_id">
           <CONNECTIONS>
             <CONNECTION INSTANCE="aes_seq_0" PORT="cfg_stream_id"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="63" NAME="dbg_video_beat_count" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_dbg_video_beat_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_video_beat_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="63" NAME="dbg_video_frame_count" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_dbg_video_frame_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_video_frame_count"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="127" NAME="m_axis_pkt_tdata" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tdata">

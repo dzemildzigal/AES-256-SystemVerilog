@@ -22,6 +22,9 @@ module HDMI_Axis_Packetizer_wrapper #(
     input  wire [63:0]  cfg_nonce_counter,
     input  wire         cfg_enable,
 
+    output wire [63:0]  dbg_video_beat_count,
+    output wire [63:0]  dbg_video_frame_count,
+
     output wire [127:0] m_axis_pkt_tdata,
     output wire [15:0]  m_axis_pkt_tkeep,
     output wire         m_axis_pkt_tvalid,
@@ -46,6 +49,8 @@ module HDMI_Axis_Packetizer_wrapper #(
         .cfg_payload_bytes   (cfg_payload_bytes),
         .cfg_nonce_counter   (cfg_nonce_counter),
         .cfg_enable          (cfg_enable),
+        .dbg_video_beat_count  (dbg_video_beat_count),
+        .dbg_video_frame_count (dbg_video_frame_count),
         .m_axis_pkt_tdata    (m_axis_pkt_tdata),
         .m_axis_pkt_tkeep    (m_axis_pkt_tkeep),
         .m_axis_pkt_tvalid   (m_axis_pkt_tvalid),
