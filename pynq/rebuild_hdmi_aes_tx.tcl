@@ -38,24 +38,22 @@ reset_run impl_1
 launch_runs impl_1 -to_step write_bitstream -jobs 16
 wait_on_run impl_1
 
+# Vivado 2024.1 sometimes crashes (EXCEPTION_ACCESS_VIOLATION) during the
+# run's write_bitstream step even though routing completed fine. Fall back to
+# in-memory bitgen from the routed checkpoint - works in both cases.
 open_run impl_1
 report_timing_summary -max_paths 20 -file impl_1_timing_final_bitgen.rpt
+write_bitstream -force pynq/output/hdmi_aes_tx.bit
 
-# 4. Export artifacts.
+# 4. Export artifacts (bitstream already written by step 3's in-memory bitgen).
 set outdir "pynq/output"
 file mkdir $outdir
-set bit_src [file normalize "HDMI_AES_TX/HDMI_AES_TX.runs/impl_1/hdmi_aes_tx_wrapper.bit"]
-if {![file exists $bit_src]} {
-    set found_bits [glob -nocomplain "HDMI_AES_TX/HDMI_AES_TX.runs/impl_1/*.bit"]
-    error "Expected bitstream not found at $bit_src. Found instead: $found_bits - wrong top module was synthesized. Check runme.log for the top used."
-}
 set hwh_src [file normalize "HDMI_AES_TX/HDMI_AES_TX.gen/sources_1/bd/hdmi_aes_tx/hw_handoff/hdmi_aes_tx.hwh"]
 if {![file exists $hwh_src]} {
     error "HWH not found at $hwh_src"
 }
 set bit_dst [file normalize "$outdir/hdmi_aes_tx.bit"]
 set hwh_dst [file normalize "$outdir/hdmi_aes_tx.hwh"]
-file copy -force $bit_src $bit_dst
 file copy -force $hwh_src $hwh_dst
 puts "ARTIFACT_BIT_DST=$bit_dst"
 puts "ARTIFACT_HWH_DST=$hwh_dst"
