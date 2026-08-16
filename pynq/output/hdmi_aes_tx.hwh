@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sat Aug 15 08:55:15 2026" VIVADOVERSION="2024.1.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 16 16:36:22 2026" VIVADOVERSION="2024.1.2">
 
   <SYSTEMINFO ARCH="zynq" BOARD="tul.com.tw:pynq-z2:part0:1.0" DEVICE="7z020" NAME="hdmi_aes_tx" PACKAGE="clg400" SPEEDGRADE="-1"/>
 
@@ -1488,6 +1488,7 @@
         </PORT>
         <PORT DIR="O" NAME="aPixelClkLckd" SIGIS="undef" SIGNAME="dvi2rgb_0_aPixelClkLckd">
           <CONNECTIONS>
+            <CONNECTION INSTANCE="rst_pixelclk" PORT="aux_reset_in"/>
             <CONNECTION INSTANCE="axi_gpio_hdmiin" PORT="gpio2_io_i"/>
           </CONNECTIONS>
         </PORT>
@@ -2213,23 +2214,6 @@
           </PORTMAPS>
         </BUSINTERFACE>
       </BUSINTERFACES>
-    </MODULE>
-    <MODULE COREREVISION="9" FULLNAME="/hdmi_vidrst_const" HWVERSION="1.1" INSTANCE="hdmi_vidrst_const" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="xlconstant" VLNV="xilinx.com:ip:xlconstant:1.1">
-      <DOCUMENTS/>
-      <PARAMETERS>
-        <PARAMETER NAME="CONST_VAL" VALUE="0x0"/>
-        <PARAMETER NAME="CONST_WIDTH" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_hdmi_vidrst_const_0"/>
-        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
-      </PARAMETERS>
-      <PORTS>
-        <PORT DIR="O" LEFT="0" NAME="dout" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_vidrst_const_dout">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_io_in_reset"/>
-          </CONNECTIONS>
-        </PORT>
-      </PORTS>
-      <BUSINTERFACES/>
     </MODULE>
     <MODULE COREREVISION="33" FULLNAME="/hp0_mem_ic" HWVERSION="2.1" INSTANCE="hp0_mem_ic" IPTYPE="BUS" IS_ENABLE="1" MODCLASS="BUS" MODTYPE="axi_interconnect" VLNV="xilinx.com:ip:axi_interconnect:2.1">
       <DOCUMENTS>
@@ -4074,7 +4058,7 @@
           <CONNECTIONS>
             <CONNECTION INSTANCE="ps7" PORT="M_AXI_GP0_ACLK"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="S00_ACLK"/>
-            <CONNECTION INSTANCE="rst_ps7_100m" PORT="slowest_sync_clk"/>
+            <CONNECTION INSTANCE="rst_pixelclk" PORT="slowest_sync_clk"/>
             <CONNECTION INSTANCE="frame_writer_0" PORT="S_AXI_ACLK"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="M00_ACLK"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="ACLK"/>
@@ -4087,6 +4071,7 @@
             <CONNECTION INSTANCE="ps7" PORT="S_AXI_HP0_ACLK"/>
             <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_aclk"/>
             <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="aclk"/>
+            <CONNECTION INSTANCE="rst_ps7_100m" PORT="slowest_sync_clk"/>
             <CONNECTION INSTANCE="hp0_mem_ic" PORT="ACLK"/>
             <CONNECTION INSTANCE="hp0_mem_ic" PORT="S00_ACLK"/>
             <CONNECTION INSTANCE="hp0_mem_ic" PORT="M00_ACLK"/>
@@ -4107,7 +4092,7 @@
         </PORT>
         <PORT DIR="O" NAME="FCLK_RESET0_N" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="ps7_FCLK_RESET0_N">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="rst_ps7_100m" PORT="ext_reset_in"/>
+            <CONNECTION INSTANCE="rst_pixelclk" PORT="ext_reset_in"/>
             <CONNECTION INSTANCE="rstn_to_rst" PORT="Op1"/>
           </CONNECTIONS>
         </PORT>
@@ -5798,6 +5783,64 @@
           <CONNECTIONS>
             <CONNECTION INSTANCE="rst_ps7_100m" PORT="dcm_locked"/>
             <CONNECTION INSTANCE="rst_ps7_142m" PORT="dcm_locked"/>
+            <CONNECTION INSTANCE="rst_pixelclk" PORT="dcm_locked"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES/>
+    </MODULE>
+    <MODULE COREREVISION="15" FULLNAME="/rst_pixelclk" HWVERSION="5.0" INSTANCE="rst_pixelclk" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="proc_sys_reset" VLNV="xilinx.com:ip:proc_sys_reset:5.0">
+      <DOCUMENTS>
+        <DOCUMENT SOURCE="http://www.xilinx.com/cgi-bin/docs/ipdoc?c=proc_sys_reset;v=v5_0;d=pg164-proc-sys-reset.pdf"/>
+      </DOCUMENTS>
+      <PARAMETERS>
+        <PARAMETER NAME="C_AUX_RESET_HIGH" VALUE="0"/>
+        <PARAMETER NAME="C_AUX_RST_WIDTH" VALUE="4"/>
+        <PARAMETER NAME="C_EXT_RESET_HIGH" VALUE="0"/>
+        <PARAMETER NAME="C_EXT_RST_WIDTH" VALUE="4"/>
+        <PARAMETER NAME="C_FAMILY" VALUE="zynq"/>
+        <PARAMETER NAME="C_NUM_BUS_RST" VALUE="1"/>
+        <PARAMETER NAME="C_NUM_INTERCONNECT_ARESETN" VALUE="1"/>
+        <PARAMETER NAME="C_NUM_PERP_ARESETN" VALUE="1"/>
+        <PARAMETER NAME="C_NUM_PERP_RST" VALUE="1"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_pixelclk_0"/>
+        <PARAMETER NAME="RESET_BOARD_INTERFACE" VALUE="Custom"/>
+        <PARAMETER NAME="USE_BOARD_FLOW" VALUE="false"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT DIR="I" NAME="aux_reset_in" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="dvi2rgb_0_aPixelClkLckd">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="dvi2rgb_0" PORT="aPixelClkLckd"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="0" NAME="bus_struct_reset" POLARITY="ACTIVE_HIGH" RIGHT="0" SIGIS="rst"/>
+        <PORT DIR="I" NAME="dcm_locked" SIGIS="undef" SIGNAME="rst_const1_dout">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="rst_const1" PORT="dout"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="ext_reset_in" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="ps7_FCLK_RESET0_N">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="ps7" PORT="FCLK_RESET0_N"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="0" NAME="interconnect_aresetn" POLARITY="ACTIVE_LOW" RIGHT="0" SIGIS="rst"/>
+        <PORT DIR="I" NAME="mb_debug_sys_rst" POLARITY="ACTIVE_HIGH" SIGIS="rst"/>
+        <PORT DIR="O" NAME="mb_reset" POLARITY="ACTIVE_HIGH" SIGIS="rst"/>
+        <PORT DIR="O" LEFT="0" NAME="peripheral_aresetn" POLARITY="ACTIVE_LOW" RIGHT="0" SIGIS="rst" SIGNAME="rst_pixelclk_peripheral_aresetn">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vtc_in" PORT="resetn"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="0" NAME="peripheral_reset" POLARITY="ACTIVE_HIGH" RIGHT="0" SIGIS="rst" SIGNAME="rst_pixelclk_peripheral_reset">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_io_in_reset"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT CLKFREQUENCY="100000000" DIR="I" NAME="slowest_sync_clk" SIGIS="clk" SIGNAME="ps7_FCLK_CLK0">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="ps7" PORT="FCLK_CLK0"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
@@ -5810,7 +5853,7 @@
       <PARAMETERS>
         <PARAMETER NAME="C_AUX_RESET_HIGH" VALUE="0"/>
         <PARAMETER NAME="C_AUX_RST_WIDTH" VALUE="4"/>
-        <PARAMETER NAME="C_EXT_RESET_HIGH" VALUE="0"/>
+        <PARAMETER NAME="C_EXT_RESET_HIGH" VALUE="1"/>
         <PARAMETER NAME="C_EXT_RST_WIDTH" VALUE="4"/>
         <PARAMETER NAME="C_FAMILY" VALUE="zynq"/>
         <PARAMETER NAME="C_NUM_BUS_RST" VALUE="1"/>
@@ -5830,9 +5873,9 @@
             <CONNECTION INSTANCE="rst_const1" PORT="dout"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="ext_reset_in" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="ps7_FCLK_RESET0_N">
+        <PORT DIR="I" NAME="ext_reset_in" POLARITY="ACTIVE_HIGH" SIGIS="rst" SIGNAME="rstn_to_rst_Res">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="ps7" PORT="FCLK_RESET0_N"/>
+            <CONNECTION INSTANCE="rstn_to_rst" PORT="Res"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="0" NAME="interconnect_aresetn" POLARITY="ACTIVE_LOW" RIGHT="0" SIGIS="rst" SIGNAME="rst_ps7_100m_interconnect_aresetn">
@@ -5909,7 +5952,6 @@
           <CONNECTIONS>
             <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="aresetn"/>
             <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_aresetn"/>
-            <CONNECTION INSTANCE="vtc_in" PORT="resetn"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="0" NAME="peripheral_reset" POLARITY="ACTIVE_HIGH" RIGHT="0" SIGIS="rst"/>
@@ -5938,6 +5980,7 @@
         </PORT>
         <PORT DIR="O" LEFT="0" NAME="Res" POLARITY="ACTIVE_HIGH" RIGHT="0" SIGIS="undef" SIGNAME="rstn_to_rst_Res">
           <CONNECTIONS>
+            <CONNECTION INSTANCE="rst_ps7_100m" PORT="ext_reset_in"/>
             <CONNECTION INSTANCE="rst_ps7_142m" PORT="ext_reset_in"/>
           </CONNECTIONS>
         </PORT>
@@ -6029,9 +6072,9 @@
             <CONNECTION INSTANCE="dvi2rgb_0" PORT="PixelClk"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="vid_io_in_reset" POLARITY="ACTIVE_HIGH" SIGIS="rst" SIGNAME="hdmi_vidrst_const_dout">
+        <PORT DIR="I" NAME="vid_io_in_reset" POLARITY="ACTIVE_HIGH" SIGIS="rst" SIGNAME="rst_pixelclk_peripheral_reset">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_vidrst_const" PORT="dout"/>
+            <CONNECTION INSTANCE="rst_pixelclk" PORT="peripheral_reset"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="vid_vsync" SIGIS="undef" SIGNAME="color_swap_0_vsync_out">
@@ -6305,9 +6348,9 @@
             <CONNECTION INSTANCE="irq_concat" PORT="In2"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="resetn" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="rst_ps7_142m_peripheral_aresetn">
+        <PORT DIR="I" NAME="resetn" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="rst_pixelclk_peripheral_aresetn">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="rst_ps7_142m" PORT="peripheral_aresetn"/>
+            <CONNECTION INSTANCE="rst_pixelclk" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
         <PORT CLKFREQUENCY="100000000" DIR="I" NAME="s_axi_aclk" SIGIS="clk" SIGNAME="ps7_FCLK_CLK0">

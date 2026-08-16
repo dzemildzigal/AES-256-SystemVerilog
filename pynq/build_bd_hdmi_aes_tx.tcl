@@ -253,12 +253,6 @@ set_property -dict [list \
     CONFIG.FIFO_DEPTH {2048} \
 ] [get_bd_cells hdmi_axis_cdc_fifo]
 
-create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 hdmi_vidrst_const
-set_property -dict [list \
-    CONFIG.CONST_VAL {0} \
-    CONFIG.CONST_WIDTH {1} \
-] [get_bd_cells hdmi_vidrst_const]
-
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 rst_const1
 set_property -dict [list \
     CONFIG.CONST_VAL {1} \
@@ -273,6 +267,16 @@ set_property -dict [list \
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_100m
 create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_142m
+
+# Matches the official PYNQ-Z2 base overlay pattern: a reset pulse generated
+# in the recovered pixel-clock domain, triggered by pixel clock lock
+# acquisition (aux_reset_in <- aPixelClkLckd). v_vid_in_axi4s and vtc_in need
+# this to initialize correctly once a real HDMI source starts driving TMDS.
+# Without it v_vid_in_axi4s can sit in an undefined state forever: verified on
+# hardware that vtc_in still detects correct timing (1650x750 for 720p60)
+# while zero AXI4-Stream video beats ever reach the packetizer. Replaces the
+# old permanent hdmi_vidrst_const=0 tie-off, which never reset this IP at all.
+create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_pixelclk
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 irq_concat
 set_property CONFIG.NUM_PORTS {3} [get_bd_cells irq_concat]
@@ -438,6 +442,13 @@ connect_if_unconnected [get_bd_pins rstn_to_rst/Res] [get_bd_pins rst_ps7_142m/e
 connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_ps7_100m/dcm_locked]
 connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_ps7_142m/dcm_locked]
 
+# rst_pixelclk lives in the recovered pixel-clock domain and resets on pixel
+# clock lock acquisition, matching the official PYNQ-Z2 base overlay.
+connect_if_unconnected [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins rst_pixelclk/slowest_sync_clk]
+connect_if_unconnected [get_bd_pins rstn_to_rst/Res] [get_bd_pins rst_pixelclk/ext_reset_in]
+connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_pixelclk/dcm_locked]
+connect_bd_net [get_bd_pins dvi2rgb_0/aPixelClkLckd] [get_bd_pins rst_pixelclk/aux_reset_in]
+
 foreach p [list \
     [get_bd_pins hp0_mem_ic/ACLK] \
     [get_bd_pins hp0_mem_ic/S00_ACLK] \
@@ -464,9 +475,11 @@ force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins 
 
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins v_vid_in_axi4s_0/aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins hdmi_axis_cdc_fifo/s_axis_aresetn]
-# Keep VTC in same reset domain as other 142MHz video-side AXI blocks to avoid
-# clk_fpga_2 -> dvi2rgb_0_PixelClk async reset timing checks inside vtc_in.
-force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins vtc_in/resetn]
+# vtc_in/resetn now comes from rst_pixelclk (dvi2rgb_0_PixelClk domain, same
+# clock as vtc_in/clk) instead of the 142MHz PS-side reset. This matches the
+# official PYNQ-Z2 base overlay and removes the cross-domain reset entirely
+# for this net, rather than merely avoiding one specific Vivado timing check.
+force_connect_bd_net [get_bd_pins rst_pixelclk/peripheral_aresetn] [get_bd_pins vtc_in/resetn]
 
 set ps7_axi_rst_map [list \
     [list ps7_axi_periph/ARESETN rst_ps7_100m/interconnect_aresetn] \
@@ -488,7 +501,7 @@ connect_bd_net [get_bd_pins dvi2rgb_0/aPixelClkLckd] [get_bd_pins axi_gpio_hdmii
 connect_if_unconnected $ps_fclk2_pin [get_bd_pins dvi2rgb_0/RefClk]
 connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins v_vid_in_axi4s_0/vid_io_in_clk]
 connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins vtc_in/clk]
-connect_bd_net [get_bd_pins hdmi_vidrst_const/dout] [get_bd_pins v_vid_in_axi4s_0/vid_io_in_reset]
+connect_bd_net [get_bd_pins rst_pixelclk/peripheral_reset] [get_bd_pins v_vid_in_axi4s_0/vid_io_in_reset]
 
 assign_bd_address
 regenerate_bd_layout

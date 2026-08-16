@@ -26,7 +26,7 @@ source pynq/build_bd_hdmi_aes_tx.tcl
 
 # 3. Build the bitstream.
 reset_run impl_1
-launch_runs impl_1 -to_step write_bitstream -jobs 8
+launch_runs impl_1 -to_step write_bitstream -jobs 16
 wait_on_run impl_1
 
 open_run impl_1
