@@ -418,8 +418,10 @@ module AXI_AES_GCM_Stream #(
     wire ct_fifo_push = push_ct_now || push_tag_now;
     wire [0:127] push_data = push_tag_now ? tag_latched :
                              ((stream_mode_reg && tag_valid && !ct_valid) ? tag_out : ct_data);
-    wire push_last = push_tag_now ? 1'b1 :
-                     ((stream_mode_reg && tag_valid && !ct_valid) ? 1'b1 : ct_last);
+    // tlast ONLY on the appended tag beat. The datapath's ct_last still flags
+    // the final ciphertext beat; forwarding it too produces a double tlast,
+    // and the writer faults (tlast with bytes still remaining) on the early one.
+    wire push_last = push_tag_now ? 1'b1 : 1'b0;
     wire ct_fifo_pop  = stream_mode_reg && !ct_fifo_empty && M_AXIS_CT_TREADY;
 
     always_ff @(posedge clk) begin
