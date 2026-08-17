@@ -101,6 +101,10 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] AES_REG_AAD_LEN_LO  = 8'h38;
     localparam logic [7:0] AES_REG_PT_LEN_HI   = 8'h3C;
     localparam logic [7:0] AES_REG_PT_LEN_LO   = 8'h40;
+    localparam logic [7:0] AES_REG_TAG0        = 8'h88;
+    localparam logic [7:0] AES_REG_TAG1        = 8'h8C;
+    localparam logic [7:0] AES_REG_TAG2        = 8'h90;
+    localparam logic [7:0] AES_REG_TAG3        = 8'h94;
 
     // Sequencer AXI-Lite register map.
     localparam logic [7:0] REG_CTRL          = 8'h00;
@@ -127,6 +131,11 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_VIDEO_FRAME_COUNT_LO = 8'h54;
     localparam logic [7:0] REG_PREFIFO_BEAT_HI = 8'h58;
     localparam logic [7:0] REG_PREFIFO_BEAT_LO = 8'h5C;
+    localparam logic [7:0] REG_TAG0 = 8'h60;
+    localparam logic [7:0] REG_TAG1 = 8'h64;
+    localparam logic [7:0] REG_TAG2 = 8'h68;
+    localparam logic [7:0] REG_TAG3 = 8'h6C;
+    localparam logic [7:0] REG_TAG_VALID = 8'h70;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -166,7 +175,12 @@ module AES_GCM_Session_Sequencer #(
         ST_W_SET_STREAM    = 5'd18,
         ST_W_START_SESS    = 5'd19,
         ST_POLL_SESSION    = 5'd20,
-        ST_PASS            = 5'd21
+        ST_PASS            = 5'd21,
+        ST_WAIT_TAG        = 5'd22,
+        ST_RD_TAG0         = 5'd23,
+        ST_RD_TAG1         = 5'd24,
+        ST_RD_TAG2         = 5'd25,
+        ST_RD_TAG3         = 5'd26
     } state_t;
 
     state_t state;
@@ -182,6 +196,11 @@ module AES_GCM_Session_Sequencer #(
     logic [15:0] reg_payload_bytes;
     logic [31:0] reg_key_word [0:7];
     logic        key_dirty;
+
+    // Mirrored AES GCM tag (read from AES 0x88-0x94 after each packet).
+    logic [31:0] reg_tag_word [0:3];
+    logic        tag_valid_flag;
+    logic [31:0] mst_rd_data;
 
     logic [31:0] aes_status_last;
 
@@ -336,6 +355,11 @@ module AES_GCM_Session_Sequencer #(
                     REG_VIDEO_FRAME_COUNT_LO: S_AXI_RDATA <= dbg_video_frame_count[31:0];
                     REG_PREFIFO_BEAT_HI: S_AXI_RDATA <= dbg_prefifo_beats[63:32];
                     REG_PREFIFO_BEAT_LO: S_AXI_RDATA <= dbg_prefifo_beats[31:0];
+                    REG_TAG0: S_AXI_RDATA <= reg_tag_word[0];
+                    REG_TAG1: S_AXI_RDATA <= reg_tag_word[1];
+                    REG_TAG2: S_AXI_RDATA <= reg_tag_word[2];
+                    REG_TAG3: S_AXI_RDATA <= reg_tag_word[3];
+                    REG_TAG_VALID: S_AXI_RDATA <= {31'd0, tag_valid_flag};
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;
@@ -394,13 +418,28 @@ module AES_GCM_Session_Sequencer #(
         end else begin
             mst_rd_done <= 1'b0;
 
-            if (!mst_rd_pending && state == ST_POLL_KEYS) begin
+            if (!mst_rd_pending && (state == ST_POLL_KEYS || state == ST_POLL_SESSION || state == ST_WAIT_TAG)) begin
                 M_AXI_ARADDR   <= AES_REG_STATUS;
                 M_AXI_ARVALID  <= 1'b1;
                 M_AXI_RREADY   <= 1'b1;
                 mst_rd_pending <= 1'b1;
-            end else if (!mst_rd_pending && state == ST_POLL_SESSION) begin
-                M_AXI_ARADDR   <= AES_REG_STATUS;
+            end else if (!mst_rd_pending && state == ST_RD_TAG0) begin
+                M_AXI_ARADDR   <= AES_REG_TAG0;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
+            end else if (!mst_rd_pending && state == ST_RD_TAG1) begin
+                M_AXI_ARADDR   <= AES_REG_TAG1;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
+            end else if (!mst_rd_pending && state == ST_RD_TAG2) begin
+                M_AXI_ARADDR   <= AES_REG_TAG2;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
+            end else if (!mst_rd_pending && state == ST_RD_TAG3) begin
+                M_AXI_ARADDR   <= AES_REG_TAG3;
                 M_AXI_ARVALID  <= 1'b1;
                 M_AXI_RREADY   <= 1'b1;
                 mst_rd_pending <= 1'b1;
@@ -409,7 +448,10 @@ module AES_GCM_Session_Sequencer #(
                     M_AXI_ARVALID <= 1'b0;
                 end
                 if (M_AXI_RVALID && M_AXI_RREADY) begin
-                    aes_status_last <= M_AXI_RDATA;
+                    mst_rd_data <= M_AXI_RDATA;
+                    if (state == ST_POLL_KEYS || state == ST_POLL_SESSION || state == ST_WAIT_TAG) begin
+                        aes_status_last <= M_AXI_RDATA;
+                    end
                     M_AXI_RREADY    <= 1'b0;
                     mst_rd_pending  <= 1'b0;
                     mst_rd_done     <= 1'b1;
@@ -424,6 +466,11 @@ module AES_GCM_Session_Sequencer #(
             state       <= ST_IDLE;
             nonce_ctr   <= DEFAULT_NONCE_SEED;
             key_dirty   <= 1'b1;
+            reg_tag_word[0] <= '0;
+            reg_tag_word[1] <= '0;
+            reg_tag_word[2] <= '0;
+            reg_tag_word[3] <= '0;
+            tag_valid_flag   <= 1'b0;
             mst_wr_addr <= '0;
             mst_wr_data <= '0;
             mst_wr_launch <= 1'b0;
@@ -488,6 +535,7 @@ module AES_GCM_Session_Sequencer #(
                 end
 
                 ST_W_NONCE0: begin
+                    tag_valid_flag <= 1'b0;
                     mst_wr_addr   <= AES_REG_NONCE0;
                     mst_wr_data   <= reg_nonce_domain;
                     mst_wr_launch <= 1'b1;
@@ -576,8 +624,27 @@ module AES_GCM_Session_Sequencer #(
 
                 ST_PASS: begin
                     if (s_axis_tvalid && m_axis_tready && s_axis_tlast) begin
-                        state     <= ST_IDLE;
+                        state     <= ST_WAIT_TAG;
                         nonce_ctr <= nonce_ctr + 1'b1;
+                    end
+                end
+
+                ST_WAIT_TAG: begin
+                    if (mst_rd_done) begin
+                        if (aes_status_last[12]) begin
+                            state <= ST_RD_TAG0;
+                        end
+                    end
+                end
+
+                ST_RD_TAG0: begin if (mst_rd_done) begin reg_tag_word[0] <= mst_rd_data; state <= ST_RD_TAG1; end end
+                ST_RD_TAG1: begin if (mst_rd_done) begin reg_tag_word[1] <= mst_rd_data; state <= ST_RD_TAG2; end end
+                ST_RD_TAG2: begin if (mst_rd_done) begin reg_tag_word[2] <= mst_rd_data; state <= ST_RD_TAG3; end end
+                ST_RD_TAG3: begin
+                    if (mst_rd_done) begin
+                        reg_tag_word[3] <= mst_rd_data;
+                        tag_valid_flag   <= 1'b1;
+                        state            <= ST_IDLE;
                     end
                 end
 
