@@ -38,12 +38,17 @@ module HDMI_Axis_Packetizer #(
     localparam logic [7:0]  VERSION = 8'd0;
     localparam logic [7:0]  TAG_LENGTH = 8'd16;
     localparam int unsigned HEADER_BYTES = 40;
+    // Inter-packet gap so the PS Python path can keep up (500 pkt/s at 100MHz).
+    // ponytail: pacer keeps the pipeline deterministic for the bring-up stage;
+    // remove it when a faster PS transport (C shim) replaces the Python sender.
+    localparam logic [17:0] PACER_CYCLES = 18'd200000;
 
-    typedef enum logic [1:0] {
-        ST_ARM     = 2'd0,   // ponytail: wait for first real frame (tuser) before packetizing;
+    typedef enum logic [2:0] {
+        ST_ARM     = 3'd0,   // ponytail: wait for first real frame (tuser) before packetizing;
                              // prevents a boot-time session starting with no video (see aresetn block)
-        ST_HEADER  = 2'd1,
-        ST_PAYLOAD = 2'd2
+        ST_HEADER  = 3'd1,
+        ST_PAYLOAD = 3'd2,
+        ST_PACE    = 3'd3    // post-packet gap (PACER_CYCLES) so the PS sender keeps up
     } state_t;
 
     state_t state;
@@ -62,6 +67,8 @@ module HDMI_Axis_Packetizer #(
     logic [127:0] pack_data;
     logic [15:0]  pack_keep;
     logic [4:0]   pack_count;
+
+    logic [17:0]  pacer;
 
     logic [63:0]  dbg_video_beat_count_r;
     logic [63:0]  dbg_video_frame_count_r;
@@ -150,6 +157,7 @@ module HDMI_Axis_Packetizer #(
             pixel_buf           <= '0;
             pixel_byte_idx      <= '0;
             pixel_valid         <= 1'b0;
+            pacer               <= '0;
             dbg_video_beat_count_r  <= '0;
             dbg_video_frame_count_r <= '0;
             pack_data           <= '0;
@@ -187,6 +195,12 @@ module HDMI_Axis_Packetizer #(
                     // s_axis_video_tready is 0 here (existing assign only asserts it in
                     // ST_PAYLOAD), so this beat is only observed, not consumed. It gets
                     // captured for real once ST_PAYLOAD starts.
+                end else if (state == ST_PACE) begin
+                    if (pacer != 18'd0) begin
+                        pacer <= pacer - 1'b1;
+                    end else begin
+                        state <= ST_HEADER;
+                    end
                 end else if (state == ST_HEADER) begin
                     emit_valid = 1'b1;
                     emit_byte  = header_byte(
@@ -233,7 +247,8 @@ module HDMI_Axis_Packetizer #(
 
                         if (payload_idx == ((cfg_payload_bytes == 16'd0) ? MAX_PAYLOAD_BYTES[15:0] : cfg_payload_bytes)-1) begin
                             emit_last   = 1'b1;
-                            state       <= ST_HEADER;
+                            state       <= ST_PACE;
+                            pacer       <= PACER_CYCLES;
                             payload_idx <= '0;
 
                             if (saw_frame_start) begin
