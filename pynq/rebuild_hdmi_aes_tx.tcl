@@ -42,17 +42,35 @@ catch {set_property AUTO_INCREMENTAL_CHECKPOINT 0 [get_runs synth_1]}
 catch {set_property INCREMENTAL_CHECKPOINT {} [get_runs synth_1]}
 catch {set_property AUTO_INCREMENTAL_CHECKPOINT 0 [get_runs impl_1]}
 catch {set_property INCREMENTAL_CHECKPOINT {} [get_runs impl_1]}
+# Try harder by default: the GHASH 128-bit GF multiply path in the AES core sits
+# ~9.8/10ns at 100MHz and flips with placement variance. Explore directives give
+# systematically better QoR. (Proper fix = pipeline GHASH; see pynq/README notes.)
+catch {set_property STEPS.PLACE_DESIGN.ARGS.DIRECTIVE Explore [get_runs impl_1]}
+catch {set_property STEPS.ROUTE_DESIGN.ARGS.DIRECTIVE Explore [get_runs impl_1]}
 catch {file delete -force "HDMI_AES_TX/HDMI_AES_TX.srcs/utils_1/imports/synth_1"}
 
 set synth_done 0
+set _force_synth 0
 catch {
     set _ss [get_property STATUS [get_runs synth_1]]
     set synth_done [string match "*Complete*" $_ss]
 }
-if {$synth_done} {
-    puts "=== synth_1 checkpoint VALID: skipping synthesis, reusing it ==="
+# Checkpoint is only valid if no RTL/BD source changed since it was built.
+set _synth_dcp [file normalize "HDMI_AES_TX/HDMI_AES_TX.runs/synth_1/hdmi_aes_tx_wrapper.dcp"]
+if {[file exists $_synth_dcp]} {
+    set _dcp_mtime [file mtime $_synth_dcp]
+    foreach _src [glob -nocomplain "AES_VERILOG.srcs/sources_1/new/*.sv"] {
+        if {[file mtime $_src] > $_dcp_mtime} { set _force_synth 1 }
+    }
+    foreach _src [glob -nocomplain "AES_VERILOG.srcs/sources_1/new/*.v"] {
+        if {[file mtime $_src] > $_dcp_mtime} { set _force_synth 1 }
+    }
+    if {[file mtime pynq/build_bd_hdmi_aes_tx.tcl] > $_dcp_mtime} { set _force_synth 1 }
+}
+if {$synth_done && !$_force_synth} {
+    puts "=== synth_1 checkpoint VALID and sources unchanged: skipping synthesis ==="
 } else {
-    puts "=== synth_1 checkpoint missing/stale: running FULL synthesis ==="
+    puts "=== synth_1 checkpoint stale or sources changed: running FULL synthesis ==="
     catch {reset_run synth_1}
 }
 puts "=== launching impl_1 (synth + place + route + bitgen)... ==="

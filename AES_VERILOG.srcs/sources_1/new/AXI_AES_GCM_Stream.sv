@@ -404,9 +404,22 @@ module AXI_AES_GCM_Stream #(
     end
 
     // ----------------------------------------------------------------
-    // Stream-side CT FIFO and in-flight accounting
+    // Stream-side CT FIFO and in-flight accounting.
+    // The 16-byte GCM tag is appended to the ciphertext stream as one final
+    // full beat (TKEEP is always 0xFFFF), so the stream carries the complete
+    // OSV datagram body: CT + TAG, with tlast on the tag beat.
     // ----------------------------------------------------------------
-    wire ct_fifo_push = stream_mode_reg && ct_valid;
+    reg tag_pending;
+
+    // Push priority: a live ct beat wins over the pending tag; if they ever
+    // coincide, the tag waits one cycle (never lost).
+    wire push_ct_now  = stream_mode_reg && ct_valid;
+    wire push_tag_now = stream_mode_reg && tag_pending && !ct_valid;
+    wire ct_fifo_push = push_ct_now || push_tag_now;
+    wire [0:127] push_data = push_tag_now ? tag_latched :
+                             ((stream_mode_reg && tag_valid && !ct_valid) ? tag_out : ct_data);
+    wire push_last = push_tag_now ? 1'b1 :
+                     ((stream_mode_reg && tag_valid && !ct_valid) ? 1'b1 : ct_last);
     wire ct_fifo_pop  = stream_mode_reg && !ct_fifo_empty && M_AXIS_CT_TREADY;
 
     always_ff @(posedge clk) begin
@@ -416,6 +429,7 @@ module AXI_AES_GCM_Stream #(
             ct_fifo_count  <= '0;
             pt_inflight_count <= '0;
             ct_fifo_overflow_sticky <= 1'b0;
+            tag_pending <= 1'b0;
         end
         else if (start_session_pulse) begin
             // Start every session with empty stream buffers.
@@ -424,12 +438,19 @@ module AXI_AES_GCM_Stream #(
             ct_fifo_count  <= '0;
             pt_inflight_count <= '0;
             ct_fifo_overflow_sticky <= 1'b0;
+            tag_pending <= 1'b0;
         end
         else begin
+            if (tag_valid && !push_tag_now) begin
+                tag_pending <= 1'b1;
+            end else if (push_tag_now && !ct_fifo_full) begin
+                tag_pending <= 1'b0;
+            end
+
             if (ct_fifo_push) begin
                 if (!ct_fifo_full) begin
-                    ct_fifo_data[ct_fifo_wr_ptr] <= ct_data;
-                    ct_fifo_last[ct_fifo_wr_ptr] <= ct_last;
+                    ct_fifo_data[ct_fifo_wr_ptr] <= push_data;
+                    ct_fifo_last[ct_fifo_wr_ptr] <= push_last;
                     ct_fifo_wr_ptr <= ptr_inc(ct_fifo_wr_ptr);
                 end
                 else begin
