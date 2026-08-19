@@ -197,7 +197,7 @@ set_property -dict [list \
     CONFIG.PCW_FCLK_CLK2_BUF {TRUE} \
     CONFIG.PCW_USE_M_AXI_GP0 {1} \
     CONFIG.PCW_USE_S_AXI_HP0 {1} \
-    CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {75} \
+    CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {50} \
     CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {142} \
     CONFIG.PCW_FPGA2_PERIPHERAL_FREQMHZ {200} \
     CONFIG.PCW_USE_FABRIC_INTERRUPT {1} \
@@ -561,7 +561,7 @@ foreach _ipin [list \
     [get_bd_intf_pins -quiet hdmi_axis_cdc_fifo/M_AXIS] \
 ] {
     if {[llength $_ipin] > 0} {
-        set_property CONFIG.FREQ_HZ {76190483} $_ipin
+        set_property CONFIG.FREQ_HZ {50000000} $_ipin
     }
 }
 puts "FREQ_HZ forced on stale FCLK0-domain intf pins"
