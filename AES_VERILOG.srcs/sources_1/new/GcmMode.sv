@@ -110,7 +110,13 @@ module GcmMode #(
     wire session_accept = session_start_i && session_ready_o;
     wire sched_block    = new_masterkey || session_accept;
 
-    wire launch_h  = (!sched_block) && pending_h;
+    // Wait for the key expansion to COMPLETE before encrypting H = E_K(0).
+    // Previously launch_h fired ~1 cycle after new_masterkey, so the H block
+    // flowed through the pipeline while the round keys were still being
+    // computed -> H was garbage -> GHASH over a wrong H -> tag never verified
+    // (the CTR keystream and E_K(J0) are computed later, after the expansion,
+    // which is why they verified correctly on the wire while the tag never did).
+    wire launch_h  = (!sched_block) && pending_h && (keys_ready == 4'd15);
     wire launch_j0 = (!sched_block) && (!pending_h) && pending_j0 && key_present;
     wire slot_for_pt = (!sched_block) && (!pending_h) && !(pending_j0 && key_present);
 

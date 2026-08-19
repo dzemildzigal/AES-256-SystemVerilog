@@ -105,6 +105,10 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] AES_REG_TAG1        = 8'h8C;
     localparam logic [7:0] AES_REG_TAG2        = 8'h90;
     localparam logic [7:0] AES_REG_TAG3        = 8'h94;
+    localparam logic [7:0] AES_REG_GHASH0      = 8'h78;
+    localparam logic [7:0] AES_REG_GHASH1      = 8'h7C;
+    localparam logic [7:0] AES_REG_GHASH2      = 8'h80;
+    localparam logic [7:0] AES_REG_GHASH3      = 8'h84;
 
     // Sequencer AXI-Lite register map.
     localparam logic [7:0] REG_CTRL          = 8'h00;
@@ -136,6 +140,10 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_TAG2 = 8'h68;
     localparam logic [7:0] REG_TAG3 = 8'h6C;
     localparam logic [7:0] REG_TAG_VALID = 8'h70;
+    localparam logic [7:0] REG_GHASH0 = 8'h74;
+    localparam logic [7:0] REG_GHASH1 = 8'h78;
+    localparam logic [7:0] REG_GHASH2 = 8'h7C;
+    localparam logic [7:0] REG_GHASH3 = 8'h80;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -180,7 +188,11 @@ module AES_GCM_Session_Sequencer #(
         ST_RD_TAG0         = 5'd23,
         ST_RD_TAG1         = 5'd24,
         ST_RD_TAG2         = 5'd25,
-        ST_RD_TAG3         = 5'd26
+        ST_RD_TAG3         = 5'd26,
+        ST_RD_GHASH0       = 5'd27,
+        ST_RD_GHASH1       = 5'd28,
+        ST_RD_GHASH2       = 5'd29,
+        ST_RD_GHASH3       = 5'd30
     } state_t;
 
     state_t state;
@@ -199,6 +211,7 @@ module AES_GCM_Session_Sequencer #(
 
     // Mirrored AES GCM tag (read from AES 0x88-0x94 after each packet).
     logic [31:0] reg_tag_word [0:3];
+    logic [31:0] reg_ghash_word [0:3];
     logic        tag_valid_flag;
     logic [31:0] mst_rd_data;
 
@@ -359,6 +372,10 @@ module AES_GCM_Session_Sequencer #(
                     REG_TAG1: S_AXI_RDATA <= reg_tag_word[1];
                     REG_TAG2: S_AXI_RDATA <= reg_tag_word[2];
                     REG_TAG3: S_AXI_RDATA <= reg_tag_word[3];
+                    REG_GHASH0: S_AXI_RDATA <= reg_ghash_word[0];
+                    REG_GHASH1: S_AXI_RDATA <= reg_ghash_word[1];
+                    REG_GHASH2: S_AXI_RDATA <= reg_ghash_word[2];
+                    REG_GHASH3: S_AXI_RDATA <= reg_ghash_word[3];
                     REG_TAG_VALID: S_AXI_RDATA <= {31'd0, tag_valid_flag};
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
@@ -443,6 +460,26 @@ module AES_GCM_Session_Sequencer #(
                 M_AXI_ARVALID  <= 1'b1;
                 M_AXI_RREADY   <= 1'b1;
                 mst_rd_pending <= 1'b1;
+            end else if (!mst_rd_pending && state == ST_RD_GHASH0) begin
+                M_AXI_ARADDR   <= AES_REG_GHASH0;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
+            end else if (!mst_rd_pending && state == ST_RD_GHASH1) begin
+                M_AXI_ARADDR   <= AES_REG_GHASH1;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
+            end else if (!mst_rd_pending && state == ST_RD_GHASH2) begin
+                M_AXI_ARADDR   <= AES_REG_GHASH2;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
+            end else if (!mst_rd_pending && state == ST_RD_GHASH3) begin
+                M_AXI_ARADDR   <= AES_REG_GHASH3;
+                M_AXI_ARVALID  <= 1'b1;
+                M_AXI_RREADY   <= 1'b1;
+                mst_rd_pending <= 1'b1;
             end else begin
                 if (M_AXI_ARVALID && M_AXI_ARREADY) begin
                     M_AXI_ARVALID <= 1'b0;
@@ -470,6 +507,10 @@ module AES_GCM_Session_Sequencer #(
             reg_tag_word[1] <= '0;
             reg_tag_word[2] <= '0;
             reg_tag_word[3] <= '0;
+            reg_ghash_word[0] <= '0;
+            reg_ghash_word[1] <= '0;
+            reg_ghash_word[2] <= '0;
+            reg_ghash_word[3] <= '0;
             tag_valid_flag   <= 1'b0;
             mst_wr_addr <= '0;
             mst_wr_data <= '0;
@@ -645,7 +686,17 @@ module AES_GCM_Session_Sequencer #(
                     if (mst_rd_done) begin
                         reg_tag_word[3] <= mst_rd_data;
                         tag_valid_flag   <= 1'b1;
-                        state            <= ST_IDLE;
+                        state            <= ST_RD_GHASH0;
+                    end
+                end
+
+                ST_RD_GHASH0: begin if (mst_rd_done) begin reg_ghash_word[0] <= mst_rd_data; state <= ST_RD_GHASH1; end end
+                ST_RD_GHASH1: begin if (mst_rd_done) begin reg_ghash_word[1] <= mst_rd_data; state <= ST_RD_GHASH2; end end
+                ST_RD_GHASH2: begin if (mst_rd_done) begin reg_ghash_word[2] <= mst_rd_data; state <= ST_RD_GHASH3; end end
+                ST_RD_GHASH3: begin
+                    if (mst_rd_done) begin
+                        reg_ghash_word[3] <= mst_rd_data;
+                        state              <= ST_IDLE;
                     end
                 end
 
