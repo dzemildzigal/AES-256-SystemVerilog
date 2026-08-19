@@ -11,6 +11,10 @@ module EncryptionRound
     output logic [0:127] out
     );
 
+    // Sim-friendly: xsim resolves a parameter-indexed part-select on a port
+    // to index 0 in some hierarchies; hoist the base to a localparam.
+    localparam integer KEY_BASE = i * 128;
+
 wire [0:127] sub_bytes_output;
 SubBytes sub_bytes_middle(.input_state(in),
                           .output_state(sub_bytes_output));
@@ -25,7 +29,7 @@ MixColumns mix_columns_middle(.input_state(shift_rows_output),
 
 wire [0:127] add_round_key_out;
 AddRoundKey add_round_key(.input_state(mix_columns_output),
-                          .round_key(expanded_key[i*128 +:128]),
+                          .round_key(expanded_key[KEY_BASE +:128]),
                           .output_state(add_round_key_out));
 
 always_ff @(posedge clk) begin

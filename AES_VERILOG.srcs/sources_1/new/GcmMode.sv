@@ -110,22 +110,21 @@ module GcmMode #(
     wire session_accept = session_start_i && session_ready_o;
     wire sched_block    = new_masterkey || session_accept;
 
-    // Wait for the key expansion to COMPLETE before encrypting H = E_K(0).
-    // Previously launch_h fired ~1 cycle after new_masterkey, so the H block
-    // flowed through the pipeline while the round keys were still being
-    // computed -> H was garbage -> GHASH over a wrong H -> tag never verified
-    // (the CTR keystream and E_K(J0) are computed later, after the expansion,
-    // which is why they verified correctly on the wire while the tag never did).
-    wire launch_h  = (!sched_block) && pending_h && (keys_ready == 4'd15);
+    wire launch_h  = (!sched_block) && pending_h;
     wire launch_j0 = (!sched_block) && (!pending_h) && pending_j0 && key_present;
     wire slot_for_pt = (!sched_block) && (!pending_h) && !(pending_j0 && key_present);
 
     wire h_path_ready      = h_valid_o || pending_h;
-    wire pt_path_pending   = sess_pending && (aad_len_bits_reg == 64'd0) && j0_launched && h_path_ready;
 
     logic gh_ct_ready;
+    // PT is accepted only once the GHASH session is actually running.
+    // Previously pt_path_pending let PT fire during sess_pending (before the
+    // GHASH had started), so the first CT blocks emerged while ct_valid_i
+    // was gated by sess_running and were silently DROPPED from the GHASH ->
+    // the tag was computed over a truncated ciphertext (CT stayed byte-correct
+    // on the wire, but the tag never verified). Wait for sess_running instead.
     wire pt_path_running   = sess_running && gh_ct_ready;
-    wire pt_base_ready     = key_present && (pt_path_pending || pt_path_running);
+    wire pt_base_ready     = key_present && pt_path_running;
 
     assign pt_ready_o      = slot_for_pt && pt_base_ready;
     wire pt_fire           = pt_valid_i && pt_ready_o;
