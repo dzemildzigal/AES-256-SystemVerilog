@@ -197,7 +197,7 @@ set_property -dict [list \
     CONFIG.PCW_FCLK_CLK2_BUF {TRUE} \
     CONFIG.PCW_USE_M_AXI_GP0 {1} \
     CONFIG.PCW_USE_S_AXI_HP0 {1} \
-    CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100} \
+    CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {75} \
     CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {142} \
     CONFIG.PCW_FPGA2_PERIPHERAL_FREQMHZ {200} \
     CONFIG.PCW_USE_FABRIC_INTERRUPT {1} \
@@ -544,6 +544,27 @@ connect_if_unconnected $ps_fclk2_pin [get_bd_pins dvi2rgb_0/RefClk]
 connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins v_vid_in_axi4s_0/vid_io_in_clk]
 connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins vtc_in/clk]
 connect_bd_net [get_bd_pins rst_pixelclk/peripheral_reset] [get_bd_pins v_vid_in_axi4s_0/vid_io_in_reset]
+
+# FCLK0 was dropped to 75 MHz (opens the GHASH GF-multiply timing margin from
+# ~0.2ns to ~3.5ns). Vivado's automation updates some interface FREQ_HZ
+# metadata but leaves custom-IP interfaces at their stale 100 MHz creation-
+# time defaults, which fails validate_bd_design. Force all of them.
+foreach _ipin [list \
+    [get_bd_intf_pins -quiet $WRITER_INST/M_AXI] \
+    [get_bd_intf_pins -quiet $WRITER_INST/S_AXIS_SRC] \
+    [get_bd_intf_pins -quiet $AES_INST/S_AXIS_PT] \
+    [get_bd_intf_pins -quiet $AES_INST/M_AXIS_CT] \
+    [get_bd_intf_pins -quiet $AES_INST/S_AXI] \
+    [get_bd_intf_pins -quiet $SEQUENCER_INST/s_axis] \
+    [get_bd_intf_pins -quiet $PACKETIZER_INST/s_axis_video] \
+    [get_bd_intf_pins -quiet $PACKETIZER_INST/m_axis_pkt] \
+    [get_bd_intf_pins -quiet hdmi_axis_cdc_fifo/M_AXIS] \
+] {
+    if {[llength $_ipin] > 0} {
+        set_property CONFIG.FREQ_HZ {76190483} $_ipin
+    }
+}
+puts "FREQ_HZ forced on stale FCLK0-domain intf pins"
 
 assign_bd_address
 regenerate_bd_layout
