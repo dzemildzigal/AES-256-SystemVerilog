@@ -21,9 +21,6 @@ module HDMI_Axis_Packetizer #(
     input  logic         cfg_enable,
 
     // Free-running diagnostic counters, read back via aes_seq_0.
-    // beat_count: +1 every clock s_axis_video_tvalid is high (assertion, not
-    // handshake: if data arrives but is never consumed, this still climbs).
-    // frame_count: +1 per accepted start-of-frame (tvalid && tready && tuser).
     output logic [63:0] dbg_video_beat_count,
     output logic [63:0] dbg_video_frame_count,
 
@@ -38,40 +35,44 @@ module HDMI_Axis_Packetizer #(
     localparam logic [7:0]  VERSION = 8'd0;
     localparam logic [7:0]  TAG_LENGTH = 8'd16;
     localparam int unsigned HEADER_BYTES = 40;
-    // Inter-packet gap so the PS Python path can keep up (500 pkt/s at 100MHz).
-    // ponytail: pacer keeps the pipeline deterministic for the bring-up stage;
-    // remove it when a faster PS transport (C shim) replaces the Python sender.
-    localparam logic [17:0] PACER_CYCLES = 18'd200000;
 
-    typedef enum logic [2:0] {
-        ST_ARM     = 3'd0,   // ponytail: wait for first real frame (tuser) before packetizing;
-                             // prevents a boot-time session starting with no video (see aresetn block)
-        ST_HEADER  = 3'd1,
-        ST_PAYLOAD = 3'd2,
-        ST_PACE    = 3'd3    // post-packet gap (PACER_CYCLES) so the PS sender keeps up
+    // Full-frame transport geometry (1280x720 RGB888, fixed):
+    //   payload = 1176 bytes = 392 pixels (40+1176 = 1216 = 76 x 16-byte beats)
+    //   frame   = 921600 px = 2351 full segments + one 8-pixel segment
+    //             -> SEGS_PER_FRAME = 2352 (last segment = 8 px + 384 px pad)
+    //   rate    = 30 fps: capture every 2nd source frame (720p60 in)
+    localparam int unsigned PX_PER_SEG     = 392;
+    localparam logic [15:0] SEGS_PER_FRAME = 16'd2352;
+    localparam logic         SKIP_FRAMES   = 1'b1;
+
+    typedef enum logic [1:0] {
+        ST_ARM    = 2'd0,   // wait for the first real SOF
+        ST_ACTIVE = 2'd1,   // capture: header + 1176-byte segments
+        ST_SKIP   = 2'd2    // consume-and-discard one source frame (30 fps)
     } state_t;
 
     state_t state;
 
-    logic [7:0]   header_idx;
-    logic [10:0]  payload_idx;
-    logic [31:0]  frame_id;
-    logic [15:0]  segment_id;
-    logic         packet_started;
-    logic         saw_frame_start;
+    // 16-byte beat packer: 1 or 3 bytes fed per cycle, beat boundary carry.
+    reg [127:0] cur_beat;
+    reg [15:0]  cur_keep;
+    reg [127:0] nxt_beat;
+    reg [15:0]  nxt_keep;
+    reg [3:0]   pos;
 
-    logic [23:0]  pixel_buf;
-    logic [1:0]   pixel_byte_idx;
-    logic         pixel_valid;
+    reg [7:0]   header_idx;    // < 40 = header phase; == 40 = payload phase
+    reg [10:0]  payload_idx;   // payload bytes fed so far (0..1175)
+    reg [8:0]   pixel_cnt;     // pixels in the current segment (0..391)
+    reg [8:0]   pad_cnt;       // pad pixels remaining at the frame cut
+    reg         capture_frame; // frame parity: capture or skip
+    reg         pending_skip;  // decided at the SOF, applied after the pad
+    reg         skip_first;    // consume the held first pixel of a skipped frame
+    reg         skip_sof_check;// the held pixel after ARM/SKIP carries a stale SOF
+    reg [31:0]  frame_id;
+    reg [15:0]  segment_id;
 
-    logic [127:0] pack_data;
-    logic [15:0]  pack_keep;
-    logic [4:0]   pack_count;
-
-    logic [17:0]  pacer;
-
-    logic [63:0]  dbg_video_beat_count_r;
-    logic [63:0]  dbg_video_frame_count_r;
+    logic [63:0] dbg_video_beat_count_r;
+    logic [63:0] dbg_video_frame_count_r;
 
     assign dbg_video_beat_count  = dbg_video_beat_count_r;
     assign dbg_video_frame_count = dbg_video_frame_count_r;
@@ -107,11 +108,8 @@ module HDMI_Axis_Packetizer #(
                 8'd13: header_byte = f_id[7:0];
                 8'd14: header_byte = s_id[15:8];
                 8'd15: header_byte = s_id[7:0];
-                8'd16: header_byte = 8'd0;
-                8'd17: header_byte = 8'd1;  // ponytail: segment_count=1 (packet granularity for now).
-                                            // Real per-video-frame segment_count needs a new
-                                            // cfg_segment_count input from the sequencer;
-                                            // deferred until transport/crypto is proven end-to-end.
+                8'd16: header_byte = SEGS_PER_FRAME[15:8];
+                8'd17: header_byte = SEGS_PER_FRAME[7:0];
                 8'd18: header_byte = ts[63:56];
                 8'd19: header_byte = ts[55:48];
                 8'd20: header_byte = ts[47:40];
@@ -138,31 +136,41 @@ module HDMI_Axis_Packetizer #(
         end
     endfunction
 
+    reg         seg_last_pending; // the tlast latch: set at the segment's last byte,
+                                  // consumed by the beat that carries it
+
     always_ff @(posedge aclk) begin
-        logic [127:0] next_pack_data;
-        logic [15:0]  next_pack_keep;
-        logic [4:0]   next_pack_count;
-        logic [7:0]   emit_byte;
-        logic         emit_valid;
-        logic         emit_last;
+        logic [7:0]  fb0, fb1, fb2;
+        logic [1:0]  fb_cnt;
+        logic        do_feed;
+        logic        seg_complete;
+        logic        beat_wrap;
+        logic [127:0] cb;
+        logic [15:0]  ck;
+        logic [127:0] nb;
+        logic [15:0]  nk;
+        logic [3:0]   ps;
 
         if (!aresetn) begin
             state               <= ST_ARM;
-            header_idx          <= '0;
+            capture_frame       <= 1'b0;
+            pending_skip        <= 1'b0;
+            skip_first          <= 1'b0;
+            skip_sof_check      <= 1'b0;
+            seg_last_pending    <= 1'b0;
+            header_idx          <= HEADER_BYTES;
             payload_idx         <= '0;
+            pixel_cnt           <= '0;
+            pad_cnt             <= '0;
             frame_id            <= '0;
             segment_id          <= '0;
-            packet_started      <= 1'b0;
-            saw_frame_start     <= 1'b0;
-            pixel_buf           <= '0;
-            pixel_byte_idx      <= '0;
-            pixel_valid         <= 1'b0;
-            pacer               <= '0;
+            cur_beat            <= '0;
+            cur_keep            <= '0;
+            nxt_beat            <= '0;
+            nxt_keep            <= '0;
+            pos                 <= '0;
             dbg_video_beat_count_r  <= '0;
             dbg_video_frame_count_r <= '0;
-            pack_data           <= '0;
-            pack_keep           <= '0;
-            pack_count          <= '0;
             m_axis_pkt_tdata    <= '0;
             m_axis_pkt_tkeep    <= '0;
             m_axis_pkt_tvalid   <= 1'b0;
@@ -180,116 +188,228 @@ module HDMI_Axis_Packetizer #(
                 m_axis_pkt_tlast  <= 1'b0;
             end
 
-            next_pack_data  = pack_data;
-            next_pack_keep  = pack_keep;
-            next_pack_count = pack_count;
-            emit_valid      = 1'b0;
-            emit_last       = 1'b0;
-            emit_byte       = 8'd0;
+            fb0 = 8'd0; fb1 = 8'd0; fb2 = 8'd0;
+            fb_cnt = 2'd0;
+            do_feed = 1'b0;
+            seg_complete = 1'b0;
 
+            // ---- byte-feed decision (only when the packer is not stalled) ----
             if (!m_axis_pkt_tvalid) begin
-                if (state == ST_ARM) begin
-                    if (cfg_enable && s_axis_video_tvalid && s_axis_video_tuser) begin
-                        state <= ST_HEADER;
+                case (state)
+                    ST_ARM: begin
+                        if (cfg_enable && s_axis_video_tvalid && s_axis_video_tuser) begin
+                            state <= ST_ACTIVE;
+                            capture_frame <= 1'b1;
+                            header_idx <= '0;
+                            payload_idx <= '0;
+                            pixel_cnt <= '0;
+                            frame_id <= '0;
+                            segment_id <= '0;
+                            skip_sof_check <= 1'b1;
+                        end
                     end
-                    // s_axis_video_tready is 0 here (existing assign only asserts it in
-                    // ST_PAYLOAD), so this beat is only observed, not consumed. It gets
-                    // captured for real once ST_PAYLOAD starts.
-                end else if (state == ST_PACE) begin
-                    if (pacer != 18'd0) begin
-                        pacer <= pacer - 1'b1;
-                    end else begin
-                        state <= ST_HEADER;
+
+                    ST_SKIP: begin
+                        if (skip_first) begin
+                            // Consume the held first pixel of the discarded
+                            // frame (it carries the SOF of the frame being
+                            // skipped, not of the next one).
+                            if (s_axis_video_tvalid) begin
+                                skip_first <= 1'b0;
+                            end
+                        end else if (s_axis_video_tvalid && s_axis_video_tuser) begin
+                            // The NEXT frame's first pixel: keep it, capture.
+                            state <= ST_ACTIVE;
+                            capture_frame <= 1'b1;
+                            frame_id <= frame_id + 1'b1;
+                            header_idx <= '0;
+                            payload_idx <= '0;
+                            pixel_cnt <= '0;
+                            segment_id <= '0;
+                            skip_sof_check <= 1'b1;
+                        end
                     end
-                end else if (state == ST_HEADER) begin
-                    emit_valid = 1'b1;
-                    emit_byte  = header_byte(
-                        header_idx,
-                        cfg_session_id,
-                        cfg_stream_id,
-                        frame_id,
-                        segment_id,
-                        cfg_payload_type,
-                        cfg_key_id,
-                        cfg_nonce_counter,
-                        (cfg_payload_bytes == 16'd0) ? MAX_PAYLOAD_BYTES[15:0] : cfg_payload_bytes
-                    );
-                    if (header_idx == HEADER_BYTES-1) begin
-                        state      <= ST_PAYLOAD;
-                        header_idx <= '0;
+
+                    ST_ACTIVE: begin
+                        if (header_idx < HEADER_BYTES) begin
+                            // header phase: 1 byte per cycle
+                            fb_cnt = 2'd1;
+                            fb0 = header_byte(
+                                header_idx,
+                                cfg_session_id,
+                                cfg_stream_id,
+                                frame_id,
+                                segment_id,
+                                cfg_payload_type,
+                                cfg_key_id,
+                                cfg_nonce_counter,
+                                (cfg_payload_bytes == 16'd0) ? MAX_PAYLOAD_BYTES[15:0] : cfg_payload_bytes
+                            );
+                            do_feed = 1'b1;
+                            if (header_idx == HEADER_BYTES-1) begin
+                                header_idx <= HEADER_BYTES;  // -> payload phase
+                                payload_idx <= '0;
+                                pixel_cnt <= '0;
+                            end else begin
+                                header_idx <= header_idx + 1'b1;
+                            end
+                        end
+                        else if (pad_cnt != 9'd0) begin
+                            // pad phase: 3 zero bytes per cycle (1 pad pixel)
+                            fb_cnt = 2'd3;
+                            do_feed = 1'b1;
+                            pad_cnt <= pad_cnt - 1'b1;
+                            if (pad_cnt == 9'd1) begin
+                                seg_complete = 1'b1;
+                                if (pending_skip) begin
+                                    state <= ST_SKIP;
+                                    skip_first <= 1'b1;
+                                end else begin
+                                    state <= ST_ACTIVE;
+                                    header_idx <= '0;
+                                    payload_idx <= '0;
+                                    pixel_cnt <= '0;
+                                    segment_id <= '0;
+                                end
+                            end
+                        end
+                        else if (s_axis_video_tvalid && skip_sof_check) begin
+                            // The held pixel after the ARM/SKIP transition: its
+                            // SOF flag is stale and must not re-trigger the
+                            // frame-boundary logic.
+                            skip_sof_check <= 1'b0;
+                            fb_cnt = 2'd3;
+                            fb0 = s_axis_video_tdata[23:16];
+                            fb1 = s_axis_video_tdata[15:8];
+                            fb2 = s_axis_video_tdata[7:0];
+                            do_feed = 1'b1;
+                            payload_idx <= payload_idx + 11'd3;
+                            pixel_cnt <= 9'd1;  // same increment as the normal
+                                                // path, so every segment counts
+                                                // identically (392 px each)
+                        end
+                        else if (s_axis_video_tvalid && s_axis_video_tuser) begin
+                            // SOF: the next frame's first pixel. Close the
+                            // current segment, decide the next frame, do NOT
+                            // consume this pixel yet.
+                            capture_frame <= !capture_frame;
+                            pending_skip <= capture_frame;  // the NEXT frame skips
+                            frame_id <= frame_id + 1'b1;
+                            if (pixel_cnt != 9'd0) begin
+                                pad_cnt <= PX_PER_SEG - pixel_cnt;
+                            end else begin
+                                // exact segment boundary: no pad needed
+                                if (capture_frame) begin
+                                    state <= ST_SKIP;
+                                    skip_first <= 1'b1;
+                                end else begin
+                                    state <= ST_ACTIVE;
+                                    header_idx <= '0;
+                                    payload_idx <= '0;
+                                    pixel_cnt <= '0;
+                                    segment_id <= '0;
+                                end
+                            end
+                        end
+                        else if (s_axis_video_tvalid) begin
+                            // payload phase: 3 bytes per cycle (1 pixel)
+                            fb_cnt = 2'd3;
+                            fb0 = s_axis_video_tdata[23:16];
+                            fb1 = s_axis_video_tdata[15:8];
+                            fb2 = s_axis_video_tdata[7:0];
+                            do_feed = 1'b1;
+                            payload_idx <= payload_idx + 11'd3;
+                            if (pixel_cnt == PX_PER_SEG-1) begin
+                                seg_complete = 1'b1;
+                                segment_id <= segment_id + 1'b1;
+                                pixel_cnt <= '0;
+                                header_idx <= '0;
+                            end else begin
+                                pixel_cnt <= pixel_cnt + 1'b1;
+                            end
+                        end
+                    end
+                endcase
+            end
+
+            // ---- beat packer (1 or 3 bytes, carry across the beat boundary) ----
+            cb = cur_beat; ck = cur_keep;
+            nb = nxt_beat; nk = nxt_keep;
+            ps = pos;
+            beat_wrap = 1'b0;
+
+            if (do_feed) begin
+                if (fb_cnt == 2'd1) begin
+                    if (ps < 4'd15) begin
+                        cb[8*ps +: 8] = fb0;
+                        ck[ps] = 1'b1;
+                        ps = ps + 1'b1;
                     end else begin
-                        header_idx <= header_idx + 1'b1;
+                        cb[120 +: 8] = fb0;
+                        ck[15] = 1'b1;
+                        beat_wrap = 1'b1;
                     end
                 end else begin
-                    if (!pixel_valid && s_axis_video_tvalid) begin
-                        pixel_buf      <= s_axis_video_tdata;
-                        pixel_valid    <= 1'b1;
-                        pixel_byte_idx <= 2'd0;
-                        if (s_axis_video_tuser) begin
-                            saw_frame_start <= 1'b1;
-                        end
-                    end
-
-                    if (pixel_valid) begin
-                        emit_valid = 1'b1;
-                        case (pixel_byte_idx)
-                            2'd0: emit_byte = pixel_buf[23:16];
-                            2'd1: emit_byte = pixel_buf[15:8];
-                            default: emit_byte = pixel_buf[7:0];
-                        endcase
-
-                        if (pixel_byte_idx == 2'd2) begin
-                            pixel_valid    <= 1'b0;
-                            pixel_byte_idx <= 2'd0;
-                        end else begin
-                            pixel_byte_idx <= pixel_byte_idx + 1'b1;
-                        end
-
-                        if (payload_idx == ((cfg_payload_bytes == 16'd0) ? MAX_PAYLOAD_BYTES[15:0] : cfg_payload_bytes)-1) begin
-                            emit_last   = 1'b1;
-                            state       <= ST_PACE;
-                            pacer       <= PACER_CYCLES;
-                            payload_idx <= '0;
-
-                            if (saw_frame_start) begin
-                                if (packet_started) begin
-                                    frame_id <= frame_id + 1'b1;
-                                end
-                                segment_id <= '0;
-                                saw_frame_start <= 1'b0;
-                            end else begin
-                                segment_id <= segment_id + 1'b1;
-                            end
-                            packet_started <= 1'b1;
-                        end else begin
-                            payload_idx <= payload_idx + 1'b1;
-                        end
+                    if (ps <= 4'd12) begin
+                        cb[8*ps +: 8]    = fb0;
+                        cb[8*ps+8 +: 8]  = fb1;
+                        cb[8*ps+16 +: 8] = fb2;
+                        ck[ps] = 1'b1; ck[ps+1] = 1'b1; ck[ps+2] = 1'b1;
+                        ps = ps + 4'd3;
+                    end else if (ps == 4'd13) begin
+                        // 13+3 = 16: the beat completes exactly, no carry
+                        cb[104 +: 8] = fb0;
+                        cb[112 +: 8] = fb1;
+                        cb[120 +: 8] = fb2;
+                        ck[13] = 1'b1; ck[14] = 1'b1; ck[15] = 1'b1;
+                        beat_wrap = 1'b1;
+                    end else if (ps == 4'd14) begin
+                        cb[112 +: 8] = fb0;
+                        cb[120 +: 8] = fb1;
+                        nb[0 +: 8]   = fb2;
+                        ck[14] = 1'b1; ck[15] = 1'b1; nk[0] = 1'b1;
+                        beat_wrap = 1'b1;
+                    end else begin  // ps == 15
+                        cb[120 +: 8] = fb0;
+                        nb[0 +: 8]   = fb1;
+                        nb[8 +: 8]   = fb2;
+                        ck[15] = 1'b1; nk[0] = 1'b1; nk[1] = 1'b1;
+                        beat_wrap = 1'b1;
                     end
                 end
 
-                if (emit_valid) begin
-                    next_pack_data[8*next_pack_count +: 8] = emit_byte;
-                    next_pack_keep[next_pack_count] = 1'b1;
-                    next_pack_count = next_pack_count + 1'b1;
-
-                    if ((next_pack_count == 16) || emit_last) begin
-                        m_axis_pkt_tdata  <= next_pack_data;
-                        m_axis_pkt_tkeep  <= next_pack_keep;
-                        m_axis_pkt_tvalid <= 1'b1;
-                        m_axis_pkt_tlast  <= emit_last;
-                        next_pack_data    = '0;
-                        next_pack_keep    = '0;
-                        next_pack_count   = '0;
-                    end
+                if (beat_wrap) begin
+                    m_axis_pkt_tdata  <= cb;
+                    m_axis_pkt_tkeep  <= ck;
+                    m_axis_pkt_tvalid <= 1'b1;
+                    m_axis_pkt_tlast  <= seg_complete || seg_last_pending;
+                    cb = nb; ck = nk;
+                    nb = '0; nk = '0;
+                    if (fb_cnt == 2'd1)      ps = 4'd0;
+                    else if (ps == 4'd13)    ps = 4'd0;
+                    else if (ps == 4'd14)    ps = 4'd1;
+                    else                     ps = 4'd2;
                 end
             end
 
-            pack_data  <= next_pack_data;
-            pack_keep  <= next_pack_keep;
-            pack_count <= next_pack_count;
+            cur_beat <= cb; cur_keep <= ck;
+            nxt_beat <= nb; nxt_keep <= nk;
+            pos <= ps;
+
+            // The tlast latch: a completion that does not land on the beat
+            // boundary this cycle (the last bytes straddle a beat) is held
+            // until the beat that carries it emits.
+            if (seg_complete && !beat_wrap) seg_last_pending <= 1'b1;
+            else if (beat_wrap)             seg_last_pending <= 1'b0;
         end
     end
 
-    assign s_axis_video_tready = cfg_enable && (state == ST_PAYLOAD) && !pixel_valid && !m_axis_pkt_tvalid;
+    // Consume pixels in the active payload phase (not during the header/pad,
+    // not when the packer stalls) and in the skip state (except the SOF
+    // pixel, which is the next frame's first pixel).
+    assign s_axis_video_tready =
+        (state == ST_SKIP && (skip_first || !(s_axis_video_tvalid && s_axis_video_tuser))) ||
+        (state == ST_ACTIVE && cfg_enable && (header_idx == HEADER_BYTES) &&
+         (pad_cnt == 9'd0) && !m_axis_pkt_tvalid);
 
 endmodule
