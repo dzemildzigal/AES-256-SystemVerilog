@@ -86,6 +86,10 @@ module AES_GCM_Session_Sequencer #(
     // ever reach the packetizer.
     input  logic [63:0] dbg_video_beat_count,
     input  logic [63:0] dbg_video_frame_count,
+
+    // Debug probes from the AES wrapper (captured per tag beat).
+    input  logic [127:0] dbg_push_data,
+    input  logic [127:0] dbg_maxis_last_beat,
     // Pre-FIFO probe counter (video_out tvalid) from video_beat_counter_0.
     input  logic [63:0] dbg_prefifo_beats
 );
@@ -144,6 +148,14 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_GHASH1 = 8'h78;
     localparam logic [7:0] REG_GHASH2 = 8'h7C;
     localparam logic [7:0] REG_GHASH3 = 8'h80;
+    localparam logic [7:0] REG_DBG_PUSH0 = 8'h84;
+    localparam logic [7:0] REG_DBG_PUSH1 = 8'h88;
+    localparam logic [7:0] REG_DBG_PUSH2 = 8'h8C;
+    localparam logic [7:0] REG_DBG_PUSH3 = 8'h90;
+    localparam logic [7:0] REG_DBG_MAXIS0 = 8'h94;
+    localparam logic [7:0] REG_DBG_MAXIS1 = 8'h98;
+    localparam logic [7:0] REG_DBG_MAXIS2 = 8'h9C;
+    localparam logic [7:0] REG_DBG_MAXIS3 = 8'hA0;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -377,6 +389,14 @@ module AES_GCM_Session_Sequencer #(
                     REG_GHASH2: S_AXI_RDATA <= reg_ghash_word[2];
                     REG_GHASH3: S_AXI_RDATA <= reg_ghash_word[3];
                     REG_TAG_VALID: S_AXI_RDATA <= {31'd0, tag_valid_flag};
+                    REG_DBG_PUSH0: S_AXI_RDATA <= dbg_push_data[127:96];
+                    REG_DBG_PUSH1: S_AXI_RDATA <= dbg_push_data[95:64];
+                    REG_DBG_PUSH2: S_AXI_RDATA <= dbg_push_data[63:32];
+                    REG_DBG_PUSH3: S_AXI_RDATA <= dbg_push_data[31:0];
+                    REG_DBG_MAXIS0: S_AXI_RDATA <= dbg_maxis_last_beat[127:96];
+                    REG_DBG_MAXIS1: S_AXI_RDATA <= dbg_maxis_last_beat[95:64];
+                    REG_DBG_MAXIS2: S_AXI_RDATA <= dbg_maxis_last_beat[63:32];
+                    REG_DBG_MAXIS3: S_AXI_RDATA <= dbg_maxis_last_beat[31:0];
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;

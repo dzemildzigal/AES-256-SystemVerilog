@@ -113,7 +113,13 @@ module AXI_AES_GCM_Stream #(
     output wire [15:0]                         M_AXIS_CT_TKEEP,
     output wire                                M_AXIS_CT_TLAST,
     output wire                                M_AXIS_CT_TVALID,
-    input  wire                                M_AXIS_CT_TREADY
+    input  wire                                M_AXIS_CT_TREADY,
+
+    // Debug probes (PS-visible through the sequencer's mirror registers):
+    // what the stream FIFO push wrote for the tag beat, and what M_AXIS
+    // actually emitted as the last beat of the packet.
+    output wire [127:0]                        dbg_push_data,
+    output wire [127:0]                        dbg_maxis_last_beat
 );
 
     localparam integer STREAM_FIFO_PTR_W = $clog2(STREAM_FIFO_DEPTH);
@@ -423,6 +429,25 @@ module AXI_AES_GCM_Stream #(
     // and the writer faults (tlast with bytes still remaining) on the early one.
     wire push_last = push_tag_now ? 1'b1 : 1'b0;
     wire ct_fifo_pop  = stream_mode_reg && !ct_fifo_empty && M_AXIS_CT_TREADY;
+
+    // Debug capture: tag-beat push value + emitted last beat (PS-visible
+    // through the sequencer's mirror registers REG_DBG_PUSH_*/REG_DBG_MAXIS_*).
+    reg [0:127] dbg_push_data_r;
+    reg [0:127] dbg_maxis_last_beat_r;
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            dbg_push_data_r       <= '0;
+            dbg_maxis_last_beat_r <= '0;
+        end
+        else begin
+            if (push_tag_now && !ct_fifo_full)
+                dbg_push_data_r <= push_data;
+            if (stream_mode_reg && M_AXIS_CT_TVALID && M_AXIS_CT_TREADY && M_AXIS_CT_TLAST)
+                dbg_maxis_last_beat_r <= ct_stream_head;
+        end
+    end
+    assign dbg_push_data       = dbg_push_data_r;
+    assign dbg_maxis_last_beat = dbg_maxis_last_beat_r;
 
     always_ff @(posedge clk) begin
         if (rst) begin

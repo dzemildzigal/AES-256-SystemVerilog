@@ -50,29 +50,12 @@ catch {set_property STEPS.ROUTE_DESIGN.ARGS.DIRECTIVE Explore [get_runs impl_1]}
 catch {file delete -force "HDMI_AES_TX/HDMI_AES_TX.srcs/utils_1/imports/synth_1"}
 
 set synth_done 0
-set _force_synth 0
-catch {
-    set _ss [get_property STATUS [get_runs synth_1]]
-    set synth_done [string match "*Complete*" $_ss]
-}
-# Checkpoint is only valid if no RTL/BD source changed since it was built.
-set _synth_dcp [file normalize "HDMI_AES_TX/HDMI_AES_TX.runs/synth_1/hdmi_aes_tx_wrapper.dcp"]
-if {[file exists $_synth_dcp]} {
-    set _dcp_mtime [file mtime $_synth_dcp]
-    foreach _src [glob -nocomplain "AES_VERILOG.srcs/sources_1/new/*.sv"] {
-        if {[file mtime $_src] > $_dcp_mtime} { set _force_synth 1 }
-    }
-    foreach _src [glob -nocomplain "AES_VERILOG.srcs/sources_1/new/*.v"] {
-        if {[file mtime $_src] > $_dcp_mtime} { set _force_synth 1 }
-    }
-    if {[file mtime pynq/build_bd_hdmi_aes_tx.tcl] > $_dcp_mtime} { set _force_synth 1 }
-}
-if {$synth_done && !$_force_synth} {
-    puts "=== synth_1 checkpoint VALID and sources unchanged: skipping synthesis ==="
-} else {
-    puts "=== synth_1 checkpoint stale or sources changed: running FULL synthesis ==="
-    catch {reset_run synth_1}
-}
+# The BD regen changes the generated IP instance suffixes every run, so a
+# reused synth checkpoint can silently mismatch the fresh BD (stale module
+# names -> IP clock XDCs never read -> broken timing + placement). Always
+# run the full synthesis: correct over fast.
+puts "=== running FULL synthesis (BD regen invalidates any checkpoint) ==="
+catch {reset_run synth_1}
 puts "=== launching impl_1 (synth + place + route + bitgen)... ==="
 reset_run impl_1
 launch_runs impl_1 -to_step write_bitstream -jobs 16

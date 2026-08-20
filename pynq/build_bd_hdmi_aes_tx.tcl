@@ -20,6 +20,8 @@ set PACKETIZER_MODULE  "HDMI_Axis_Packetizer_wrapper"
 set PACKETIZER_INST    "hdmi_packetizer_0"
 set SEQUENCER_MODULE   "AES_GCM_Session_Sequencer_wrapper"
 set SEQUENCER_INST     "aes_seq_0"
+set CLK_MUX_MODULE     "clk_mux_ctrl"
+set CLK_MUX_INST       "aes_clk_mux"
 set BD_NAME            "hdmi_aes_tx"
 
 proc detect_pynq_board_part {} {
@@ -158,6 +160,7 @@ ensure_local_rtl_source $repo_root "HDMI_Axis_Packetizer_wrapper.v"
 ensure_local_rtl_source $repo_root "HDMI_Axis_Packetizer.sv"
 ensure_local_rtl_source $repo_root "VideoBeatCounter_wrapper.v"
 ensure_local_rtl_source $repo_root "VideoBeatCounter.sv"
+ensure_local_rtl_source $repo_root "clk_mux_ctrl.v"
 ensure_local_constraint_source $repo_root "hdmi_aes_tx_pynq_z2.xdc"
 update_compile_order -fileset sources_1
 
@@ -174,6 +177,8 @@ require_ip "xilinx.com:user:color_swap:1.1"
 require_ip "xilinx.com:ip:xlconstant:1.1"
 require_ip "xilinx.com:ip:xlconcat:2.1"
 require_ip "xilinx.com:ip:axi_gpio:2.0"
+require_ip "xilinx.com:ip:xlslice:1.0"
+require_ip "xilinx.com:ip:clk_wiz:6.0"
 require_ip "xilinx.com:ip:axis_data_fifo:2.0"
 require_ip "xilinx.com:ip:proc_sys_reset:5.0"
 require_ip "xilinx.com:ip:util_vector_logic:2.0"
@@ -197,7 +202,7 @@ set_property -dict [list \
     CONFIG.PCW_FCLK_CLK2_BUF {TRUE} \
     CONFIG.PCW_USE_M_AXI_GP0 {1} \
     CONFIG.PCW_USE_S_AXI_HP0 {1} \
-    CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {50} \
+    CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100} \
     CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {142} \
     CONFIG.PCW_FPGA2_PERIPHERAL_FREQMHZ {200} \
     CONFIG.PCW_USE_FABRIC_INTERRUPT {1} \
@@ -208,6 +213,7 @@ create_bd_cell -type module -reference $WRITER_MODULE $WRITER_INST
 create_bd_cell -type module -reference $PACKETIZER_MODULE $PACKETIZER_INST
 create_bd_cell -type module -reference $SEQUENCER_MODULE $SEQUENCER_INST
 create_bd_cell -type module -reference VideoBeatCounter_wrapper video_beat_counter_0
+create_bd_cell -type module -reference $CLK_MUX_MODULE $CLK_MUX_INST
 
 # Refresh module references from the current RTL on disk. BD module refs
 # cache the analyzed port list; without this, ports added to the wrappers
@@ -215,7 +221,7 @@ create_bd_cell -type module -reference VideoBeatCounter_wrapper video_beat_count
 # [BD 41-84] "required object is not specified".
 # Pass instance NAMES (documented form), not cell objects: object form
 # returns failure silently in 2024.1.
-set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0]
+set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0 aes_clk_mux]
 puts "INFO: update_module_reference rc=$_mrrc"
 create_bd_cell -type ip -vlnv digilentinc.com:ip:dvi2rgb:1.7 dvi2rgb_0
 set_property -dict [list \
@@ -280,7 +286,106 @@ set_property -dict [list \
 ] [get_bd_cells rstn_to_rst]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_100m
+# The aux_reset_in (gpio[0] from axi_gpio_clkctrl) is active-HIGH: 1 = hold
+# the design domain in reset during a frequency switch.
+set_property -dict [list \
+    CONFIG.C_AUX_RESET_HIGH {1} \
+] [get_bd_cells rst_ps7_100m]
 create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_142m
+
+# ------------------------------------------------------------------
+# Runtime-selectable design clock (50 / 75 / 100 MHz), PS-controlled.
+# FCLK0 is the fixed 100 MHz master. The MMCM generates all three rates
+# simultaneously (VCO 600 MHz: /12 = 50, /8 = 75, /6 = 100); a cascaded
+# BUFGMUX_CTRL (aes_clk_mux) picks one for the whole design domain. The
+# PS writes axi_gpio_clkctrl (its own AXI-Lite slave on the STABLE FCLK0
+# branch of the interconnect) to switch: bit0 = domain reset request
+# (proc_sys_reset aux_reset_in), bits[2:1] = mux select. Switching
+# procedure (in tx_daemon.py): disable sequencer -> assert reset -> set
+# select -> wait -> release reset -> reconfigure.
+# ------------------------------------------------------------------
+create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_aes
+set_property -dict [list \
+    CONFIG.PRIM_IN_FREQ {100.000} \
+    CONFIG.PRIM_SOURCE {No_buffer} \
+    CONFIG.CLKOUT1_USED {true} \
+    CONFIG.CLKOUT2_USED {true} \
+    CONFIG.CLKOUT3_USED {true} \
+    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {100.000} \
+    CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {75.000} \
+    CONFIG.CLKOUT3_REQUESTED_OUT_FREQ {50.000} \
+    CONFIG.USE_LOCKED {false} \
+    CONFIG.USE_RESET {false} \
+    CONFIG.RESET_TYPE {ACTIVE_LOW} \
+] [get_bd_cells clk_wiz_aes]
+
+# 3-bit PS-controlled GPIO on the stable FCLK0 domain:
+#   gpio[0]   -> rst_ps7_100m/aux_reset_in (1 = hold design domain in reset)
+#   gpio[2:1] -> aes_clk_mux/sel (00 = 50 MHz, 01 = 75 MHz, 10 = 100 MHz)
+create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_clkctrl
+set_property -dict [list \
+    CONFIG.C_ALL_OUTPUTS {1} \
+    CONFIG.C_GPIO_WIDTH {3} \
+] [get_bd_cells axi_gpio_clkctrl]
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 clkctrl_rst_slice
+set_property -dict [list \
+    CONFIG.DIN_WIDTH {3} \
+    CONFIG.DIN_FROM {0} \
+    CONFIG.DIN_TO {0} \
+    CONFIG.DOUT_WIDTH {1} \
+] [get_bd_cells clkctrl_rst_slice]
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 clkctrl_sel_slice
+set_property -dict [list \
+    CONFIG.DIN_WIDTH {3} \
+    CONFIG.DIN_FROM {2} \
+    CONFIG.DIN_TO {1} \
+    CONFIG.DOUT_WIDTH {2} \
+] [get_bd_cells clkctrl_sel_slice]
+
+# Reset controller for the STABLE FCLK0 side (the PS->PL interconnect's S00
+# branch and axi_gpio_clkctrl). It must NOT be gated by the domain-reset GPIO,
+# or the PS could never release the switched domain again.
+create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_stable
+
+# ------------------------------------------------------------------
+# Clock pre-wiring (MUST run before the AXI automation below: the
+# automation resolves each slave's clock from its existing ACLK net).
+#   FCLK0 (100 MHz, stable) -> MMCM -> BUFGMUX -> design clock
+# ------------------------------------------------------------------
+connect_bd_net [get_bd_pins ps7/FCLK_CLK0] [get_bd_pins clk_wiz_aes/clk_in1]
+connect_bd_net [get_bd_pins clk_wiz_aes/clk_out3] [get_bd_pins $CLK_MUX_INST/clk_in0]
+connect_bd_net [get_bd_pins clk_wiz_aes/clk_out2] [get_bd_pins $CLK_MUX_INST/clk_in1]
+connect_bd_net [get_bd_pins clk_wiz_aes/clk_out1] [get_bd_pins $CLK_MUX_INST/clk_in2]
+set design_clk_pin [get_bd_pins $CLK_MUX_INST/clk_out]
+
+# Design-domain clocks that NO BD automation rule queries are pre-wired to
+# the mux output directly (the AES core's S_AXI_ACLK - driven by the
+# sequencer's m_axi, not by the ps7 periph - plus the packetizer and the
+# CDC FIFO's m_axis side and the domain reset controller).
+# The four AXI-Lite slaves below are deliberately NOT pre-wired: the
+# apply_bd_automation rule queries the slave clock frequency in MHz and
+# crashes on a module-pin clock with no frequency metadata. They get wired
+# to FCLK0 by the automation and re-routed to the mux afterwards (the
+# interconnect M-port clocks are re-routed together with them).
+foreach _p [list \
+    [get_bd_pins $AES_INST/S_AXI_ACLK] \
+    [get_bd_pins $PACKETIZER_INST/aclk] \
+] {
+    connect_if_unconnected $design_clk_pin $_p
+}
+connect_if_unconnected $design_clk_pin [get_bd_pins hdmi_axis_cdc_fifo/m_axis_aclk]
+connect_if_unconnected $design_clk_pin [get_bd_pins rst_ps7_100m/slowest_sync_clk]
+
+# Stable-side clocking: clkctrl GPIO + stable reset controller stay on FCLK0.
+connect_bd_net [get_bd_pins ps7/FCLK_CLK0] [get_bd_pins axi_gpio_clkctrl/s_axi_aclk]
+connect_bd_net [get_bd_pins ps7/FCLK_CLK0] [get_bd_pins rst_ps7_stable/slowest_sync_clk]
+
+# Domain reset request + mux select from the PS GPIO (active-high aux reset).
+# proc_sys_reset v5.0 defaults C_AUX_RESET_HIGH=1, so gpio[0]=1 asserts reset.
+connect_bd_net [get_bd_pins axi_gpio_clkctrl/gpio_io_o] [get_bd_pins clkctrl_rst_slice/Din]
+connect_bd_net [get_bd_pins axi_gpio_clkctrl/gpio_io_o] [get_bd_pins clkctrl_sel_slice/Din]
+connect_bd_net [get_bd_pins clkctrl_rst_slice/Dout] [get_bd_pins rst_ps7_100m/aux_reset_in]
+connect_bd_net [get_bd_pins clkctrl_sel_slice/Dout] [get_bd_pins $CLK_MUX_INST/sel]
 
 # Matches the official PYNQ-Z2 base overlay pattern: a reset pulse generated
 # in the recovered pixel-clock domain, triggered by pixel clock lock
@@ -359,6 +464,37 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 \
         intc_ip    {Auto}
         master_apm {0}
     } [get_bd_intf_pins $SEQUENCER_INST/s_axi]
+
+# Clock-control GPIO: lives on the STABLE FCLK0 side of the interconnect
+# (its ACLK was pre-wired to FCLK0), so it stays reachable while the design
+# domain is held in reset during a frequency switch.
+apply_bd_automation -rule xilinx.com:bd_rule:axi4 \
+    -config {
+        Clk_master {/ps7/FCLK_CLK0 (100 MHz)}
+        Clk_slave  {Auto}
+        Clk_xbar   {Auto}
+        Master     {/ps7/M_AXI_GP0}
+        Slave      {/axi_gpio_clkctrl/S_AXI}
+        ddr_seg    {Auto}
+        intc_ip    {Auto}
+        master_apm {0}
+    } [get_bd_intf_pins axi_gpio_clkctrl/S_AXI]
+
+# Re-route the four design-domain slaves and their interconnect master ports
+# from FCLK0 (wired by the automation) to the switchable design clock.
+# The interconnect S00 side and the clkctrl branch stay on stable FCLK0.
+foreach _p [list \
+    [get_bd_pins $WRITER_INST/S_AXI_ACLK] \
+    [get_bd_pins $SEQUENCER_INST/aclk] \
+    [get_bd_pins vtc_in/s_axi_aclk] \
+    [get_bd_pins axi_gpio_hdmiin/s_axi_aclk] \
+    [get_bd_pins ps7_axi_periph/M00_ACLK] \
+    [get_bd_pins ps7_axi_periph/M01_ACLK] \
+    [get_bd_pins ps7_axi_periph/M02_ACLK] \
+    [get_bd_pins ps7_axi_periph/M03_ACLK] \
+] {
+    force_connect_bd_net $design_clk_pin $_p
+}
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 hp0_mem_ic
 set_property -dict [list \
@@ -461,20 +597,26 @@ set ps_fclk2_pin       [get_bd_pins ps7/FCLK_CLK2]
 set ps_fclk_resetn_pin [get_bd_pins ps7/FCLK_RESET0_N]
 set ps_hp0_aclk_pin    [get_bd_pins ps7/S_AXI_HP0_ACLK]
 
+# The design clock (mux output) feeds the design-domain logic; the PS-side
+# HP0 port stays on stable FCLK0 and hp0_mem_ic bridges the two (S00 = mux
+# clock from the writer, M00 = FCLK0 to the PS). M_AXI_GP0 stays on FCLK0
+# via the automation.
 connect_if_unconnected $ps_fclk0_pin $ps_hp0_aclk_pin
 connect_if_unconnected $ps_fclk1_pin [get_bd_pins v_vid_in_axi4s_0/aclk]
 
-connect_if_unconnected $ps_fclk0_pin [get_bd_pins hdmi_axis_cdc_fifo/m_axis_aclk]
+connect_if_unconnected $design_clk_pin [get_bd_pins hdmi_axis_cdc_fifo/m_axis_aclk]
 connect_if_unconnected $ps_fclk1_pin [get_bd_pins hdmi_axis_cdc_fifo/s_axis_aclk]
-connect_if_unconnected $ps_fclk0_pin [get_bd_pins $PACKETIZER_INST/aclk]
-connect_if_unconnected $ps_fclk0_pin [get_bd_pins rst_ps7_100m/slowest_sync_clk]
+connect_if_unconnected $design_clk_pin [get_bd_pins $PACKETIZER_INST/aclk]
+connect_if_unconnected $design_clk_pin [get_bd_pins rst_ps7_100m/slowest_sync_clk]
 connect_if_unconnected $ps_fclk1_pin [get_bd_pins rst_ps7_142m/slowest_sync_clk]
 
 connect_if_unconnected $ps_fclk_resetn_pin [get_bd_pins rstn_to_rst/Op1]
 connect_if_unconnected [get_bd_pins rstn_to_rst/Res] [get_bd_pins rst_ps7_100m/ext_reset_in]
 connect_if_unconnected [get_bd_pins rstn_to_rst/Res] [get_bd_pins rst_ps7_142m/ext_reset_in]
+connect_if_unconnected [get_bd_pins rstn_to_rst/Res] [get_bd_pins rst_ps7_stable/ext_reset_in]
 connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_ps7_100m/dcm_locked]
 connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_ps7_142m/dcm_locked]
+connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_ps7_stable/dcm_locked]
 
 # rst_pixelclk lives in the recovered pixel-clock domain and resets while the
 # pixel clock is NOT locked. proc_sys_reset v5.0 defaults BOTH reset inputs to
@@ -491,20 +633,24 @@ connect_bd_net [get_bd_pins dvi2rgb_0/aPixelClkLckd] [get_bd_pins rst_pixelclk/a
 
 foreach p [list \
     [get_bd_pins hp0_mem_ic/ACLK] \
-    [get_bd_pins hp0_mem_ic/S00_ACLK] \
     [get_bd_pins hp0_mem_ic/M00_ACLK] \
+] {
+    connect_if_unconnected $ps_fclk0_pin $p
+}
+connect_if_unconnected $design_clk_pin [get_bd_pins hp0_mem_ic/S00_ACLK]
+foreach p [list \
     [get_bd_pins $AES_INST/S_AXI_ACLK] \
     [get_bd_pins $WRITER_INST/S_AXI_ACLK] \
     [get_bd_pins $SEQUENCER_INST/aclk] \
     [get_bd_pins vtc_in/s_axi_aclk] \
     [get_bd_pins axi_gpio_hdmiin/s_axi_aclk] \
 ] {
-    connect_if_unconnected $ps_fclk0_pin $p
+    connect_if_unconnected $design_clk_pin $p
 }
 
 force_connect_bd_net [get_bd_pins rst_ps7_100m/interconnect_aresetn] [get_bd_pins hp0_mem_ic/ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins hp0_mem_ic/S00_ARESETN]
-force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins hp0_mem_ic/M00_ARESETN]
+force_connect_bd_net [get_bd_pins rst_ps7_stable/peripheral_aresetn] [get_bd_pins hp0_mem_ic/M00_ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $AES_INST/S_AXI_ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $WRITER_INST/S_AXI_ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $SEQUENCER_INST/aresetn]
@@ -524,12 +670,13 @@ connect_bd_net [get_bd_pins ps7/FCLK_CLK1] [get_bd_pins video_beat_counter_0/acl
 force_connect_bd_net [get_bd_pins rst_pixelclk/peripheral_aresetn] [get_bd_pins vtc_in/resetn]
 
 set ps7_axi_rst_map [list \
-    [list ps7_axi_periph/ARESETN rst_ps7_100m/interconnect_aresetn] \
-    [list ps7_axi_periph/S00_ARESETN rst_ps7_100m/peripheral_aresetn] \
+    [list ps7_axi_periph/ARESETN rst_ps7_stable/interconnect_aresetn] \
+    [list ps7_axi_periph/S00_ARESETN rst_ps7_stable/peripheral_aresetn] \
     [list ps7_axi_periph/M00_ARESETN rst_ps7_100m/peripheral_aresetn] \
     [list ps7_axi_periph/M01_ARESETN rst_ps7_100m/peripheral_aresetn] \
     [list ps7_axi_periph/M02_ARESETN rst_ps7_100m/peripheral_aresetn] \
     [list ps7_axi_periph/M03_ARESETN rst_ps7_100m/peripheral_aresetn] \
+    [list ps7_axi_periph/M04_ARESETN rst_ps7_stable/peripheral_aresetn] \
 ]
 foreach pair $ps7_axi_rst_map {
     set sink_pin [get_bd_pins -quiet [lindex $pair 0]]
@@ -545,29 +692,42 @@ connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins v_vid_in_axi4s_0/vi
 connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins vtc_in/clk]
 connect_bd_net [get_bd_pins rst_pixelclk/peripheral_reset] [get_bd_pins v_vid_in_axi4s_0/vid_io_in_reset]
 
-# FCLK0 was dropped to 75 MHz (opens the GHASH GF-multiply timing margin from
-# ~0.2ns to ~3.5ns). Vivado's automation updates some interface FREQ_HZ
-# metadata but leaves custom-IP interfaces at their stale 100 MHz creation-
-# time defaults, which fails validate_bd_design. Force all of them.
-foreach _ipin [list \
-    [get_bd_intf_pins -quiet $WRITER_INST/M_AXI] \
-    [get_bd_intf_pins -quiet $WRITER_INST/S_AXIS_SRC] \
-    [get_bd_intf_pins -quiet $AES_INST/S_AXIS_PT] \
-    [get_bd_intf_pins -quiet $AES_INST/M_AXIS_CT] \
-    [get_bd_intf_pins -quiet $AES_INST/S_AXI] \
-    [get_bd_intf_pins -quiet $SEQUENCER_INST/s_axis] \
-    [get_bd_intf_pins -quiet $PACKETIZER_INST/s_axis_video] \
-    [get_bd_intf_pins -quiet $PACKETIZER_INST/m_axis_pkt] \
-    [get_bd_intf_pins -quiet hdmi_axis_cdc_fifo/M_AXIS] \
-] {
-    if {[llength $_ipin] > 0} {
-        set_property CONFIG.FREQ_HZ {50000000} $_ipin
-    }
-}
-puts "FREQ_HZ forced on stale FCLK0-domain intf pins"
+# AES tag-path debug probes -> sequencer mirror registers (REG_DBG_PUSH_* /
+# REG_DBG_MAXIS_* at 0x84-0xA0).
+connect_bd_net [get_bd_pins $AES_INST/dbg_push_data] [get_bd_pins $SEQUENCER_INST/dbg_push_data]
+connect_bd_net [get_bd_pins $AES_INST/dbg_maxis_last_beat] [get_bd_pins $SEQUENCER_INST/dbg_maxis_last_beat]
 
 assign_bd_address
 regenerate_bd_layout
+save_bd_design
+
+# Patch the serialized BD: give the BUFGMUX module's clk_out pin an explicit
+# frequency so the BD can derive the design-domain clock. It cannot infer
+# the frequency through the module boundary, which otherwise leaves the
+# auto-generated clock converters at the 10 MHz default and fails both the
+# validation and the HDL generation.
+set _bd_path [file normalize [file join \
+    [get_property DIRECTORY [current_project]] \
+    "${current_project_name}.srcs" "sources_1" "bd" $BD_NAME "${BD_NAME}.bd"]]
+set _fh [open $_bd_path r]
+set _bd_txt [read $_fh]
+close $_fh
+set _old "\"clk_out\": {\n            \"direction\": \"O\"\n          }"
+set _new "\"clk_out\": {\n            \"direction\": \"O\",\n            \"parameters\": {\n              \"FREQ_HZ\": {\n                \"value\": \"100000000\",\n                \"value_src\": \"user_prop\"\n              }\n            }\n          }"
+if {[string first $_old $_bd_txt] < 0} {
+    error "clk_out pin block not found for the FREQ_HZ patch"
+}
+set _bd_txt [string map [list $_old $_new] $_bd_txt]
+set _fh [open $_bd_path w]
+puts -nonewline $_fh $_bd_txt
+close $_fh
+puts "BD patched: aes_clk_mux/clk_out FREQ_HZ = 100 MHz (worst case)"
+
+# Reopen from the patched file so the BD re-derives the design clock
+# frequency from the pin metadata.
+close_bd_design [get_bd_designs $BD_NAME]
+open_bd_design [get_files "*/${BD_NAME}.bd"]
+
 validate_bd_design
 save_bd_design
 

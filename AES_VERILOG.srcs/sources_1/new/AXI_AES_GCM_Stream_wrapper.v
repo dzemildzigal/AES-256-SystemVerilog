@@ -38,7 +38,10 @@ module AXI_AES_GCM_Stream_wrapper #(
     output wire [15:0]                         M_AXIS_CT_TKEEP,
     output wire                                M_AXIS_CT_TLAST,
     output wire                                M_AXIS_CT_TVALID,
-    input  wire                                M_AXIS_CT_TREADY
+    input  wire                                M_AXIS_CT_TREADY,
+
+    output wire [127:0]                        dbg_push_data,
+    output wire [127:0]                        dbg_maxis_last_beat
 );
 
     AXI_AES_GCM_Stream #(
@@ -77,7 +80,10 @@ module AXI_AES_GCM_Stream_wrapper #(
         .M_AXIS_CT_TKEEP  (M_AXIS_CT_TKEEP),
         .M_AXIS_CT_TLAST  (M_AXIS_CT_TLAST),
         .M_AXIS_CT_TVALID (M_AXIS_CT_TVALID),
-        .M_AXIS_CT_TREADY (M_AXIS_CT_TREADY)
+        .M_AXIS_CT_TREADY (M_AXIS_CT_TREADY),
+
+        .dbg_push_data     (dbg_push_data),
+        .dbg_maxis_last_beat (dbg_maxis_last_beat)
     );
 
 endmodule
