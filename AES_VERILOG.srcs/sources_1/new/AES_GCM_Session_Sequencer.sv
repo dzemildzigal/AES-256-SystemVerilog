@@ -156,6 +156,7 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_DBG_MAXIS1 = 8'h98;
     localparam logic [7:0] REG_DBG_MAXIS2 = 8'h9C;
     localparam logic [7:0] REG_DBG_MAXIS3 = 8'hA0;
+    localparam logic [7:0] REG_AES_STATUS = 8'hA4;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -397,6 +398,7 @@ module AES_GCM_Session_Sequencer #(
                     REG_DBG_MAXIS1: S_AXI_RDATA <= dbg_maxis_last_beat[95:64];
                     REG_DBG_MAXIS2: S_AXI_RDATA <= dbg_maxis_last_beat[63:32];
                     REG_DBG_MAXIS3: S_AXI_RDATA <= dbg_maxis_last_beat[31:0];
+                    REG_AES_STATUS: S_AXI_RDATA <= aes_status_last;
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;

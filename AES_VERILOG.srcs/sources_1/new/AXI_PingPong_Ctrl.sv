@@ -31,6 +31,12 @@
 //   0x0058 WRITER_ERROR_COUNT RO
 //   0x005C WRITER_CMD         RW1C  [0] clear_fault [1] clear_error_count
 //   0x0060 WRITER_SRC_SEL      RW    [0] 0=deterministic pattern, 1=AXI-Stream source
+//   0x0064 FAULT_CAUSE         RO    latched first-fault code
+//   0x0068 FAULT_STATE         RO    writer state and TLAST context
+//   0x006C FAULT_KEEP          RO    stream TKEEP at fault
+//   0x0070 FAULT_BYTES_LEFT    RO    writer bytes remaining at fault
+//   0x0074 FAULT_BURST_BYTES   RO    burst bytes at fault
+//   0x0078 FAULT_BRESP         RO    AXI B response at fault
 //////////////////////////////////////////////////////////////////////////////////
 
 module AXI_PingPong_Ctrl #(
@@ -171,6 +177,22 @@ module AXI_PingPong_Ctrl #(
     reg         writer_busy;
     reg         writer_fault;
     reg [31:0]  writer_error_count;
+
+    // Latched first-fault diagnostics. These remain stable until soft reset or
+    // WRITER_CMD.clear_fault, so software can inspect the exact failing branch.
+    reg [31:0]  fault_cause;
+    reg [31:0]  fault_state_info;
+    reg [15:0]  fault_keep;
+    reg [31:0]  fault_bytes_remaining;
+    reg [31:0]  fault_burst_bytes;
+    reg [1:0]   fault_bresp;
+
+    localparam [31:0] FAULT_BASE_INVALID = 32'd1;
+    localparam [31:0] FAULT_HOLD_KEEP    = 32'd2;
+    localparam [31:0] FAULT_INPUT_KEEP   = 32'd3;
+    localparam [31:0] FAULT_STROBE       = 32'd4;
+    localparam [31:0] FAULT_BRESP        = 32'd5;
+    localparam [31:0] FAULT_EARLY_TLAST = 32'd6;
 
     // Producer/writer internal state
     reg [31:0]  producer_frame_id;
@@ -327,6 +349,12 @@ module AXI_PingPong_Ctrl #(
             writer_busy            <= 1'b0;
             writer_fault           <= 1'b0;
             writer_error_count     <= 32'd0;
+            fault_cause            <= 32'd0;
+            fault_state_info       <= 32'd0;
+            fault_keep             <= 16'd0;
+            fault_bytes_remaining  <= 32'd0;
+            fault_burst_bytes      <= 32'd0;
+            fault_bresp            <= 2'b00;
 
             producer_frame_id      <= 32'd0;
             frame_period_counter   <= 32'd0;
@@ -383,6 +411,12 @@ module AXI_PingPong_Ctrl #(
                             writer_busy            <= 1'b0;
                             writer_fault           <= 1'b0;
                             writer_error_count     <= 32'd0;
+                            fault_cause            <= 32'd0;
+                            fault_state_info       <= 32'd0;
+                            fault_keep             <= 16'd0;
+                            fault_bytes_remaining  <= 32'd0;
+                            fault_burst_bytes      <= 32'd0;
+                            fault_bresp            <= 2'b00;
                             writer_state           <= WR_IDLE;
                             writer_target_index    <= 1'b0;
                             writer_addr_curr       <= 32'd0;
@@ -457,6 +491,14 @@ module AXI_PingPong_Ctrl #(
 
                     6'd23: begin // WRITER_CMD (RW1C)
                         writer_fault       <= writer_fault & ~S_AXI_WDATA[0];
+                        if (S_AXI_WDATA[0]) begin
+                            fault_cause           <= 32'd0;
+                            fault_state_info      <= 32'd0;
+                            fault_keep            <= 16'd0;
+                            fault_bytes_remaining <= 32'd0;
+                            fault_burst_bytes     <= 32'd0;
+                            fault_bresp           <= 2'b00;
+                        end
                         if (S_AXI_WDATA[1]) begin
                             writer_error_count <= 32'd0;
                         end
@@ -489,6 +531,14 @@ module AXI_PingPong_Ctrl #(
                             end
                             else if (writer_base_invalid) begin
                                 writer_fault       <= 1'b1;
+                                if (fault_cause == 32'd0) begin
+                                    fault_cause           <= FAULT_BASE_INVALID;
+                                    fault_state_info      <= {26'd0, writer_state};
+                                    fault_keep            <= stream_hold_keep;
+                                    fault_bytes_remaining <= writer_bytes_remaining;
+                                    fault_burst_bytes     <= burst_bytes_total;
+                                    fault_bresp           <= M_AXI_BRESP;
+                                end
                                 writer_error_count <= writer_error_count + 32'd1;
                                 writer_busy        <= 1'b0;
                                 writer_state       <= WR_ERROR;
@@ -553,6 +603,14 @@ module AXI_PingPong_Ctrl #(
                                 end
                                 else begin
                                     writer_fault       <= 1'b1;
+                                    if (fault_cause == 32'd0) begin
+                                        fault_cause           <= FAULT_HOLD_KEEP;
+                                        fault_state_info      <= {26'd0, writer_state};
+                                        fault_keep            <= stream_hold_keep;
+                                        fault_bytes_remaining <= writer_bytes_remaining;
+                                        fault_burst_bytes     <= burst_bytes_total;
+                                        fault_bresp           <= M_AXI_BRESP;
+                                    end
                                     writer_error_count <= writer_error_count + 32'd1;
                                     writer_busy        <= 1'b0;
                                     writer_state       <= WR_ERROR;
@@ -561,6 +619,14 @@ module AXI_PingPong_Ctrl #(
                             else if (S_AXIS_SRC_TVALID && S_AXIS_SRC_TREADY) begin
                                 if (S_AXIS_SRC_TKEEP == 16'h0000) begin
                                     writer_fault       <= 1'b1;
+                                    if (fault_cause == 32'd0) begin
+                                        fault_cause           <= FAULT_INPUT_KEEP;
+                                        fault_state_info      <= {26'd0, writer_state};
+                                        fault_keep            <= S_AXIS_SRC_TKEEP;
+                                        fault_bytes_remaining <= writer_bytes_remaining;
+                                        fault_burst_bytes     <= burst_bytes_total;
+                                        fault_bresp           <= M_AXI_BRESP;
+                                    end
                                     writer_error_count <= writer_error_count + 32'd1;
                                     writer_busy        <= 1'b0;
                                     writer_state       <= WR_ERROR;
@@ -584,6 +650,14 @@ module AXI_PingPong_Ctrl #(
                             end
                             else if (source_stream_mode && (stream_strobe_bytes == 4'd0)) begin
                                 writer_fault       <= 1'b1;
+                                if (fault_cause == 32'd0) begin
+                                    fault_cause           <= FAULT_STROBE;
+                                    fault_state_info      <= {26'd0, writer_state};
+                                    fault_keep            <= {8'd0, stream_word_strobe};
+                                    fault_bytes_remaining <= writer_bytes_remaining;
+                                    fault_burst_bytes     <= burst_bytes_total;
+                                    fault_bresp           <= M_AXI_BRESP;
+                                end
                                 writer_error_count <= writer_error_count + 32'd1;
                                 writer_busy        <= 1'b0;
                                 writer_state       <= WR_ERROR;
@@ -683,6 +757,14 @@ module AXI_PingPong_Ctrl #(
 
                                 if (M_AXI_BRESP != 2'b00) begin
                                     writer_fault       <= 1'b1;
+                                    if (fault_cause == 32'd0) begin
+                                        fault_cause           <= FAULT_BRESP;
+                                        fault_state_info      <= {26'd0, writer_state};
+                                        fault_keep            <= {8'd0, stream_word_strobe};
+                                        fault_bytes_remaining <= writer_bytes_remaining;
+                                        fault_burst_bytes     <= burst_bytes_total;
+                                        fault_bresp           <= M_AXI_BRESP;
+                                    end
                                     writer_error_count <= writer_error_count + 32'd1;
                                     writer_busy        <= 1'b0;
                                     writer_state       <= WR_ERROR;
@@ -690,6 +772,14 @@ module AXI_PingPong_Ctrl #(
                                 else if (source_stream_mode) begin
                                     if (stream_word_last && (writer_bytes_remaining > burst_bytes_total)) begin
                                         writer_fault       <= 1'b1;
+                                        if (fault_cause == 32'd0) begin
+                                            fault_cause           <= FAULT_EARLY_TLAST;
+                                            fault_state_info      <= {26'd0, writer_state};
+                                            fault_keep            <= {8'd0, stream_word_strobe};
+                                            fault_bytes_remaining <= writer_bytes_remaining;
+                                            fault_burst_bytes     <= burst_bytes_total;
+                                            fault_bresp           <= M_AXI_BRESP;
+                                        end
                                         writer_error_count <= writer_error_count + 32'd1;
                                         writer_busy        <= 1'b0;
                                         writer_state       <= WR_ERROR;
@@ -867,6 +957,12 @@ module AXI_PingPong_Ctrl #(
             6'd22: rd_mux = writer_error_count;                                       // 0x58
             6'd23: rd_mux = 32'd0;                                                    // 0x5C command register
             6'd24: rd_mux = {31'd0, writer_src_stream};                               // 0x60
+            6'd25: rd_mux = fault_cause;                                                // 0x64
+            6'd26: rd_mux = fault_state_info;                                           // 0x68
+            6'd27: rd_mux = {16'd0, fault_keep};                                        // 0x6C
+            6'd28: rd_mux = fault_bytes_remaining;                                      // 0x70
+            6'd29: rd_mux = fault_burst_bytes;                                          // 0x74
+            6'd30: rd_mux = {30'd0, fault_bresp};                                       // 0x78
             default: rd_mux = 32'd0;
         endcase
     end

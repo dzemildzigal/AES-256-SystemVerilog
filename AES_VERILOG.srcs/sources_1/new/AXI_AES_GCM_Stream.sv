@@ -243,10 +243,7 @@ module AXI_AES_GCM_Stream #(
     wire ct_fifo_full  = (ct_fifo_count == STREAM_FIFO_DEPTH);
 
     wire [STREAM_FIFO_PTR_W:0] total_outstanding = ct_fifo_count + pt_inflight_count;
-    // Reserve 1 FIFO slot for the GCM tag beat (carries tlast). It is NOT
-    // counted in total_outstanding, so without the -1 the tag can be dropped
-    // when the FIFO is full -> writer faults on a missing tlast.
-    wire stream_can_accept_pt = (total_outstanding < (STREAM_FIFO_DEPTH - 1));
+    wire stream_can_accept_pt = (total_outstanding < STREAM_FIFO_DEPTH);
 
     assign S_AXIS_PT_TREADY = stream_mode_reg && pt_ready && stream_can_accept_pt && pt_keep_ok;
     wire pt_stream_accept = stream_mode_reg && S_AXIS_PT_TVALID && S_AXIS_PT_TREADY;
