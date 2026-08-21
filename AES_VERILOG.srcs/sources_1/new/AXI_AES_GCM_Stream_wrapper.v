@@ -50,7 +50,8 @@ module AXI_AES_GCM_Stream_wrapper #(
     output wire [31:0]                         dbg_last_fifo_pushes,
     output wire [31:0]                         dbg_last_axis_pops,
     output wire [31:0]                         dbg_last_tag_attempts,
-    output wire [31:0]                         dbg_last_fifo_count
+    output wire [31:0]                         dbg_last_fifo_count,
+    output wire                                stream_empty
 );
 
     AXI_AES_GCM_Stream #(
@@ -101,7 +102,8 @@ module AXI_AES_GCM_Stream_wrapper #(
         .dbg_last_fifo_pushes(dbg_last_fifo_pushes),
         .dbg_last_axis_pops  (dbg_last_axis_pops),
         .dbg_last_tag_attempts(dbg_last_tag_attempts),
-        .dbg_last_fifo_count (dbg_last_fifo_count)
+        .dbg_last_fifo_count (dbg_last_fifo_count),
+        .stream_empty        (stream_empty)
     );
 
 endmodule

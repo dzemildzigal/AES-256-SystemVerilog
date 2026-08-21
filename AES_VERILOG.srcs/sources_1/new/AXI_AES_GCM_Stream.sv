@@ -128,7 +128,8 @@ module AXI_AES_GCM_Stream #(
     output wire [31:0]                         dbg_last_fifo_pushes,
     output wire [31:0]                         dbg_last_axis_pops,
     output wire [31:0]                         dbg_last_tag_attempts,
-    output wire [31:0]                         dbg_last_fifo_count
+    output wire [31:0]                         dbg_last_fifo_count,
+    output wire                                stream_empty
 );
 
     localparam integer STREAM_FIFO_PTR_W = $clog2(STREAM_FIFO_DEPTH);
@@ -247,6 +248,7 @@ module AXI_AES_GCM_Stream #(
     reg [STREAM_FIFO_PTR_W:0]   ct_fifo_count;
     reg [STREAM_FIFO_PTR_W:0]   pt_inflight_count;
     reg                         ct_fifo_overflow_sticky;
+    reg                         tag_pending;
 
     // Per-session source diagnostics. These count the stream before the
     // writer, so they distinguish a short AES packet from a later loss.
@@ -276,6 +278,7 @@ module AXI_AES_GCM_Stream #(
 
     wire ct_fifo_empty = (ct_fifo_count == 0);
     wire ct_fifo_full  = (ct_fifo_count == STREAM_FIFO_DEPTH);
+    assign stream_empty = ct_fifo_empty && (pt_inflight_count == 0) && !tag_pending;
 
     wire [STREAM_FIFO_PTR_W:0] total_outstanding = ct_fifo_count + pt_inflight_count;
     wire stream_can_accept_pt = (total_outstanding < STREAM_FIFO_DEPTH);
@@ -450,8 +453,6 @@ module AXI_AES_GCM_Stream #(
     // full beat (TKEEP is always 0xFFFF), so the stream carries the complete
     // OSV datagram body: CT + TAG, with tlast on the tag beat.
     // ----------------------------------------------------------------
-    reg tag_pending;
-
     // Push priority: a live ct beat wins over the pending tag; if they ever
     // coincide, the tag waits one cycle (never lost).
     wire push_ct_now  = stream_mode_reg && ct_valid;
@@ -506,13 +507,10 @@ module AXI_AES_GCM_Stream #(
             dbg_last_fifo_count_r <= 32'd0;
         end
         else if (start_session_pulse) begin
-            // Start every session with empty stream buffers.
-            ct_fifo_wr_ptr <= '0;
-            ct_fifo_rd_ptr <= '0;
-            ct_fifo_count  <= '0;
-            pt_inflight_count <= '0;
+            // The sequencer starts a session only after stream_empty. Keep the
+            // output FIFO intact: clearing it here discards ciphertext/tag
+            // beats from the previous packet while the writer is draining.
             ct_fifo_overflow_sticky <= 1'b0;
-            tag_pending <= 1'b0;
             dbg_ct_beats_r <= 32'd0;
             dbg_tag_pushes_r <= 32'd0;
             dbg_tag_fifo_count_r <= 32'd0;

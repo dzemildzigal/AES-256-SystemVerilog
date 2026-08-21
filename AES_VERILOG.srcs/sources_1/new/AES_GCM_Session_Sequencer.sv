@@ -99,6 +99,7 @@ module AES_GCM_Session_Sequencer #(
     input  logic [31:0]  dbg_last_axis_pops,
     input  logic [31:0]  dbg_last_tag_attempts,
     input  logic [31:0]  dbg_last_fifo_count,
+    input  logic         aes_stream_empty,
     // Pre-FIFO probe counter (video_out tvalid) from video_beat_counter_0.
     input  logic [63:0] dbg_prefifo_beats
 );
@@ -213,17 +214,18 @@ module AES_GCM_Session_Sequencer #(
         ST_W_PT_LO         = 5'd17,
         ST_W_SET_STREAM    = 5'd18,
         ST_W_START_SESS    = 5'd19,
-        ST_POLL_SESSION    = 5'd20,
-        ST_PASS            = 5'd21,
-        ST_WAIT_TAG        = 5'd22,
-        ST_RD_TAG0         = 5'd23,
-        ST_RD_TAG1         = 5'd24,
-        ST_RD_TAG2         = 5'd25,
-        ST_RD_TAG3         = 5'd26,
-        ST_RD_GHASH0       = 5'd27,
-        ST_RD_GHASH1       = 5'd28,
-        ST_RD_GHASH2       = 5'd29,
-        ST_RD_GHASH3       = 5'd30
+        ST_WAIT_STREAM_EMPTY = 5'd20,
+        ST_POLL_SESSION    = 5'd21,
+        ST_PASS            = 5'd22,
+        ST_WAIT_TAG        = 5'd23,
+        ST_RD_TAG0         = 5'd24,
+        ST_RD_TAG1         = 5'd25,
+        ST_RD_TAG2         = 5'd26,
+        ST_RD_TAG3         = 5'd27,
+        ST_RD_GHASH0       = 5'd28,
+        ST_RD_GHASH1       = 5'd29,
+        ST_RD_GHASH2       = 5'd30,
+        ST_RD_GHASH3       = 5'd31
     } state_t;
 
     state_t state;
@@ -697,7 +699,12 @@ module AES_GCM_Session_Sequencer #(
                 end
 
                 ST_W_START_SESS: begin
-                    if (mst_wr_done) begin
+                    if (mst_wr_done)
+                        state <= ST_WAIT_STREAM_EMPTY;
+                end
+
+                ST_WAIT_STREAM_EMPTY: begin
+                    if (aes_stream_empty) begin
                         mst_wr_addr   <= AES_REG_CTRL;
                         mst_wr_data   <= AES_CTRL_START_SESSION;
                         mst_wr_launch <= 1'b1;
