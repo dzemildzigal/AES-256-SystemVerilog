@@ -178,6 +178,14 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_DBG_LAST_FIFO_COUNT = 8'hC8;
     localparam logic [7:0] REG_TAG_COMPLETE_COUNT_HI = 8'hCC;
     localparam logic [7:0] REG_TAG_COMPLETE_COUNT_LO = 8'hD0;
+    localparam logic [7:0] REG_LAST_SEQ_TOTAL_CYCLES = 8'hD4;
+    localparam logic [7:0] REG_LAST_SEQ_SETUP_CYCLES = 8'hD8;
+    localparam logic [7:0] REG_LAST_SEQ_WAIT_EMPTY = 8'hDC;
+    localparam logic [7:0] REG_LAST_SEQ_POLL_SESSION = 8'hE0;
+    localparam logic [7:0] REG_LAST_SEQ_PASS = 8'hE4;
+    localparam logic [7:0] REG_LAST_SEQ_WAIT_TAG = 8'hE8;
+    localparam logic [7:0] REG_LAST_SEQ_TAG_READ = 8'hEC;
+    localparam logic [7:0] REG_LAST_SEQ_GHASH_READ = 8'hF0;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -233,6 +241,25 @@ module AES_GCM_Session_Sequencer #(
     state_t state;
     logic [63:0] nonce_ctr;
     logic [63:0] tag_complete_count;
+
+    // Per-packet sequencer cycle breakdown. Counters are reset when a packet
+    // starts and latched after the final GHASH mirror read.
+    logic [31:0] seq_total_cycles;
+    logic [31:0] seq_setup_cycles;
+    logic [31:0] seq_wait_empty_cycles;
+    logic [31:0] seq_poll_session_cycles;
+    logic [31:0] seq_pass_cycles;
+    logic [31:0] seq_wait_tag_cycles;
+    logic [31:0] seq_tag_read_cycles;
+    logic [31:0] seq_ghash_read_cycles;
+    logic [31:0] last_seq_total_cycles;
+    logic [31:0] last_seq_setup_cycles;
+    logic [31:0] last_seq_wait_empty_cycles;
+    logic [31:0] last_seq_poll_session_cycles;
+    logic [31:0] last_seq_pass_cycles;
+    logic [31:0] last_seq_wait_tag_cycles;
+    logic [31:0] last_seq_tag_read_cycles;
+    logic [31:0] last_seq_ghash_read_cycles;
 
     logic [31:0] reg_ctrl;
     logic [31:0] reg_session_id;
@@ -433,6 +460,14 @@ module AES_GCM_Session_Sequencer #(
                     REG_DBG_LAST_FIFO_COUNT: S_AXI_RDATA <= dbg_last_fifo_count;
                     REG_TAG_COMPLETE_COUNT_HI: S_AXI_RDATA <= tag_complete_count[63:32];
                     REG_TAG_COMPLETE_COUNT_LO: S_AXI_RDATA <= tag_complete_count[31:0];
+                    REG_LAST_SEQ_TOTAL_CYCLES: S_AXI_RDATA <= last_seq_total_cycles;
+                    REG_LAST_SEQ_SETUP_CYCLES: S_AXI_RDATA <= last_seq_setup_cycles;
+                    REG_LAST_SEQ_WAIT_EMPTY: S_AXI_RDATA <= last_seq_wait_empty_cycles;
+                    REG_LAST_SEQ_POLL_SESSION: S_AXI_RDATA <= last_seq_poll_session_cycles;
+                    REG_LAST_SEQ_PASS: S_AXI_RDATA <= last_seq_pass_cycles;
+                    REG_LAST_SEQ_WAIT_TAG: S_AXI_RDATA <= last_seq_wait_tag_cycles;
+                    REG_LAST_SEQ_TAG_READ: S_AXI_RDATA <= last_seq_tag_read_cycles;
+                    REG_LAST_SEQ_GHASH_READ: S_AXI_RDATA <= last_seq_ghash_read_cycles;
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;
@@ -559,6 +594,22 @@ module AES_GCM_Session_Sequencer #(
             state       <= ST_IDLE;
             nonce_ctr   <= DEFAULT_NONCE_SEED;
             tag_complete_count <= 64'd0;
+            seq_total_cycles <= 32'd0;
+            seq_setup_cycles <= 32'd0;
+            seq_wait_empty_cycles <= 32'd0;
+            seq_poll_session_cycles <= 32'd0;
+            seq_pass_cycles <= 32'd0;
+            seq_wait_tag_cycles <= 32'd0;
+            seq_tag_read_cycles <= 32'd0;
+            seq_ghash_read_cycles <= 32'd0;
+            last_seq_total_cycles <= 32'd0;
+            last_seq_setup_cycles <= 32'd0;
+            last_seq_wait_empty_cycles <= 32'd0;
+            last_seq_poll_session_cycles <= 32'd0;
+            last_seq_pass_cycles <= 32'd0;
+            last_seq_wait_tag_cycles <= 32'd0;
+            last_seq_tag_read_cycles <= 32'd0;
+            last_seq_ghash_read_cycles <= 32'd0;
             key_dirty   <= 1'b1;
             reg_tag_word[0] <= '0;
             reg_tag_word[1] <= '0;
@@ -582,6 +633,31 @@ module AES_GCM_Session_Sequencer #(
                 key_dirty <= 1'b1;
             end
 
+            // Count the current packet state. The final state cycle is added
+            // explicitly when the last GHASH read completes below.
+            if (state != ST_IDLE) begin
+                seq_total_cycles <= seq_total_cycles + 32'd1;
+                case (state)
+                    ST_W_NONCE0, ST_W_NONCE1, ST_W_NONCE2,
+                    ST_W_AAD_HI, ST_W_AAD_LO, ST_W_PT_HI, ST_W_PT_LO,
+                    ST_W_SET_STREAM, ST_W_START_SESS:
+                        seq_setup_cycles <= seq_setup_cycles + 32'd1;
+                    ST_WAIT_STREAM_EMPTY:
+                        seq_wait_empty_cycles <= seq_wait_empty_cycles + 32'd1;
+                    ST_POLL_SESSION:
+                        seq_poll_session_cycles <= seq_poll_session_cycles + 32'd1;
+                    ST_PASS:
+                        seq_pass_cycles <= seq_pass_cycles + 32'd1;
+                    ST_WAIT_TAG:
+                        seq_wait_tag_cycles <= seq_wait_tag_cycles + 32'd1;
+                    ST_RD_TAG0, ST_RD_TAG1, ST_RD_TAG2, ST_RD_TAG3:
+                        seq_tag_read_cycles <= seq_tag_read_cycles + 32'd1;
+                    ST_RD_GHASH0, ST_RD_GHASH1, ST_RD_GHASH2, ST_RD_GHASH3:
+                        seq_ghash_read_cycles <= seq_ghash_read_cycles + 32'd1;
+                    default: begin end
+                endcase
+            end
+
             case (state)
 
                 ST_IDLE: begin
@@ -596,6 +672,14 @@ module AES_GCM_Session_Sequencer #(
                         // key (verified on the wire: keystream matched key=0).
                         state <= ST_W_KEY0;
                     end else if (s_axis_tvalid) begin
+                        seq_total_cycles <= 32'd0;
+                        seq_setup_cycles <= 32'd0;
+                        seq_wait_empty_cycles <= 32'd0;
+                        seq_poll_session_cycles <= 32'd0;
+                        seq_pass_cycles <= 32'd0;
+                        seq_wait_tag_cycles <= 32'd0;
+                        seq_tag_read_cycles <= 32'd0;
+                        seq_ghash_read_cycles <= 32'd0;
                         state <= ST_W_NONCE0;
                     end
                 end
@@ -759,6 +843,14 @@ module AES_GCM_Session_Sequencer #(
                 ST_RD_GHASH3: begin
                     if (mst_rd_done) begin
                         reg_ghash_word[3] <= mst_rd_data;
+                        last_seq_total_cycles <= seq_total_cycles + 32'd1;
+                        last_seq_setup_cycles <= seq_setup_cycles;
+                        last_seq_wait_empty_cycles <= seq_wait_empty_cycles;
+                        last_seq_poll_session_cycles <= seq_poll_session_cycles;
+                        last_seq_pass_cycles <= seq_pass_cycles;
+                        last_seq_wait_tag_cycles <= seq_wait_tag_cycles;
+                        last_seq_tag_read_cycles <= seq_tag_read_cycles;
+                        last_seq_ghash_read_cycles <= seq_ghash_read_cycles + 32'd1;
                         state              <= ST_IDLE;
                     end
                 end

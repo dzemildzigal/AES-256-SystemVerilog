@@ -39,6 +39,16 @@
 //   0x0078 FAULT_BRESP         RO    AXI B response at fault
 //   0x007C COMPLETE_COUNT_LO   RO    completed DDR packets, low word
 //   0x0080 COMPLETE_COUNT_HI   RO    completed DDR packets, high word
+//   0x0084 WR_FETCH_CYCLES_LO  RO    cumulative WR_FETCH cycles, low word
+//   0x0088 WR_FETCH_CYCLES_HI  RO    cumulative WR_FETCH cycles, high word
+//   0x008C WR_AW_CYCLES_LO     RO    cumulative WR_AW cycles, low word
+//   0x0090 WR_AW_CYCLES_HI     RO    cumulative WR_AW cycles, high word
+//   0x0094 WR_W_CYCLES_LO      RO    cumulative WR_W cycles, low word
+//   0x0098 WR_W_CYCLES_HI      RO    cumulative WR_W cycles, high word
+//   0x009C WR_B_CYCLES_LO      RO    cumulative WR_B cycles, low word
+//   0x00A0 WR_B_CYCLES_HI      RO    cumulative WR_B cycles, high word
+//   0x00A4 WR_IDLE_BLOCKED_LO  RO    blocked WR_IDLE cycles, low word
+//   0x00A8 WR_IDLE_BLOCKED_HI  RO    blocked WR_IDLE cycles, high word
 //////////////////////////////////////////////////////////////////////////////////
 
 module AXI_PingPong_Ctrl #(
@@ -169,6 +179,11 @@ module AXI_PingPong_Ctrl #(
     reg [31:0]  valid_bytes_buf1;
     reg [31:0]  drop_count;
     reg [63:0]  complete_count;
+    reg [63:0]  wr_fetch_cycles;
+    reg [63:0]  wr_aw_cycles;
+    reg [63:0]  wr_w_cycles;
+    reg [63:0]  wr_b_cycles;
+    reg [63:0]  wr_idle_blocked_cycles;
     reg [31:0]  irq_enable_reg;
     reg [31:0]  irq_status_reg;
 
@@ -234,6 +249,8 @@ module AXI_PingPong_Ctrl #(
     wire [5:0] rd_index = axi_araddr[7:2];
 
     wire [63:0] selected_base_addr = write_index ? buf1_base_addr : buf0_base_addr;
+    wire writer_target_ready = (write_index == 1'b0 && ready_mask[0]) ||
+                                (write_index == 1'b1 && ready_mask[1]);
     wire writer_base_invalid =
         (selected_base_addr[63:32] != 32'd0) ||
         (selected_base_addr[31:0] == 32'd0);
@@ -343,6 +360,11 @@ module AXI_PingPong_Ctrl #(
             valid_bytes_buf1       <= 32'd0;
             drop_count             <= 32'd0;
             complete_count         <= 64'd0;
+            wr_fetch_cycles        <= 64'd0;
+            wr_aw_cycles           <= 64'd0;
+            wr_w_cycles            <= 64'd0;
+            wr_b_cycles            <= 64'd0;
+            wr_idle_blocked_cycles <= 64'd0;
             irq_enable_reg         <= 32'd0;
             irq_status_reg         <= 32'd0;
 
@@ -394,6 +416,18 @@ module AXI_PingPong_Ctrl #(
             m_axi_bready           <= 1'b0;
         end
         else begin
+            if (control_enable && writer_enable) begin
+                case (writer_state)
+                    WR_FETCH: wr_fetch_cycles <= wr_fetch_cycles + 64'd1;
+                    WR_AW:    wr_aw_cycles    <= wr_aw_cycles + 64'd1;
+                    WR_W:     wr_w_cycles     <= wr_w_cycles + 64'd1;
+                    WR_B:     wr_b_cycles     <= wr_b_cycles + 64'd1;
+                    WR_IDLE:  if (writer_target_ready)
+                                  wr_idle_blocked_cycles <= wr_idle_blocked_cycles + 64'd1;
+                    default: begin end
+                endcase
+            end
+
             // AXI-Lite write side effects
             if (wr_handshake) begin
                 case (wr_index)
@@ -409,6 +443,11 @@ module AXI_PingPong_Ctrl #(
                             valid_bytes_buf1       <= 32'd0;
                             drop_count             <= 32'd0;
                             complete_count         <= 64'd0;
+                            wr_fetch_cycles        <= 64'd0;
+                            wr_aw_cycles           <= 64'd0;
+                            wr_w_cycles            <= 64'd0;
+                            wr_b_cycles            <= 64'd0;
+                            wr_idle_blocked_cycles <= 64'd0;
                             irq_status_reg         <= 32'd0;
                             producer_frame_id      <= 32'd0;
                             frame_period_counter   <= 32'd0;
@@ -530,8 +569,7 @@ module AXI_PingPong_Ctrl #(
                             stream_hold_hi_pending <= 1'b0;
                             stream_word_valid      <= 1'b0;
 
-                            if ((write_index == 1'b0 && ready_mask[0]) ||
-                                (write_index == 1'b1 && ready_mask[1])) begin
+                            if (writer_target_ready) begin
                                 drop_count <= drop_count + 32'd1;
                             end
                             else if (writer_base_invalid) begin
@@ -971,6 +1009,16 @@ module AXI_PingPong_Ctrl #(
             6'd30: rd_mux = {30'd0, fault_bresp};                                       // 0x78
             6'd31: rd_mux = complete_count[31:0];                                        // 0x7C
             6'd32: rd_mux = complete_count[63:32];                                       // 0x80
+            6'd33: rd_mux = wr_fetch_cycles[31:0];                                       // 0x84
+            6'd34: rd_mux = wr_fetch_cycles[63:32];                                      // 0x88
+            6'd35: rd_mux = wr_aw_cycles[31:0];                                          // 0x8C
+            6'd36: rd_mux = wr_aw_cycles[63:32];                                         // 0x90
+            6'd37: rd_mux = wr_w_cycles[31:0];                                           // 0x94
+            6'd38: rd_mux = wr_w_cycles[63:32];                                          // 0x98
+            6'd39: rd_mux = wr_b_cycles[31:0];                                           // 0x9C
+            6'd40: rd_mux = wr_b_cycles[63:32];                                          // 0xA0
+            6'd41: rd_mux = wr_idle_blocked_cycles[31:0];                                // 0xA4
+            6'd42: rd_mux = wr_idle_blocked_cycles[63:32];                               // 0xA8
             default: rd_mux = 32'd0;
         endcase
     end
