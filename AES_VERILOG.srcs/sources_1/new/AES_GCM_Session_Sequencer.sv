@@ -176,6 +176,8 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_DBG_LAST_AXIS_POPS = 8'hC0;
     localparam logic [7:0] REG_DBG_LAST_TAG_ATTEMPTS = 8'hC4;
     localparam logic [7:0] REG_DBG_LAST_FIFO_COUNT = 8'hC8;
+    localparam logic [7:0] REG_TAG_COMPLETE_COUNT_HI = 8'hCC;
+    localparam logic [7:0] REG_TAG_COMPLETE_COUNT_LO = 8'hD0;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -230,6 +232,7 @@ module AES_GCM_Session_Sequencer #(
 
     state_t state;
     logic [63:0] nonce_ctr;
+    logic [63:0] tag_complete_count;
 
     logic [31:0] reg_ctrl;
     logic [31:0] reg_session_id;
@@ -428,6 +431,8 @@ module AES_GCM_Session_Sequencer #(
                     REG_DBG_LAST_AXIS_POPS: S_AXI_RDATA <= dbg_last_axis_pops;
                     REG_DBG_LAST_TAG_ATTEMPTS: S_AXI_RDATA <= dbg_last_tag_attempts;
                     REG_DBG_LAST_FIFO_COUNT: S_AXI_RDATA <= dbg_last_fifo_count;
+                    REG_TAG_COMPLETE_COUNT_HI: S_AXI_RDATA <= tag_complete_count[63:32];
+                    REG_TAG_COMPLETE_COUNT_LO: S_AXI_RDATA <= tag_complete_count[31:0];
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;
@@ -553,6 +558,7 @@ module AES_GCM_Session_Sequencer #(
         if (!aresetn) begin
             state       <= ST_IDLE;
             nonce_ctr   <= DEFAULT_NONCE_SEED;
+            tag_complete_count <= 64'd0;
             key_dirty   <= 1'b1;
             reg_tag_word[0] <= '0;
             reg_tag_word[1] <= '0;
@@ -742,6 +748,7 @@ module AES_GCM_Session_Sequencer #(
                     if (mst_rd_done) begin
                         reg_tag_word[3] <= mst_rd_data;
                         tag_valid_flag   <= 1'b1;
+                        tag_complete_count <= tag_complete_count + 64'd1;
                         state            <= ST_RD_GHASH0;
                     end
                 end

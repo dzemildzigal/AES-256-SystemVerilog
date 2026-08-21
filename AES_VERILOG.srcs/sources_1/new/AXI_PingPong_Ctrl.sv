@@ -37,6 +37,8 @@
 //   0x0070 FAULT_BYTES_LEFT    RO    writer bytes remaining at fault
 //   0x0074 FAULT_BURST_BYTES   RO    burst bytes at fault
 //   0x0078 FAULT_BRESP         RO    AXI B response at fault
+//   0x007C COMPLETE_COUNT_LO   RO    completed DDR packets, low word
+//   0x0080 COMPLETE_COUNT_HI   RO    completed DDR packets, high word
 //////////////////////////////////////////////////////////////////////////////////
 
 module AXI_PingPong_Ctrl #(
@@ -166,6 +168,7 @@ module AXI_PingPong_Ctrl #(
     reg [31:0]  valid_bytes_buf0;
     reg [31:0]  valid_bytes_buf1;
     reg [31:0]  drop_count;
+    reg [63:0]  complete_count;
     reg [31:0]  irq_enable_reg;
     reg [31:0]  irq_status_reg;
 
@@ -339,6 +342,7 @@ module AXI_PingPong_Ctrl #(
             valid_bytes_buf0       <= 32'd0;
             valid_bytes_buf1       <= 32'd0;
             drop_count             <= 32'd0;
+            complete_count         <= 64'd0;
             irq_enable_reg         <= 32'd0;
             irq_status_reg         <= 32'd0;
 
@@ -404,6 +408,7 @@ module AXI_PingPong_Ctrl #(
                             valid_bytes_buf0       <= 32'd0;
                             valid_bytes_buf1       <= 32'd0;
                             drop_count             <= 32'd0;
+                            complete_count         <= 64'd0;
                             irq_status_reg         <= 32'd0;
                             producer_frame_id      <= 32'd0;
                             frame_period_counter   <= 32'd0;
@@ -805,6 +810,7 @@ module AXI_PingPong_Ctrl #(
                         end
 
                         WR_COMPLETE: begin
+                            complete_count        <= complete_count + 64'd1;
                             writer_busy            <= 1'b0;
                             stream_hold_valid      <= 1'b0;
                             stream_hold_hi_pending <= 1'b0;
@@ -963,6 +969,8 @@ module AXI_PingPong_Ctrl #(
             6'd28: rd_mux = fault_bytes_remaining;                                      // 0x70
             6'd29: rd_mux = fault_burst_bytes;                                          // 0x74
             6'd30: rd_mux = {30'd0, fault_bresp};                                       // 0x78
+            6'd31: rd_mux = complete_count[31:0];                                        // 0x7C
+            6'd32: rd_mux = complete_count[63:32];                                       // 0x80
             default: rd_mux = 32'd0;
         endcase
     end
