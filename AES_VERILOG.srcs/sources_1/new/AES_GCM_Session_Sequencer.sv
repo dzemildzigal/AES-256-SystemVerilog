@@ -94,6 +94,11 @@ module AES_GCM_Session_Sequencer #(
     input  logic [31:0]  dbg_tag_pushes,
     input  logic [31:0]  dbg_tag_fifo_count,
     input  logic [31:0]  dbg_tag_pt_inflight,
+    input  logic [31:0]  dbg_last_ct_beats,
+    input  logic [31:0]  dbg_last_fifo_pushes,
+    input  logic [31:0]  dbg_last_axis_pops,
+    input  logic [31:0]  dbg_last_tag_attempts,
+    input  logic [31:0]  dbg_last_fifo_count,
     // Pre-FIFO probe counter (video_out tvalid) from video_beat_counter_0.
     input  logic [63:0] dbg_prefifo_beats
 );
@@ -165,6 +170,11 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_DBG_TAG_PUSHES = 8'hAC;
     localparam logic [7:0] REG_DBG_TAG_FIFO_COUNT = 8'hB0;
     localparam logic [7:0] REG_DBG_TAG_PT_INFLIGHT = 8'hB4;
+    localparam logic [7:0] REG_DBG_LAST_CT_BEATS = 8'hB8;
+    localparam logic [7:0] REG_DBG_LAST_FIFO_PUSHES = 8'hBC;
+    localparam logic [7:0] REG_DBG_LAST_AXIS_POPS = 8'hC0;
+    localparam logic [7:0] REG_DBG_LAST_TAG_ATTEMPTS = 8'hC4;
+    localparam logic [7:0] REG_DBG_LAST_FIFO_COUNT = 8'hC8;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -411,6 +421,11 @@ module AES_GCM_Session_Sequencer #(
                     REG_DBG_TAG_PUSHES: S_AXI_RDATA <= dbg_tag_pushes;
                     REG_DBG_TAG_FIFO_COUNT: S_AXI_RDATA <= dbg_tag_fifo_count;
                     REG_DBG_TAG_PT_INFLIGHT: S_AXI_RDATA <= dbg_tag_pt_inflight;
+                    REG_DBG_LAST_CT_BEATS: S_AXI_RDATA <= dbg_last_ct_beats;
+                    REG_DBG_LAST_FIFO_PUSHES: S_AXI_RDATA <= dbg_last_fifo_pushes;
+                    REG_DBG_LAST_AXIS_POPS: S_AXI_RDATA <= dbg_last_axis_pops;
+                    REG_DBG_LAST_TAG_ATTEMPTS: S_AXI_RDATA <= dbg_last_tag_attempts;
+                    REG_DBG_LAST_FIFO_COUNT: S_AXI_RDATA <= dbg_last_fifo_count;
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;

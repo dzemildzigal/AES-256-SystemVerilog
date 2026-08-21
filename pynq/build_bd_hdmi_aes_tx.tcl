@@ -700,6 +700,11 @@ connect_bd_net [get_bd_pins $AES_INST/dbg_ct_beats] [get_bd_pins $SEQUENCER_INST
 connect_bd_net [get_bd_pins $AES_INST/dbg_tag_pushes] [get_bd_pins $SEQUENCER_INST/dbg_tag_pushes]
 connect_bd_net [get_bd_pins $AES_INST/dbg_tag_fifo_count] [get_bd_pins $SEQUENCER_INST/dbg_tag_fifo_count]
 connect_bd_net [get_bd_pins $AES_INST/dbg_tag_pt_inflight] [get_bd_pins $SEQUENCER_INST/dbg_tag_pt_inflight]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_ct_beats] [get_bd_pins $SEQUENCER_INST/dbg_last_ct_beats]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_fifo_pushes] [get_bd_pins $SEQUENCER_INST/dbg_last_fifo_pushes]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_axis_pops] [get_bd_pins $SEQUENCER_INST/dbg_last_axis_pops]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_tag_attempts] [get_bd_pins $SEQUENCER_INST/dbg_last_tag_attempts]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_fifo_count] [get_bd_pins $SEQUENCER_INST/dbg_last_fifo_count]
 
 assign_bd_address
 regenerate_bd_layout

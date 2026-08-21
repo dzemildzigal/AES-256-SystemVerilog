@@ -79,7 +79,12 @@ module AES_GCM_Session_Sequencer_wrapper #(
     input  wire [31:0]  dbg_ct_beats,
     input  wire [31:0]  dbg_tag_pushes,
     input  wire [31:0]  dbg_tag_fifo_count,
-    input  wire [31:0]  dbg_tag_pt_inflight
+    input  wire [31:0]  dbg_tag_pt_inflight,
+    input  wire [31:0]  dbg_last_ct_beats,
+    input  wire [31:0]  dbg_last_fifo_pushes,
+    input  wire [31:0]  dbg_last_axis_pops,
+    input  wire [31:0]  dbg_last_tag_attempts,
+    input  wire [31:0]  dbg_last_fifo_count
 );
 
     AES_GCM_Session_Sequencer #(
@@ -159,7 +164,12 @@ module AES_GCM_Session_Sequencer_wrapper #(
         .dbg_ct_beats          (dbg_ct_beats),
         .dbg_tag_pushes        (dbg_tag_pushes),
         .dbg_tag_fifo_count    (dbg_tag_fifo_count),
-        .dbg_tag_pt_inflight   (dbg_tag_pt_inflight)
+        .dbg_tag_pt_inflight   (dbg_tag_pt_inflight),
+        .dbg_last_ct_beats     (dbg_last_ct_beats),
+        .dbg_last_fifo_pushes  (dbg_last_fifo_pushes),
+        .dbg_last_axis_pops    (dbg_last_axis_pops),
+        .dbg_last_tag_attempts (dbg_last_tag_attempts),
+        .dbg_last_fifo_count   (dbg_last_fifo_count)
     );
 
 endmodule

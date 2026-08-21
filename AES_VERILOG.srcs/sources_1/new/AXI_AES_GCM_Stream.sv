@@ -123,7 +123,12 @@ module AXI_AES_GCM_Stream #(
     output wire [31:0]                         dbg_ct_beats,
     output wire [31:0]                         dbg_tag_pushes,
     output wire [31:0]                         dbg_tag_fifo_count,
-    output wire [31:0]                         dbg_tag_pt_inflight
+    output wire [31:0]                         dbg_tag_pt_inflight,
+    output wire [31:0]                         dbg_last_ct_beats,
+    output wire [31:0]                         dbg_last_fifo_pushes,
+    output wire [31:0]                         dbg_last_axis_pops,
+    output wire [31:0]                         dbg_last_tag_attempts,
+    output wire [31:0]                         dbg_last_fifo_count
 );
 
     localparam integer STREAM_FIFO_PTR_W = $clog2(STREAM_FIFO_DEPTH);
@@ -249,6 +254,20 @@ module AXI_AES_GCM_Stream #(
     reg [31:0] dbg_tag_pushes_r;
     reg [31:0] dbg_tag_fifo_count_r;
     reg [31:0] dbg_tag_pt_inflight_r;
+    reg [31:0] dbg_fifo_pushes_r;
+    reg [31:0] dbg_axis_pops_r;
+    reg [31:0] dbg_tag_attempts_r;
+    reg [31:0] dbg_last_ct_beats_r;
+    reg [31:0] dbg_last_fifo_pushes_r;
+    reg [31:0] dbg_last_axis_pops_r;
+    reg [31:0] dbg_last_tag_attempts_r;
+    reg [31:0] dbg_last_fifo_count_r;
+
+    assign dbg_last_ct_beats = dbg_last_ct_beats_r;
+    assign dbg_last_fifo_pushes = dbg_last_fifo_pushes_r;
+    assign dbg_last_axis_pops = dbg_last_axis_pops_r;
+    assign dbg_last_tag_attempts = dbg_last_tag_attempts_r;
+    assign dbg_last_fifo_count = dbg_last_fifo_count_r;
 
     assign dbg_ct_beats       = dbg_ct_beats_r;
     assign dbg_tag_pushes     = dbg_tag_pushes_r;
@@ -477,6 +496,14 @@ module AXI_AES_GCM_Stream #(
             dbg_tag_pushes_r <= 32'd0;
             dbg_tag_fifo_count_r <= 32'd0;
             dbg_tag_pt_inflight_r <= 32'd0;
+            dbg_fifo_pushes_r <= 32'd0;
+            dbg_axis_pops_r <= 32'd0;
+            dbg_tag_attempts_r <= 32'd0;
+            dbg_last_ct_beats_r <= 32'd0;
+            dbg_last_fifo_pushes_r <= 32'd0;
+            dbg_last_axis_pops_r <= 32'd0;
+            dbg_last_tag_attempts_r <= 32'd0;
+            dbg_last_fifo_count_r <= 32'd0;
         end
         else if (start_session_pulse) begin
             // Start every session with empty stream buffers.
@@ -490,10 +517,26 @@ module AXI_AES_GCM_Stream #(
             dbg_tag_pushes_r <= 32'd0;
             dbg_tag_fifo_count_r <= 32'd0;
             dbg_tag_pt_inflight_r <= 32'd0;
+            dbg_fifo_pushes_r <= 32'd0;
+            dbg_axis_pops_r <= 32'd0;
+            dbg_tag_attempts_r <= 32'd0;
         end
         else begin
             if (ct_valid)
                 dbg_ct_beats_r <= dbg_ct_beats_r + 32'd1;
+            if (tag_valid)
+                dbg_tag_attempts_r <= dbg_tag_attempts_r + 32'd1;
+            if (ct_fifo_push && !ct_fifo_full)
+                dbg_fifo_pushes_r <= dbg_fifo_pushes_r + 32'd1;
+            if (ct_fifo_pop)
+                dbg_axis_pops_r <= dbg_axis_pops_r + 32'd1;
+            if (tag_valid) begin
+                dbg_last_ct_beats_r <= dbg_ct_beats_r + (ct_valid ? 32'd1 : 32'd0);
+                dbg_last_fifo_pushes_r <= dbg_fifo_pushes_r + ((ct_fifo_push && !ct_fifo_full) ? 32'd1 : 32'd0);
+                dbg_last_axis_pops_r <= dbg_axis_pops_r;
+                dbg_last_tag_attempts_r <= dbg_tag_attempts_r + 32'd1;
+                dbg_last_fifo_count_r <= ct_fifo_count;
+            end
             if (push_tag_now && !ct_fifo_full) begin
                 dbg_tag_pushes_r <= dbg_tag_pushes_r + 32'd1;
                 dbg_tag_fifo_count_r <= ct_fifo_count;

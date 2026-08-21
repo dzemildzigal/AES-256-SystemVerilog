@@ -45,7 +45,12 @@ module AXI_AES_GCM_Stream_wrapper #(
     output wire [31:0]                         dbg_ct_beats,
     output wire [31:0]                         dbg_tag_pushes,
     output wire [31:0]                         dbg_tag_fifo_count,
-    output wire [31:0]                         dbg_tag_pt_inflight
+    output wire [31:0]                         dbg_tag_pt_inflight,
+    output wire [31:0]                         dbg_last_ct_beats,
+    output wire [31:0]                         dbg_last_fifo_pushes,
+    output wire [31:0]                         dbg_last_axis_pops,
+    output wire [31:0]                         dbg_last_tag_attempts,
+    output wire [31:0]                         dbg_last_fifo_count
 );
 
     AXI_AES_GCM_Stream #(
@@ -91,7 +96,12 @@ module AXI_AES_GCM_Stream_wrapper #(
         .dbg_ct_beats        (dbg_ct_beats),
         .dbg_tag_pushes      (dbg_tag_pushes),
         .dbg_tag_fifo_count  (dbg_tag_fifo_count),
-        .dbg_tag_pt_inflight (dbg_tag_pt_inflight)
+        .dbg_tag_pt_inflight (dbg_tag_pt_inflight),
+        .dbg_last_ct_beats   (dbg_last_ct_beats),
+        .dbg_last_fifo_pushes(dbg_last_fifo_pushes),
+        .dbg_last_axis_pops  (dbg_last_axis_pops),
+        .dbg_last_tag_attempts(dbg_last_tag_attempts),
+        .dbg_last_fifo_count (dbg_last_fifo_count)
     );
 
 endmodule
