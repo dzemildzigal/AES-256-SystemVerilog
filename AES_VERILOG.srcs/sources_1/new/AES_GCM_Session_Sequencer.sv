@@ -101,7 +101,23 @@ module AES_GCM_Session_Sequencer #(
     input  logic [31:0]  dbg_last_fifo_count,
     input  logic         aes_stream_empty,
     // Pre-FIFO probe counter (video_out tvalid) from video_beat_counter_0.
-    input  logic [63:0] dbg_prefifo_beats
+    input  logic [63:0] dbg_prefifo_beats,
+
+    // AES pipeline stall probes mirrored into this register map.
+    input  logic [29:0] dbg_aes_stall_status,
+    input  logic [63:0] dbg_fifo_full_cycles,
+    input  logic [63:0] dbg_empty_no_ct_cycles,
+    input  logic [63:0] dbg_pt_blocked_cycles,
+    input  logic [63:0] dbg_no_offer_cycles,
+    input  logic [63:0] dbg_gh_not_ready_cycles,
+    input  logic [63:0] dbg_slot_blocked_cycles,
+    input  logic [63:0] dbg_gcm_busy_cycles,
+    input  logic [31:0] dbg_last_fifo_full,
+    input  logic [31:0] dbg_last_empty_no_ct,
+    input  logic [31:0] dbg_last_pt_blocked,
+    input  logic [31:0] dbg_last_no_offer,
+    input  logic [31:0] dbg_last_gh_not_ready,
+    input  logic [31:0] dbg_last_slot_blocked
 );
 
     // AES register addresses.
@@ -185,7 +201,28 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_LAST_SEQ_PASS = 8'hE4;
     localparam logic [7:0] REG_LAST_SEQ_WAIT_TAG = 8'hE8;
     localparam logic [7:0] REG_LAST_SEQ_TAG_READ = 8'hEC;
-    localparam logic [7:0] REG_LAST_SEQ_GHASH_READ = 8'hF0;
+    localparam logic [8:0] REG_LAST_SEQ_GHASH_READ = 9'h0F0;
+    localparam logic [8:0] REG_AES_STALL_STATUS     = 9'h100;
+    localparam logic [8:0] REG_FIFO_FULL_LO         = 9'h104;
+    localparam logic [8:0] REG_FIFO_FULL_HI         = 9'h108;
+    localparam logic [8:0] REG_EMPTY_NO_CT_LO       = 9'h10C;
+    localparam logic [8:0] REG_EMPTY_NO_CT_HI       = 9'h110;
+    localparam logic [8:0] REG_PT_BLOCKED_LO        = 9'h114;
+    localparam logic [8:0] REG_PT_BLOCKED_HI        = 9'h118;
+    localparam logic [8:0] REG_NO_OFFER_LO          = 9'h11C;
+    localparam logic [8:0] REG_NO_OFFER_HI          = 9'h120;
+    localparam logic [8:0] REG_GH_NOT_READY_LO      = 9'h124;
+    localparam logic [8:0] REG_GH_NOT_READY_HI      = 9'h128;
+    localparam logic [8:0] REG_SLOT_BLOCKED_LO      = 9'h12C;
+    localparam logic [8:0] REG_SLOT_BLOCKED_HI      = 9'h130;
+    localparam logic [8:0] REG_GCM_BUSY_LO          = 9'h134;
+    localparam logic [8:0] REG_GCM_BUSY_HI          = 9'h138;
+    localparam logic [8:0] REG_LAST_FIFO_FULL       = 9'h13C;
+    localparam logic [8:0] REG_LAST_EMPTY_NO_CT     = 9'h140;
+    localparam logic [8:0] REG_LAST_PT_BLOCKED      = 9'h144;
+    localparam logic [8:0] REG_LAST_NO_OFFER        = 9'h148;
+    localparam logic [8:0] REG_LAST_GH_NOT_READY    = 9'h14C;
+    localparam logic [8:0] REG_LAST_SLOT_BLOCKED    = 9'h150;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -362,7 +399,7 @@ module AES_GCM_Session_Sequencer #(
             end
 
             if (S_AXI_WREADY && S_AXI_WVALID) begin
-                case (slv_awaddr[7:0])
+                case (slv_awaddr)
                     REG_CTRL: begin
                         reg_ctrl[0] <= S_AXI_WDATA[0];
                     end
@@ -398,7 +435,7 @@ module AES_GCM_Session_Sequencer #(
             end
 
             if (S_AXI_ARREADY && S_AXI_ARVALID) begin
-                case (S_AXI_ARADDR[7:0])
+                case (S_AXI_ARADDR)
                     REG_CTRL: S_AXI_RDATA <= reg_ctrl;
                     REG_STATUS: S_AXI_RDATA <= {
                         12'd0,
@@ -468,6 +505,27 @@ module AES_GCM_Session_Sequencer #(
                     REG_LAST_SEQ_WAIT_TAG: S_AXI_RDATA <= last_seq_wait_tag_cycles;
                     REG_LAST_SEQ_TAG_READ: S_AXI_RDATA <= last_seq_tag_read_cycles;
                     REG_LAST_SEQ_GHASH_READ: S_AXI_RDATA <= last_seq_ghash_read_cycles;
+                    REG_AES_STALL_STATUS: S_AXI_RDATA <= {s_axis_tvalid, (state == ST_PASS), dbg_aes_stall_status};
+                    REG_FIFO_FULL_LO: S_AXI_RDATA <= dbg_fifo_full_cycles[31:0];
+                    REG_FIFO_FULL_HI: S_AXI_RDATA <= dbg_fifo_full_cycles[63:32];
+                    REG_EMPTY_NO_CT_LO: S_AXI_RDATA <= dbg_empty_no_ct_cycles[31:0];
+                    REG_EMPTY_NO_CT_HI: S_AXI_RDATA <= dbg_empty_no_ct_cycles[63:32];
+                    REG_PT_BLOCKED_LO: S_AXI_RDATA <= dbg_pt_blocked_cycles[31:0];
+                    REG_PT_BLOCKED_HI: S_AXI_RDATA <= dbg_pt_blocked_cycles[63:32];
+                    REG_NO_OFFER_LO: S_AXI_RDATA <= dbg_no_offer_cycles[31:0];
+                    REG_NO_OFFER_HI: S_AXI_RDATA <= dbg_no_offer_cycles[63:32];
+                    REG_GH_NOT_READY_LO: S_AXI_RDATA <= dbg_gh_not_ready_cycles[31:0];
+                    REG_GH_NOT_READY_HI: S_AXI_RDATA <= dbg_gh_not_ready_cycles[63:32];
+                    REG_SLOT_BLOCKED_LO: S_AXI_RDATA <= dbg_slot_blocked_cycles[31:0];
+                    REG_SLOT_BLOCKED_HI: S_AXI_RDATA <= dbg_slot_blocked_cycles[63:32];
+                    REG_GCM_BUSY_LO: S_AXI_RDATA <= dbg_gcm_busy_cycles[31:0];
+                    REG_GCM_BUSY_HI: S_AXI_RDATA <= dbg_gcm_busy_cycles[63:32];
+                    REG_LAST_FIFO_FULL: S_AXI_RDATA <= dbg_last_fifo_full;
+                    REG_LAST_EMPTY_NO_CT: S_AXI_RDATA <= dbg_last_empty_no_ct;
+                    REG_LAST_PT_BLOCKED: S_AXI_RDATA <= dbg_last_pt_blocked;
+                    REG_LAST_NO_OFFER: S_AXI_RDATA <= dbg_last_no_offer;
+                    REG_LAST_GH_NOT_READY: S_AXI_RDATA <= dbg_last_gh_not_ready;
+                    REG_LAST_SLOT_BLOCKED: S_AXI_RDATA <= dbg_last_slot_blocked;
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;

@@ -707,6 +707,22 @@ connect_bd_net [get_bd_pins $AES_INST/dbg_last_tag_attempts] [get_bd_pins $SEQUE
 connect_bd_net [get_bd_pins $AES_INST/dbg_last_fifo_count] [get_bd_pins $SEQUENCER_INST/dbg_last_fifo_count]
 connect_bd_net [get_bd_pins $AES_INST/stream_empty] [get_bd_pins $SEQUENCER_INST/aes_stream_empty]
 
+# AES pipeline stall probes -> sequencer mirror registers at 0x100-0x150.
+connect_bd_net [get_bd_pins $AES_INST/dbg_aes_stall_status] [get_bd_pins $SEQUENCER_INST/dbg_aes_stall_status]
+connect_bd_net [get_bd_pins $AES_INST/dbg_fifo_full_cycles] [get_bd_pins $SEQUENCER_INST/dbg_fifo_full_cycles]
+connect_bd_net [get_bd_pins $AES_INST/dbg_empty_no_ct_cycles] [get_bd_pins $SEQUENCER_INST/dbg_empty_no_ct_cycles]
+connect_bd_net [get_bd_pins $AES_INST/dbg_pt_blocked_cycles] [get_bd_pins $SEQUENCER_INST/dbg_pt_blocked_cycles]
+connect_bd_net [get_bd_pins $AES_INST/dbg_no_offer_cycles] [get_bd_pins $SEQUENCER_INST/dbg_no_offer_cycles]
+connect_bd_net [get_bd_pins $AES_INST/dbg_gh_not_ready_cycles] [get_bd_pins $SEQUENCER_INST/dbg_gh_not_ready_cycles]
+connect_bd_net [get_bd_pins $AES_INST/dbg_slot_blocked_cycles] [get_bd_pins $SEQUENCER_INST/dbg_slot_blocked_cycles]
+connect_bd_net [get_bd_pins $AES_INST/dbg_gcm_busy_cycles] [get_bd_pins $SEQUENCER_INST/dbg_gcm_busy_cycles]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_fifo_full] [get_bd_pins $SEQUENCER_INST/dbg_last_fifo_full]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_empty_no_ct] [get_bd_pins $SEQUENCER_INST/dbg_last_empty_no_ct]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_pt_blocked] [get_bd_pins $SEQUENCER_INST/dbg_last_pt_blocked]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_no_offer] [get_bd_pins $SEQUENCER_INST/dbg_last_no_offer]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_gh_not_ready] [get_bd_pins $SEQUENCER_INST/dbg_last_gh_not_ready]
+connect_bd_net [get_bd_pins $AES_INST/dbg_last_slot_blocked] [get_bd_pins $SEQUENCER_INST/dbg_last_slot_blocked]
+
 assign_bd_address
 regenerate_bd_layout
 save_bd_design

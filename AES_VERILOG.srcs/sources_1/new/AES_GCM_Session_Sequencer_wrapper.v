@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module AES_GCM_Session_Sequencer_wrapper #(
-    parameter C_AXI_ADDR_WIDTH  = 8,
+    parameter C_AXI_ADDR_WIDTH  = 9,
     parameter C_AXI_DATA_WIDTH  = 32
 )(
     input  wire         aclk,
@@ -85,7 +85,22 @@ module AES_GCM_Session_Sequencer_wrapper #(
     input  wire [31:0]  dbg_last_axis_pops,
     input  wire [31:0]  dbg_last_tag_attempts,
     input  wire [31:0]  dbg_last_fifo_count,
-    input  wire         aes_stream_empty
+    input  wire         aes_stream_empty,
+
+    input  wire [29:0]  dbg_aes_stall_status,
+    input  wire [63:0]  dbg_fifo_full_cycles,
+    input  wire [63:0]  dbg_empty_no_ct_cycles,
+    input  wire [63:0]  dbg_pt_blocked_cycles,
+    input  wire [63:0]  dbg_no_offer_cycles,
+    input  wire [63:0]  dbg_gh_not_ready_cycles,
+    input  wire [63:0]  dbg_slot_blocked_cycles,
+    input  wire [63:0]  dbg_gcm_busy_cycles,
+    input  wire [31:0]  dbg_last_fifo_full,
+    input  wire [31:0]  dbg_last_empty_no_ct,
+    input  wire [31:0]  dbg_last_pt_blocked,
+    input  wire [31:0]  dbg_last_no_offer,
+    input  wire [31:0]  dbg_last_gh_not_ready,
+    input  wire [31:0]  dbg_last_slot_blocked
 );
 
     AES_GCM_Session_Sequencer #(
@@ -171,7 +186,22 @@ module AES_GCM_Session_Sequencer_wrapper #(
         .dbg_last_axis_pops    (dbg_last_axis_pops),
         .dbg_last_tag_attempts (dbg_last_tag_attempts),
         .dbg_last_fifo_count   (dbg_last_fifo_count),
-        .aes_stream_empty       (aes_stream_empty)
+        .aes_stream_empty       (aes_stream_empty),
+
+        .dbg_aes_stall_status  (dbg_aes_stall_status),
+        .dbg_fifo_full_cycles  (dbg_fifo_full_cycles),
+        .dbg_empty_no_ct_cycles(dbg_empty_no_ct_cycles),
+        .dbg_pt_blocked_cycles (dbg_pt_blocked_cycles),
+        .dbg_no_offer_cycles   (dbg_no_offer_cycles),
+        .dbg_gh_not_ready_cycles(dbg_gh_not_ready_cycles),
+        .dbg_slot_blocked_cycles(dbg_slot_blocked_cycles),
+        .dbg_gcm_busy_cycles   (dbg_gcm_busy_cycles),
+        .dbg_last_fifo_full    (dbg_last_fifo_full),
+        .dbg_last_empty_no_ct  (dbg_last_empty_no_ct),
+        .dbg_last_pt_blocked   (dbg_last_pt_blocked),
+        .dbg_last_no_offer     (dbg_last_no_offer),
+        .dbg_last_gh_not_ready (dbg_last_gh_not_ready),
+        .dbg_last_slot_blocked (dbg_last_slot_blocked)
     );
 
 endmodule

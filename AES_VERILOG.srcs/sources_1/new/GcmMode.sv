@@ -59,7 +59,14 @@ module GcmMode #(
     output logic         h_valid_o,
     output logic         busy_o,
     output logic [0:31]  session_cycles_o,
-    output logic         session_cycles_valid_o
+    output logic         session_cycles_valid_o,
+
+    // Debug probes for the AXI wrapper cycle counters.
+    output logic         dbg_slot_for_pt,
+    output logic         dbg_sess_running,
+    output logic         dbg_gh_ct_ready,
+    output logic         dbg_key_present,
+    output logic [4:0]   dbg_gh_fifo_count
     );
 
     localparam integer ENC_LAT = 15;
@@ -200,10 +207,16 @@ module GcmMode #(
         .ghash_out_o(gh_out),
         .ghash_valid_o(gh_out_valid),
         .tag_out_o(gh_tag),
-        .tag_valid_o(gh_tag_valid)
+        .tag_valid_o(gh_tag_valid),
+        .dbg_fifo_count(dbg_gh_fifo_count)
     );
 
     assign aad_ready_o = sess_running ? gh_aad_ready : 1'b0;
+
+    assign dbg_slot_for_pt = slot_for_pt;
+    assign dbg_sess_running = sess_running;
+    assign dbg_gh_ct_ready = gh_ct_ready;
+    assign dbg_key_present = key_present;
 
     // ----------------------------------------------------------------
     // Top-level status

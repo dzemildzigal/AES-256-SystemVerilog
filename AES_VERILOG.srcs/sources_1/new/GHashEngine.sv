@@ -49,7 +49,8 @@ module GHashEngine #(
     output logic [0:127] ghash_out_o,
     output logic         ghash_valid_o,
     output logic [0:127] tag_out_o,
-    output logic         tag_valid_o
+    output logic         tag_valid_o,
+    output logic [4:0]   dbg_fifo_count
     );
 
     localparam integer PTR_W = $clog2(FIFO_DEPTH);
@@ -121,6 +122,7 @@ module GHashEngine #(
     // Ready signals
     // ----------------------------------------------------------------
     assign ready_o     = ~busy_o;
+    assign dbg_fifo_count = fifo_count;
     assign aad_ready_o = busy_o && (phase == PH_AAD) && (fifo_count < FIFO_DEPTH);
     assign ct_ready_o  = busy_o && (phase == PH_CT)  && (fifo_count < FIFO_DEPTH);
 

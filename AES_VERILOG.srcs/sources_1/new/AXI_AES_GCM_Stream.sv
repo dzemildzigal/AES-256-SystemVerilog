@@ -128,7 +128,23 @@ module AXI_AES_GCM_Stream #(
     output wire [31:0]                         dbg_last_axis_pops,
     output wire [31:0]                         dbg_last_tag_attempts,
     output wire [31:0]                         dbg_last_fifo_count,
-    output wire                                stream_empty
+    output wire                                stream_empty,
+
+    // AES pipeline stall probes mirrored by the sequencer register map.
+    output wire [29:0]                         dbg_aes_stall_status,
+    output wire [63:0]                         dbg_fifo_full_cycles,
+    output wire [63:0]                         dbg_empty_no_ct_cycles,
+    output wire [63:0]                         dbg_pt_blocked_cycles,
+    output wire [63:0]                         dbg_no_offer_cycles,
+    output wire [63:0]                         dbg_gh_not_ready_cycles,
+    output wire [63:0]                         dbg_slot_blocked_cycles,
+    output wire [63:0]                         dbg_gcm_busy_cycles,
+    output wire [31:0]                         dbg_last_fifo_full,
+    output wire [31:0]                         dbg_last_empty_no_ct,
+    output wire [31:0]                         dbg_last_pt_blocked,
+    output wire [31:0]                         dbg_last_no_offer,
+    output wire [31:0]                         dbg_last_gh_not_ready,
+    output wire [31:0]                         dbg_last_slot_blocked
 );
 
     localparam integer STREAM_FIFO_PTR_W = $clog2(STREAM_FIFO_DEPTH);
@@ -238,6 +254,13 @@ module AXI_AES_GCM_Stream #(
     // ----------------------------------------------------------------
     wire pt_keep_ok = (S_AXIS_PT_TKEEP == 16'hFFFF);
 
+    // Debug probes from GcmMode internals.
+    wire         dbg_slot_for_pt;
+    wire         dbg_sess_running;
+    wire         dbg_gh_ct_ready;
+    wire         dbg_key_present;
+    wire [4:0]   dbg_gh_fifo_count;
+
     // CT FIFO and in-flight accounting prevent output overflow under backpressure.
     // The tag uses a separate one-beat tail register.
     reg [0:127] ct_fifo_data [0:STREAM_FIFO_DEPTH-1];
@@ -266,6 +289,36 @@ module AXI_AES_GCM_Stream #(
     reg [31:0] dbg_last_tag_attempts_r;
     reg [31:0] dbg_last_fifo_count_r;
 
+    // AES pipeline stall probes: cumulative per-session cycle counters and
+    // their per-packet latched copies.
+    reg [63:0] dbg_fifo_full_cycles_r;
+    reg [63:0] dbg_empty_no_ct_cycles_r;
+    reg [63:0] dbg_pt_blocked_cycles_r;
+    reg [63:0] dbg_no_offer_cycles_r;
+    reg [63:0] dbg_gh_not_ready_cycles_r;
+    reg [63:0] dbg_slot_blocked_cycles_r;
+    reg [63:0] dbg_gcm_busy_cycles_r;
+    reg [31:0] dbg_last_fifo_full_r;
+    reg [31:0] dbg_last_empty_no_ct_r;
+    reg [31:0] dbg_last_pt_blocked_r;
+    reg [31:0] dbg_last_no_offer_r;
+    reg [31:0] dbg_last_gh_not_ready_r;
+    reg [31:0] dbg_last_slot_blocked_r;
+
+    assign dbg_fifo_full_cycles    = dbg_fifo_full_cycles_r;
+    assign dbg_empty_no_ct_cycles  = dbg_empty_no_ct_cycles_r;
+    assign dbg_pt_blocked_cycles   = dbg_pt_blocked_cycles_r;
+    assign dbg_no_offer_cycles     = dbg_no_offer_cycles_r;
+    assign dbg_gh_not_ready_cycles = dbg_gh_not_ready_cycles_r;
+    assign dbg_slot_blocked_cycles = dbg_slot_blocked_cycles_r;
+    assign dbg_gcm_busy_cycles     = dbg_gcm_busy_cycles_r;
+    assign dbg_last_fifo_full      = dbg_last_fifo_full_r;
+    assign dbg_last_empty_no_ct    = dbg_last_empty_no_ct_r;
+    assign dbg_last_pt_blocked     = dbg_last_pt_blocked_r;
+    assign dbg_last_no_offer       = dbg_last_no_offer_r;
+    assign dbg_last_gh_not_ready   = dbg_last_gh_not_ready_r;
+    assign dbg_last_slot_blocked   = dbg_last_slot_blocked_r;
+
     assign dbg_last_ct_beats = dbg_last_ct_beats_r;
     assign dbg_last_fifo_pushes = dbg_last_fifo_pushes_r;
     assign dbg_last_axis_pops = dbg_last_axis_pops_r;
@@ -288,6 +341,31 @@ module AXI_AES_GCM_Stream #(
     wire [0:127] ct_output_head = tag_direct_valid ? tag_latched : ct_stream_head;
 
     assign stream_empty = ct_fifo_empty && (pt_inflight_count == 0) && !tag_pending;
+
+    // AES pipeline stall conditions, counted per session.
+    wire aes_probe_active = stream_mode_reg && dbg_sess_running;
+    wire c_fifo_full       = aes_probe_active && ct_fifo_full;
+    wire c_empty_no_ct     = aes_probe_active && ct_fifo_empty && !ct_valid && !tag_direct_valid;
+    wire c_pt_blocked      = aes_probe_active && S_AXIS_PT_TVALID && !S_AXIS_PT_TREADY;
+    wire c_no_offer        = aes_probe_active && S_AXIS_PT_TREADY && !S_AXIS_PT_TVALID;
+    wire c_gh_not_ready    = aes_probe_active && !dbg_gh_ct_ready;
+    wire c_slot_blocked    = aes_probe_active && !dbg_slot_for_pt;
+    wire c_gcm_busy        = stream_mode_reg && busy;
+
+    assign dbg_aes_stall_status = {
+        S_AXIS_PT_TREADY,       // [29] AES input ready
+        pt_ready,               // [28]
+        dbg_slot_for_pt,        // [27]
+        dbg_sess_running,       // [26]
+        dbg_gh_ct_ready,        // [25]
+        dbg_key_present,        // [24]
+        3'd0,                   // [23:21] pad
+        dbg_gh_fifo_count,      // [20:16]
+        ct_fifo_count[6:0],     // [15:9]
+        pt_inflight_count[6:0], // [8:2]
+        ct_valid,               // [1]
+        ct_fifo_empty           // [0]
+    };
 
     wire [STREAM_FIFO_PTR_W:0] total_outstanding = ct_fifo_count + pt_inflight_count;
     wire stream_can_accept_pt = (total_outstanding < STREAM_FIFO_DEPTH);
@@ -345,7 +423,12 @@ module AXI_AES_GCM_Stream #(
         .h_valid_o(h_valid),
         .busy_o(busy),
         .session_cycles_o(session_cycles),
-        .session_cycles_valid_o(session_cycles_valid)
+        .session_cycles_valid_o(session_cycles_valid),
+        .dbg_slot_for_pt(dbg_slot_for_pt),
+        .dbg_sess_running(dbg_sess_running),
+        .dbg_gh_ct_ready(dbg_gh_ct_ready),
+        .dbg_key_present(dbg_key_present),
+        .dbg_gh_fifo_count(dbg_gh_fifo_count)
     );
 
     // ----------------------------------------------------------------
@@ -512,6 +595,19 @@ module AXI_AES_GCM_Stream #(
             dbg_last_axis_pops_r <= 32'd0;
             dbg_last_tag_attempts_r <= 32'd0;
             dbg_last_fifo_count_r <= 32'd0;
+            dbg_fifo_full_cycles_r <= 64'd0;
+            dbg_empty_no_ct_cycles_r <= 64'd0;
+            dbg_pt_blocked_cycles_r <= 64'd0;
+            dbg_no_offer_cycles_r <= 64'd0;
+            dbg_gh_not_ready_cycles_r <= 64'd0;
+            dbg_slot_blocked_cycles_r <= 64'd0;
+            dbg_gcm_busy_cycles_r <= 64'd0;
+            dbg_last_fifo_full_r <= 32'd0;
+            dbg_last_empty_no_ct_r <= 32'd0;
+            dbg_last_pt_blocked_r <= 32'd0;
+            dbg_last_no_offer_r <= 32'd0;
+            dbg_last_gh_not_ready_r <= 32'd0;
+            dbg_last_slot_blocked_r <= 32'd0;
         end
         else if (start_session_pulse) begin
             // The sequencer starts a session only after stream_empty. Keep the
@@ -525,8 +621,29 @@ module AXI_AES_GCM_Stream #(
             dbg_fifo_pushes_r <= 32'd0;
             dbg_axis_pops_r <= 32'd0;
             dbg_tag_attempts_r <= 32'd0;
+            dbg_fifo_full_cycles_r <= 64'd0;
+            dbg_empty_no_ct_cycles_r <= 64'd0;
+            dbg_pt_blocked_cycles_r <= 64'd0;
+            dbg_no_offer_cycles_r <= 64'd0;
+            dbg_gh_not_ready_cycles_r <= 64'd0;
+            dbg_slot_blocked_cycles_r <= 64'd0;
+            dbg_gcm_busy_cycles_r <= 64'd0;
         end
         else begin
+            if (c_fifo_full)
+                dbg_fifo_full_cycles_r <= dbg_fifo_full_cycles_r + 64'd1;
+            if (c_empty_no_ct)
+                dbg_empty_no_ct_cycles_r <= dbg_empty_no_ct_cycles_r + 64'd1;
+            if (c_pt_blocked)
+                dbg_pt_blocked_cycles_r <= dbg_pt_blocked_cycles_r + 64'd1;
+            if (c_no_offer)
+                dbg_no_offer_cycles_r <= dbg_no_offer_cycles_r + 64'd1;
+            if (c_gh_not_ready)
+                dbg_gh_not_ready_cycles_r <= dbg_gh_not_ready_cycles_r + 64'd1;
+            if (c_slot_blocked)
+                dbg_slot_blocked_cycles_r <= dbg_slot_blocked_cycles_r + 64'd1;
+            if (c_gcm_busy)
+                dbg_gcm_busy_cycles_r <= dbg_gcm_busy_cycles_r + 64'd1;
             if (ct_valid)
                 dbg_ct_beats_r <= dbg_ct_beats_r + 32'd1;
             if (tag_valid)
@@ -542,6 +659,12 @@ module AXI_AES_GCM_Stream #(
                 dbg_last_axis_pops_r <= dbg_axis_pops_r;
                 dbg_last_tag_attempts_r <= dbg_tag_attempts_r + 32'd1;
                 dbg_last_fifo_count_r <= ct_fifo_count;
+                dbg_last_fifo_full_r <= dbg_fifo_full_cycles_r + (c_fifo_full ? 32'd1 : 32'd0);
+                dbg_last_empty_no_ct_r <= dbg_empty_no_ct_cycles_r + (c_empty_no_ct ? 32'd1 : 32'd0);
+                dbg_last_pt_blocked_r <= dbg_pt_blocked_cycles_r + (c_pt_blocked ? 32'd1 : 32'd0);
+                dbg_last_no_offer_r <= dbg_no_offer_cycles_r + (c_no_offer ? 32'd1 : 32'd0);
+                dbg_last_gh_not_ready_r <= dbg_gh_not_ready_cycles_r + (c_gh_not_ready ? 32'd1 : 32'd0);
+                dbg_last_slot_blocked_r <= dbg_slot_blocked_cycles_r + (c_slot_blocked ? 32'd1 : 32'd0);
             end
             if (tag_direct_pop) begin
                 dbg_tag_pushes_r <= dbg_tag_pushes_r + 32'd1;
