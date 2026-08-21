@@ -90,6 +90,10 @@ module AES_GCM_Session_Sequencer #(
     // Debug probes from the AES wrapper (captured per tag beat).
     input  logic [127:0] dbg_push_data,
     input  logic [127:0] dbg_maxis_last_beat,
+    input  logic [31:0]  dbg_ct_beats,
+    input  logic [31:0]  dbg_tag_pushes,
+    input  logic [31:0]  dbg_tag_fifo_count,
+    input  logic [31:0]  dbg_tag_pt_inflight,
     // Pre-FIFO probe counter (video_out tvalid) from video_beat_counter_0.
     input  logic [63:0] dbg_prefifo_beats
 );
@@ -157,6 +161,10 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [7:0] REG_DBG_MAXIS2 = 8'h9C;
     localparam logic [7:0] REG_DBG_MAXIS3 = 8'hA0;
     localparam logic [7:0] REG_AES_STATUS = 8'hA4;
+    localparam logic [7:0] REG_DBG_CT_BEATS = 8'hA8;
+    localparam logic [7:0] REG_DBG_TAG_PUSHES = 8'hAC;
+    localparam logic [7:0] REG_DBG_TAG_FIFO_COUNT = 8'hB0;
+    localparam logic [7:0] REG_DBG_TAG_PT_INFLIGHT = 8'hB4;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -399,6 +407,10 @@ module AES_GCM_Session_Sequencer #(
                     REG_DBG_MAXIS2: S_AXI_RDATA <= dbg_maxis_last_beat[63:32];
                     REG_DBG_MAXIS3: S_AXI_RDATA <= dbg_maxis_last_beat[31:0];
                     REG_AES_STATUS: S_AXI_RDATA <= aes_status_last;
+                    REG_DBG_CT_BEATS: S_AXI_RDATA <= dbg_ct_beats;
+                    REG_DBG_TAG_PUSHES: S_AXI_RDATA <= dbg_tag_pushes;
+                    REG_DBG_TAG_FIFO_COUNT: S_AXI_RDATA <= dbg_tag_fifo_count;
+                    REG_DBG_TAG_PT_INFLIGHT: S_AXI_RDATA <= dbg_tag_pt_inflight;
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;

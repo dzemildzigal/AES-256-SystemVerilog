@@ -41,7 +41,11 @@ module AXI_AES_GCM_Stream_wrapper #(
     input  wire                                M_AXIS_CT_TREADY,
 
     output wire [127:0]                        dbg_push_data,
-    output wire [127:0]                        dbg_maxis_last_beat
+    output wire [127:0]                        dbg_maxis_last_beat,
+    output wire [31:0]                         dbg_ct_beats,
+    output wire [31:0]                         dbg_tag_pushes,
+    output wire [31:0]                         dbg_tag_fifo_count,
+    output wire [31:0]                         dbg_tag_pt_inflight
 );
 
     AXI_AES_GCM_Stream #(
@@ -82,8 +86,12 @@ module AXI_AES_GCM_Stream_wrapper #(
         .M_AXIS_CT_TVALID (M_AXIS_CT_TVALID),
         .M_AXIS_CT_TREADY (M_AXIS_CT_TREADY),
 
-        .dbg_push_data     (dbg_push_data),
-        .dbg_maxis_last_beat (dbg_maxis_last_beat)
+        .dbg_push_data       (dbg_push_data),
+        .dbg_maxis_last_beat  (dbg_maxis_last_beat),
+        .dbg_ct_beats        (dbg_ct_beats),
+        .dbg_tag_pushes      (dbg_tag_pushes),
+        .dbg_tag_fifo_count  (dbg_tag_fifo_count),
+        .dbg_tag_pt_inflight (dbg_tag_pt_inflight)
     );
 
 endmodule

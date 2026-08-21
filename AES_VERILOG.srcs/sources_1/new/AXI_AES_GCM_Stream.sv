@@ -119,7 +119,11 @@ module AXI_AES_GCM_Stream #(
     // what the stream FIFO push wrote for the tag beat, and what M_AXIS
     // actually emitted as the last beat of the packet.
     output wire [127:0]                        dbg_push_data,
-    output wire [127:0]                        dbg_maxis_last_beat
+    output wire [127:0]                        dbg_maxis_last_beat,
+    output wire [31:0]                         dbg_ct_beats,
+    output wire [31:0]                         dbg_tag_pushes,
+    output wire [31:0]                         dbg_tag_fifo_count,
+    output wire [31:0]                         dbg_tag_pt_inflight
 );
 
     localparam integer STREAM_FIFO_PTR_W = $clog2(STREAM_FIFO_DEPTH);
@@ -238,6 +242,18 @@ module AXI_AES_GCM_Stream #(
     reg [STREAM_FIFO_PTR_W:0]   ct_fifo_count;
     reg [STREAM_FIFO_PTR_W:0]   pt_inflight_count;
     reg                         ct_fifo_overflow_sticky;
+
+    // Per-session source diagnostics. These count the stream before the
+    // writer, so they distinguish a short AES packet from a later loss.
+    reg [31:0] dbg_ct_beats_r;
+    reg [31:0] dbg_tag_pushes_r;
+    reg [31:0] dbg_tag_fifo_count_r;
+    reg [31:0] dbg_tag_pt_inflight_r;
+
+    assign dbg_ct_beats       = dbg_ct_beats_r;
+    assign dbg_tag_pushes     = dbg_tag_pushes_r;
+    assign dbg_tag_fifo_count = dbg_tag_fifo_count_r;
+    assign dbg_tag_pt_inflight = dbg_tag_pt_inflight_r;
 
     wire ct_fifo_empty = (ct_fifo_count == 0);
     wire ct_fifo_full  = (ct_fifo_count == STREAM_FIFO_DEPTH);
@@ -457,6 +473,10 @@ module AXI_AES_GCM_Stream #(
             pt_inflight_count <= '0;
             ct_fifo_overflow_sticky <= 1'b0;
             tag_pending <= 1'b0;
+            dbg_ct_beats_r <= 32'd0;
+            dbg_tag_pushes_r <= 32'd0;
+            dbg_tag_fifo_count_r <= 32'd0;
+            dbg_tag_pt_inflight_r <= 32'd0;
         end
         else if (start_session_pulse) begin
             // Start every session with empty stream buffers.
@@ -466,8 +486,20 @@ module AXI_AES_GCM_Stream #(
             pt_inflight_count <= '0;
             ct_fifo_overflow_sticky <= 1'b0;
             tag_pending <= 1'b0;
+            dbg_ct_beats_r <= 32'd0;
+            dbg_tag_pushes_r <= 32'd0;
+            dbg_tag_fifo_count_r <= 32'd0;
+            dbg_tag_pt_inflight_r <= 32'd0;
         end
         else begin
+            if (ct_valid)
+                dbg_ct_beats_r <= dbg_ct_beats_r + 32'd1;
+            if (push_tag_now && !ct_fifo_full) begin
+                dbg_tag_pushes_r <= dbg_tag_pushes_r + 32'd1;
+                dbg_tag_fifo_count_r <= ct_fifo_count;
+                dbg_tag_pt_inflight_r <= pt_inflight_count;
+            end
+
             if (tag_valid && !push_tag_now) begin
                 tag_pending <= 1'b1;
             end else if (push_tag_now && !ct_fifo_full) begin

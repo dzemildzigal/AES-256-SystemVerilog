@@ -696,6 +696,10 @@ connect_bd_net [get_bd_pins rst_pixelclk/peripheral_reset] [get_bd_pins v_vid_in
 # REG_DBG_MAXIS_* at 0x84-0xA0).
 connect_bd_net [get_bd_pins $AES_INST/dbg_push_data] [get_bd_pins $SEQUENCER_INST/dbg_push_data]
 connect_bd_net [get_bd_pins $AES_INST/dbg_maxis_last_beat] [get_bd_pins $SEQUENCER_INST/dbg_maxis_last_beat]
+connect_bd_net [get_bd_pins $AES_INST/dbg_ct_beats] [get_bd_pins $SEQUENCER_INST/dbg_ct_beats]
+connect_bd_net [get_bd_pins $AES_INST/dbg_tag_pushes] [get_bd_pins $SEQUENCER_INST/dbg_tag_pushes]
+connect_bd_net [get_bd_pins $AES_INST/dbg_tag_fifo_count] [get_bd_pins $SEQUENCER_INST/dbg_tag_fifo_count]
+connect_bd_net [get_bd_pins $AES_INST/dbg_tag_pt_inflight] [get_bd_pins $SEQUENCER_INST/dbg_tag_pt_inflight]
 
 assign_bd_address
 regenerate_bd_layout
