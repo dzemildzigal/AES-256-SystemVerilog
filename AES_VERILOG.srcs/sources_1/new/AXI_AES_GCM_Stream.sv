@@ -28,7 +28,7 @@
 //                                [15]   session_drop_sticky   (start_session when not ready)
 //                                [16]   session_cycles_valid_sticky
 //                                [17]   stream_mode           (1=AXI-Stream PT/CT path enabled)
-//                                [18]   ct_fifo_overflow      (CT output FIFO overflow)
+//                                [18]   ct_fifo_overflow      (ciphertext beat rejected while FIFO full)
 //   0x08   KEY0          R/W   masterkey[0:31]      (MSB)
 //   0x0C   KEY1          R/W   masterkey[32:63]
 //   0x10   KEY2          R/W   masterkey[64:95]
@@ -116,8 +116,7 @@ module AXI_AES_GCM_Stream #(
     input  wire                                M_AXIS_CT_TREADY,
 
     // Debug probes (PS-visible through the sequencer's mirror registers):
-    // what the stream FIFO push wrote for the tag beat, and what M_AXIS
-    // actually emitted as the last beat of the packet.
+    // the tag tail value and what M_AXIS actually emitted as the last beat.
     output wire [127:0]                        dbg_push_data,
     output wire [127:0]                        dbg_maxis_last_beat,
     output wire [31:0]                         dbg_ct_beats,
@@ -240,6 +239,7 @@ module AXI_AES_GCM_Stream #(
     wire pt_keep_ok = (S_AXIS_PT_TKEEP == 16'hFFFF);
 
     // CT FIFO and in-flight accounting prevent output overflow under backpressure.
+    // The tag uses a separate one-beat tail register.
     reg [0:127] ct_fifo_data [0:STREAM_FIFO_DEPTH-1];
     reg         ct_fifo_last [0:STREAM_FIFO_DEPTH-1];
 
@@ -249,6 +249,7 @@ module AXI_AES_GCM_Stream #(
     reg [STREAM_FIFO_PTR_W:0]   pt_inflight_count;
     reg                         ct_fifo_overflow_sticky;
     reg                         tag_pending;
+    reg [0:127]                 tag_latched;
 
     // Per-session source diagnostics. These count the stream before the
     // writer, so they distinguish a short AES packet from a later loss.
@@ -278,6 +279,14 @@ module AXI_AES_GCM_Stream #(
 
     wire ct_fifo_empty = (ct_fifo_count == 0);
     wire ct_fifo_full  = (ct_fifo_count == STREAM_FIFO_DEPTH);
+
+    // The tag is a one-beat packet tail. Keep it outside the ciphertext FIFO
+    // and emit it only after every ciphertext beat has drained.
+    wire [0:127] ct_stream_head = ct_fifo_data[ct_fifo_rd_ptr];
+    wire tag_direct_valid = stream_mode_reg && ct_fifo_empty &&
+                            (pt_inflight_count == 0) && tag_pending;
+    wire [0:127] ct_output_head = tag_direct_valid ? tag_latched : ct_stream_head;
+
     assign stream_empty = ct_fifo_empty && (pt_inflight_count == 0) && !tag_pending;
 
     wire [STREAM_FIFO_PTR_W:0] total_outstanding = ct_fifo_count + pt_inflight_count;
@@ -287,20 +296,20 @@ module AXI_AES_GCM_Stream #(
     wire pt_stream_accept = stream_mode_reg && S_AXIS_PT_TVALID && S_AXIS_PT_TREADY;
 
     wire [0:127] pt_stream_data;
-    wire [0:127] ct_stream_head = ct_fifo_data[ct_fifo_rd_ptr];
 
     genvar b;
     generate
         for (b = 0; b < 16; b = b + 1) begin : g_axis_byte_map
             // Keep a native 1:1 lane mapping between DMA stream and core byte lanes.
             assign pt_stream_data[b*8 +: 8] = S_AXIS_PT_TDATA[b*8 +: 8];
-            assign M_AXIS_CT_TDATA[b*8 +: 8] = ct_stream_head[b*8 +: 8];
+            assign M_AXIS_CT_TDATA[b*8 +: 8] = ct_output_head[b*8 +: 8];
         end
     endgenerate
 
     assign M_AXIS_CT_TKEEP  = 16'hFFFF;
-    assign M_AXIS_CT_TVALID = stream_mode_reg && !ct_fifo_empty;
-    assign M_AXIS_CT_TLAST  = (!ct_fifo_empty) ? ct_fifo_last[ct_fifo_rd_ptr] : 1'b0;
+    assign M_AXIS_CT_TVALID = stream_mode_reg && (!ct_fifo_empty || tag_direct_valid);
+    assign M_AXIS_CT_TLAST  = tag_direct_valid ? 1'b1 :
+                              ((!ct_fifo_empty) ? ct_fifo_last[ct_fifo_rd_ptr] : 1'b0);
 
     wire [0:127] pt_data_mux  = stream_mode_reg ? pt_stream_data : pt_data_reg;
     wire         pt_valid_mux = stream_mode_reg ? pt_stream_accept : pt_valid_pulse;
@@ -353,7 +362,6 @@ module AXI_AES_GCM_Stream #(
 
     reg [0:127] ct_data_latched;
     reg [0:127] ghash_latched;
-    reg [0:127] tag_latched;
     reg [0:31]  session_cycles_latched;
     reg         stream_cycles_active;
     reg [0:31]  stream_cycles_live;
@@ -453,21 +461,20 @@ module AXI_AES_GCM_Stream #(
     // full beat (TKEEP is always 0xFFFF), so the stream carries the complete
     // OSV datagram body: CT + TAG, with tlast on the tag beat.
     // ----------------------------------------------------------------
-    // Push priority: a live ct beat wins over the pending tag; if they ever
-    // coincide, the tag waits one cycle (never lost).
+    // Ciphertext uses the FIFO. The tag uses the dedicated one-beat tail
+    // register above, so it never competes for a ciphertext FIFO slot.
     wire push_ct_now  = stream_mode_reg && ct_valid;
-    wire push_tag_now = stream_mode_reg && tag_pending && !ct_valid;
-    wire ct_fifo_push = push_ct_now || push_tag_now;
-    wire [0:127] push_data = push_tag_now ? tag_latched :
-                             ((stream_mode_reg && tag_valid && !ct_valid) ? tag_out : ct_data);
-    // tlast ONLY on the appended tag beat. The datapath's ct_last still flags
-    // the final ciphertext beat; forwarding it too produces a double tlast,
-    // and the writer faults (tlast with bytes still remaining) on the early one.
-    wire push_last = push_tag_now ? 1'b1 : 1'b0;
+    wire ct_fifo_push = push_ct_now;
     wire ct_fifo_pop  = stream_mode_reg && !ct_fifo_empty && M_AXIS_CT_TREADY;
+    wire tag_direct_pop = tag_direct_valid && M_AXIS_CT_TREADY;
+    // Permit a ciphertext push on the same cycle that a full FIFO pops.
+    // Without this, a full FIFO can reject a beat even though a slot is freed.
+    wire ct_fifo_write_accept = ct_fifo_push && (!ct_fifo_full || ct_fifo_pop);
+    // tlast is only on the dedicated tag beat. Ciphertext FIFO beats never
+    // carry tlast; forwarding ct_last would create an early packet boundary.
 
-    // Debug capture: tag-beat push value + emitted last beat (PS-visible
-    // through the sequencer's mirror registers REG_DBG_PUSH_*/REG_DBG_MAXIS_*).
+    // Debug capture: tag-tail value + emitted last beat (PS-visible through
+    // the sequencer's mirror registers REG_DBG_PUSH_*/REG_DBG_MAXIS_*).
     reg [0:127] dbg_push_data_r;
     reg [0:127] dbg_maxis_last_beat_r;
     always_ff @(posedge clk) begin
@@ -476,10 +483,10 @@ module AXI_AES_GCM_Stream #(
             dbg_maxis_last_beat_r <= '0;
         end
         else begin
-            if (push_tag_now && !ct_fifo_full)
-                dbg_push_data_r <= push_data;
+            if (tag_direct_pop)
+                dbg_push_data_r <= tag_latched;
             if (stream_mode_reg && M_AXIS_CT_TVALID && M_AXIS_CT_TREADY && M_AXIS_CT_TLAST)
-                dbg_maxis_last_beat_r <= ct_stream_head;
+                dbg_maxis_last_beat_r <= tag_direct_pop ? tag_latched : ct_stream_head;
         end
     end
     assign dbg_push_data       = dbg_push_data_r;
@@ -524,36 +531,39 @@ module AXI_AES_GCM_Stream #(
                 dbg_ct_beats_r <= dbg_ct_beats_r + 32'd1;
             if (tag_valid)
                 dbg_tag_attempts_r <= dbg_tag_attempts_r + 32'd1;
-            if (ct_fifo_push && !ct_fifo_full)
+            if (ct_fifo_write_accept)
                 dbg_fifo_pushes_r <= dbg_fifo_pushes_r + 32'd1;
             if (ct_fifo_pop)
                 dbg_axis_pops_r <= dbg_axis_pops_r + 32'd1;
             if (tag_valid) begin
                 dbg_last_ct_beats_r <= dbg_ct_beats_r + (ct_valid ? 32'd1 : 32'd0);
-                dbg_last_fifo_pushes_r <= dbg_fifo_pushes_r + ((ct_fifo_push && !ct_fifo_full) ? 32'd1 : 32'd0);
+                dbg_last_fifo_pushes_r <= dbg_fifo_pushes_r +
+                                          (ct_fifo_write_accept ? 32'd1 : 32'd0);
                 dbg_last_axis_pops_r <= dbg_axis_pops_r;
                 dbg_last_tag_attempts_r <= dbg_tag_attempts_r + 32'd1;
                 dbg_last_fifo_count_r <= ct_fifo_count;
             end
-            if (push_tag_now && !ct_fifo_full) begin
+            if (tag_direct_pop) begin
                 dbg_tag_pushes_r <= dbg_tag_pushes_r + 32'd1;
                 dbg_tag_fifo_count_r <= ct_fifo_count;
                 dbg_tag_pt_inflight_r <= pt_inflight_count;
             end
 
-            if (tag_valid && !push_tag_now) begin
+            if (tag_valid) begin
                 tag_pending <= 1'b1;
-            end else if (push_tag_now && !ct_fifo_full) begin
+            end else if (tag_direct_pop) begin
                 tag_pending <= 1'b0;
             end
 
             if (ct_fifo_push) begin
-                if (!ct_fifo_full) begin
-                    ct_fifo_data[ct_fifo_wr_ptr] <= push_data;
-                    ct_fifo_last[ct_fifo_wr_ptr] <= push_last;
+                if (ct_fifo_write_accept) begin
+                    ct_fifo_data[ct_fifo_wr_ptr] <= ct_data;
+                    ct_fifo_last[ct_fifo_wr_ptr] <= 1'b0;
                     ct_fifo_wr_ptr <= ptr_inc(ct_fifo_wr_ptr);
                 end
                 else begin
+                    // This is a real ciphertext loss. A pending tag is not
+                    // an overflow because the tag has its own tail register.
                     ct_fifo_overflow_sticky <= 1'b1;
                 end
             end
@@ -561,13 +571,13 @@ module AXI_AES_GCM_Stream #(
             if (ct_fifo_pop)
                 ct_fifo_rd_ptr <= ptr_inc(ct_fifo_rd_ptr);
 
-            case ({ct_fifo_push && !ct_fifo_full, ct_fifo_pop})
+            case ({ct_fifo_write_accept, ct_fifo_pop})
                 2'b10: ct_fifo_count <= ct_fifo_count + 1'b1;
                 2'b01: ct_fifo_count <= ct_fifo_count - 1'b1;
                 default: ;
             endcase
 
-            case ({pt_stream_accept, ct_fifo_push})
+            case ({pt_stream_accept, ct_fifo_write_accept})
                 2'b10: pt_inflight_count <= pt_inflight_count + 1'b1;
                 2'b01: if (pt_inflight_count != 0)
                            pt_inflight_count <= pt_inflight_count - 1'b1;
