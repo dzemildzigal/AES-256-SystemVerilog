@@ -37,18 +37,18 @@ module HDMI_Axis_Packetizer #(
     localparam logic [7:0]  TAG_LENGTH = 8'd16;
     localparam int unsigned HEADER_BYTES = 40;
 
-    // Full-frame transport geometry (1280x720 RGB888, fixed):
-    //   payload = 1176 bytes = 392 pixels (40+1176 = 1216 = 76 x 16-byte beats)
-    //   frame   = 921600 px = 2351 full segments + one 8-pixel segment
-    //             -> SEGS_PER_FRAME = 2352 (last segment = 8 px + 384 px pad)
+    // Full-frame transport geometry (1280x720, 3 bytes per beat):
+    //   payload = 1176 bytes = 392 beats (40+1176 = 1216 = 76 x 16-byte beats)
+    //   RGB888  frame = 921600 beats -> SEGS_PER_FRAME = 2352, LAST =   8
+    //   YUV420  frame = 460800 beats -> SEGS_PER_FRAME = 1176, LAST = 200
+    //   (the YUV420 converter halves the beat count; last segment = pad)
     //   Streaming fix: SKIP_FRAMES=0 and SOF is IGNORED after the initial
-    //   ARM sync. A frame closes by pixel count (2351*392 + 8 = 921600 px),
-    //   never by SOF-abort. No frame is skipped or discarded, so the
-    //   packetizer consumes the video stream continuously and every
-    //   transported frame carries all 2352 segments.
+    //   ARM sync. A frame closes by beat count, never by SOF-abort. No frame
+    //   is skipped or discarded, so the packetizer consumes the video stream
+    //   continuously and every transported frame carries all its segments.
     localparam int unsigned PX_PER_SEG     = 392;
-    localparam logic [15:0] SEGS_PER_FRAME = 16'd2352;
-    localparam logic [8:0]  LAST_SEG_PX    = 9'd8;   // 921600 - 2351*392
+    localparam logic [15:0] SEGS_PER_FRAME = 16'd1176;   // YUV420: 460800/392
+    localparam logic [8:0]  LAST_SEG_PX    = 9'd200;     // 460800 - 1175*392
     localparam logic         SKIP_FRAMES   = 1'b0;
 
     typedef enum logic [1:0] {

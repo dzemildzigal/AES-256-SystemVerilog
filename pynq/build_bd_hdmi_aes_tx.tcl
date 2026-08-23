@@ -160,6 +160,8 @@ ensure_local_rtl_source $repo_root "HDMI_Axis_Packetizer_wrapper.v"
 ensure_local_rtl_source $repo_root "HDMI_Axis_Packetizer.sv"
 ensure_local_rtl_source $repo_root "VideoBeatCounter_wrapper.v"
 ensure_local_rtl_source $repo_root "VideoBeatCounter.sv"
+ensure_local_rtl_source $repo_root "YUV420Converter_wrapper.v"
+ensure_local_rtl_source $repo_root "YUV420Converter.sv"
 ensure_local_rtl_source $repo_root "VideoFrontEndProbe_wrapper.v"
 ensure_local_rtl_source $repo_root "VideoFrontEndProbe.sv"
 ensure_local_rtl_source $repo_root "VideoStatusProbe_wrapper.v"
@@ -217,6 +219,7 @@ create_bd_cell -type module -reference $WRITER_MODULE $WRITER_INST
 create_bd_cell -type module -reference $PACKETIZER_MODULE $PACKETIZER_INST
 create_bd_cell -type module -reference $SEQUENCER_MODULE $SEQUENCER_INST
 create_bd_cell -type module -reference VideoBeatCounter_wrapper video_beat_counter_0
+create_bd_cell -type module -reference YUV420Converter_wrapper yuv420_converter_0
 create_bd_cell -type module -reference VideoBeatCounter_wrapper cdc_out_probe_0
 create_bd_cell -type module -reference VideoFrontEndProbe_wrapper video_fe_probe_0
 create_bd_cell -type module -reference VideoStatusProbe_wrapper video_status_probe_0
@@ -228,7 +231,7 @@ create_bd_cell -type module -reference $CLK_MUX_MODULE $CLK_MUX_INST
 # [BD 41-84] "required object is not specified".
 # Pass instance NAMES (documented form), not cell objects: object form
 # returns failure silently in 2024.1.
-set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0 aes_clk_mux video_beat_counter_0 video_fe_probe_0 video_status_probe_0]
+set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0 aes_clk_mux video_beat_counter_0 yuv420_converter_0 video_fe_probe_0 video_status_probe_0]
 create_bd_cell -type ip -vlnv digilentinc.com:ip:dvi2rgb:1.7 dvi2rgb_0
 set_property -dict [list \
     CONFIG.kAddBUFG {false} \
@@ -550,7 +553,11 @@ connect_bd_net [get_bd_pins video_status_probe_0/reset_pulse_count] [get_bd_pins
 connect_bd_net [get_bd_pins video_status_probe_0/reset_level] [get_bd_pins $SEQUENCER_INST/dbg_vid_reset_level]
 connect_bd_intf_net [get_bd_intf_pins v_vid_in_axi4s_0/vtiming_out] [get_bd_intf_pins vtc_in/vtiming_in]
 connect_bd_intf_net [get_bd_intf_pins v_vid_in_axi4s_0/video_out] [get_bd_intf_pins video_beat_counter_0/s_axis_video]
-connect_bd_intf_net [get_bd_intf_pins video_beat_counter_0/m_axis_video] [get_bd_intf_pins hdmi_axis_cdc_fifo/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins video_beat_counter_0/m_axis_video] [get_bd_intf_pins yuv420_converter_0/s_axis_video]
+# The converter halves the beat count (RGB888 -> YUV420 packed 2 beats per
+# 2x2 block) and consumes the coupler at full rate so the v_vid_in
+# overflow->formatter-reset frame-drop loop never triggers.
+connect_bd_intf_net [get_bd_intf_pins yuv420_converter_0/m_axis_video] [get_bd_intf_pins hdmi_axis_cdc_fifo/S_AXIS]
 connect_bd_net [get_bd_pins video_beat_counter_0/count] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_beats]
 connect_bd_net [get_bd_pins video_beat_counter_0/valid_cycles] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_valid_cycles]
 connect_bd_net [get_bd_pins video_beat_counter_0/ready_cycles] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_ready_cycles]
@@ -707,6 +714,8 @@ force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins 
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins hdmi_axis_cdc_fifo/s_axis_aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins video_beat_counter_0/aresetn]
 connect_bd_net [get_bd_pins ps7/FCLK_CLK1] [get_bd_pins video_beat_counter_0/aclk]
+connect_bd_net [get_bd_pins ps7/FCLK_CLK1] [get_bd_pins yuv420_converter_0/aclk]
+force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins yuv420_converter_0/aresetn]
 # cdc_out_probe_0 runs on the design clock with the packetizer.
 connect_bd_net $design_clk_pin [get_bd_pins cdc_out_probe_0/aclk]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins cdc_out_probe_0/aresetn]
