@@ -82,8 +82,6 @@ module AES_GCM_Session_Sequencer_wrapper #(
     input  wire         dbg_vid_reset_level,
     input  wire [31:0]  dbg_pkt_fifo_wr_count,
     input  wire [31:0]  dbg_pkt_fifo_rd_count,
-    input  wire         dbg_pkt_fifo_s_ready,
-    input  wire         dbg_pkt_fifo_m_valid,
 
     input  wire [127:0] dbg_push_data,
     input  wire [127:0] dbg_maxis_last_beat,
@@ -195,8 +193,6 @@ module AES_GCM_Session_Sequencer_wrapper #(
         .dbg_vid_reset_level   (dbg_vid_reset_level),
         .dbg_pkt_fifo_wr_count (dbg_pkt_fifo_wr_count),
         .dbg_pkt_fifo_rd_count (dbg_pkt_fifo_rd_count),
-        .dbg_pkt_fifo_s_ready (dbg_pkt_fifo_s_ready),
-        .dbg_pkt_fifo_m_valid (dbg_pkt_fifo_m_valid),
         .dbg_push_data         (dbg_push_data),
         .dbg_maxis_last_beat   (dbg_maxis_last_beat),
         .dbg_ct_beats          (dbg_ct_beats),

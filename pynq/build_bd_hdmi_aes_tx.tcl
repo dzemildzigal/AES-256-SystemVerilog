@@ -772,11 +772,14 @@ connect_bd_net [get_bd_pins $AES_INST/dbg_last_slot_blocked] [get_bd_pins $SEQUE
 
 # Packetizer live probes -> sequencer mirror register REG_PKT_STATUS (0x154).
 connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_pkt_status] [get_bd_pins $SEQUENCER_INST/dbg_pkt_status]
-# Packet FIFO probes: occupancy, backpressure, and output-valid status.
+# Packet FIFO probes: occupancy counts only. Do NOT tap the FIFO's
+# s_axis_tready or m_axis_tvalid here: a BD pin can only sit on one net, so
+# such a tap DISCONNECTS the handshake signal from its interface net and
+# grounds it in the generated top (sequencer s_axis_tvalid=1'b0,
+# packetizer m_axis_tready=1'b1) - the exact 0-packet stall seen on board.
+# The sequencer observes its own s_axis pins internally for REG_PKT_FIFO_STATUS.
 connect_bd_net [get_bd_pins packet_seq_fifo_0/axis_wr_data_count] [get_bd_pins $SEQUENCER_INST/dbg_pkt_fifo_wr_count]
 connect_bd_net [get_bd_pins packet_seq_fifo_0/axis_rd_data_count] [get_bd_pins $SEQUENCER_INST/dbg_pkt_fifo_rd_count]
-connect_bd_net [get_bd_pins packet_seq_fifo_0/s_axis_tready] [get_bd_pins $SEQUENCER_INST/dbg_pkt_fifo_s_ready]
-connect_bd_net [get_bd_pins packet_seq_fifo_0/m_axis_tvalid] [get_bd_pins $SEQUENCER_INST/dbg_pkt_fifo_m_valid]
 
 assign_bd_address
 regenerate_bd_layout

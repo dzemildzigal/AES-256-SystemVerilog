@@ -112,11 +112,11 @@ module AES_GCM_Session_Sequencer #(
     input  logic [63:0] dbg_vid_underflow_count,
     input  logic [63:0] dbg_vid_reset_pulse_count,
     input  logic        dbg_vid_reset_level,
-    // Packet FIFO probes (packet_seq_fifo_0).
+    // Packet FIFO probes (packet_seq_fifo_0). The handshake bits are
+    // observed from our own s_axis pins - the FIFO's m_axis_tvalid IS our
+    // s_axis_tvalid and our s_axis_tready IS the FIFO's m_axis_tready.
     input  logic [31:0] dbg_pkt_fifo_wr_count,
     input  logic [31:0] dbg_pkt_fifo_rd_count,
-    input  logic        dbg_pkt_fifo_s_ready,
-    input  logic        dbg_pkt_fifo_m_valid,
 
     // AES pipeline stall probes mirrored into this register map.
     input  logic [29:0] dbg_aes_stall_status,
@@ -570,9 +570,11 @@ module AES_GCM_Session_Sequencer #(
                     REG_VID_PROBE_STATUS: S_AXI_RDATA <= {31'd0, dbg_vid_reset_level};
                     REG_PKT_FIFO_WR_COUNT: S_AXI_RDATA <= dbg_pkt_fifo_wr_count;
                     REG_PKT_FIFO_RD_COUNT: S_AXI_RDATA <= dbg_pkt_fifo_rd_count;
+                    // bit1 = FIFO output valid (== s_axis_tvalid);
+                    // bit0 = our ready toward FIFO (== FIFO m_axis_tready).
                     REG_PKT_FIFO_STATUS: S_AXI_RDATA <= {30'd0,
-                        dbg_pkt_fifo_m_valid,
-                        dbg_pkt_fifo_s_ready};
+                        s_axis_tvalid,
+                        s_axis_tready};
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;
