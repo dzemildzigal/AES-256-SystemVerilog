@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 23 09:23:36 2026" VIVADOVERSION="2024.1.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 23 10:44:42 2026" VIVADOVERSION="2024.1.2">
 
   <SYSTEMINFO ARCH="zynq" BOARD="tul.com.tw:pynq-z2:part0:1.0" DEVICE="7z020" NAME="hdmi_aes_tx" PACKAGE="clg400" SPEEDGRADE="-1"/>
 
@@ -850,19 +850,9 @@
             <CONNECTION INSTANCE="video_fe_probe_0" PORT="pixel_clk_count"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="dbg_pkt_fifo_m_valid" SIGIS="undef" SIGNAME="packet_seq_fifo_0_m_axis_tvalid">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="m_axis_tvalid"/>
-          </CONNECTIONS>
-        </PORT>
         <PORT DIR="I" LEFT="31" NAME="dbg_pkt_fifo_rd_count" RIGHT="0" SIGIS="undef" SIGNAME="packet_seq_fifo_0_axis_rd_data_count">
           <CONNECTIONS>
             <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="axis_rd_data_count"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" NAME="dbg_pkt_fifo_s_ready" SIGIS="undef" SIGNAME="packet_seq_fifo_0_s_axis_tready">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_tready"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="31" NAME="dbg_pkt_fifo_wr_count" RIGHT="0" SIGIS="undef" SIGNAME="packet_seq_fifo_0_axis_wr_data_count">
@@ -4414,10 +4404,9 @@
             <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="m_axis_tvalid" SIGIS="undef" SIGNAME="packet_seq_fifo_0_m_axis_tvalid">
+        <PORT DIR="O" NAME="m_axis_tvalid" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tvalid">
           <CONNECTIONS>
             <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tvalid"/>
-            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_pkt_fifo_m_valid"/>
           </CONNECTIONS>
         </PORT>
         <PORT CLKFREQUENCY="100000000" DIR="I" NAME="s_axis_aclk" SIGIS="clk" SIGNAME="aes_clk_mux_clk_out">
@@ -4445,10 +4434,9 @@
             <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tlast"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="s_axis_tready" SIGIS="undef" SIGNAME="packet_seq_fifo_0_s_axis_tready">
+        <PORT DIR="O" NAME="s_axis_tready" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tready">
           <CONNECTIONS>
             <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tready"/>
-            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_pkt_fifo_s_ready"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="s_axis_tvalid" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tvalid">
