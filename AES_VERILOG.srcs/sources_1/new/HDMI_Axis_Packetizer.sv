@@ -37,18 +37,19 @@ module HDMI_Axis_Packetizer #(
     localparam logic [7:0]  TAG_LENGTH = 8'd16;
     localparam int unsigned HEADER_BYTES = 40;
 
-    // Full-frame transport geometry (1280x720, 3 bytes per beat):
-    //   payload = 1176 bytes = 392 beats (40+1176 = 1216 = 76 x 16-byte beats)
-    //   RGB888  frame = 921600 beats -> SEGS_PER_FRAME = 2352, LAST =   8
-    //   YUV420  frame = 460800 beats -> SEGS_PER_FRAME = 1176, LAST = 200
-    //   (the YUV420 converter halves the beat count; last segment = pad)
-    //   Streaming fix: SKIP_FRAMES=0 and SOF is IGNORED after the initial
-    //   ARM sync. A frame closes by beat count, never by SOF-abort. No frame
-    //   is skipped or discarded, so the packetizer consumes the video stream
-    //   continuously and every transported frame carries all its segments.
+    // Full-frame transport geometry (1280x720 RGB888, fixed):
+    //   payload = 1176 bytes = 392 pixels (40+1176 = 1216 = 76 x 16-byte beats)
+    //   frame   = 921600 px = 2351 full segments + one 8-pixel segment
+    //             -> SEGS_PER_FRAME = 2352 (last segment = 8 px + 384 px pad)
+    //   Wire rate: 30 fps (2:1 frame decimation, see the pad-end state
+    //   transition) -> 2352*30 = 70560 packets/s = 663 Mbit/s payload, fits
+    //   Gigabit Ethernet with ~25% headroom. Frames close by pixel count,
+    //   never by SOF-abort, so the packetizer consumes the video stream
+    //   continuously at full rate and the v_vid_in coupler overflow loop
+    //   never triggers.
     localparam int unsigned PX_PER_SEG     = 392;
-    localparam logic [15:0] SEGS_PER_FRAME = 16'd1176;   // YUV420: 460800/392
-    localparam logic [8:0]  LAST_SEG_PX    = 9'd200;     // 460800 - 1175*392
+    localparam logic [15:0] SEGS_PER_FRAME = 16'd2352;
+    localparam logic [8:0]  LAST_SEG_PX    = 9'd8;   // 921600 - 2351*392
     localparam logic         SKIP_FRAMES   = 1'b0;
 
     typedef enum logic [1:0] {
@@ -72,7 +73,7 @@ module HDMI_Axis_Packetizer #(
     reg [8:0]   pixel_cnt;     // pixels in the current segment (0..391)
     reg [8:0]   pad_cnt;       // pad pixels remaining at the frame cut
     reg         capture_frame; // frame parity: capture or skip
-    reg         pending_skip;  // decided at the SOF, applied after the pad
+    reg         skip_sof_seen; // first SOF in ST_SKIP belongs to the skipped frame
     reg         skip_first;    // consume the held first pixel of a skipped frame
     reg         skip_sof_check;// the held pixel after ARM/SKIP carries a stale SOF
     reg [31:0]  frame_id;
@@ -172,7 +173,7 @@ module HDMI_Axis_Packetizer #(
         if (!aresetn) begin
             state               <= ST_ARM;
             capture_frame       <= 1'b0;
-            pending_skip        <= 1'b0;
+            skip_sof_seen       <= 1'b0;
             skip_first          <= 1'b0;
             skip_sof_check      <= 1'b0;
             seg_last_pending    <= 1'b0;
@@ -236,15 +237,28 @@ module HDMI_Axis_Packetizer #(
                                 skip_first <= 1'b0;
                             end
                         end else if (s_axis_video_tvalid && s_axis_video_tuser) begin
-                            // The NEXT frame's first pixel: keep it, capture.
-                            state <= ST_ACTIVE;
-                            capture_frame <= 1'b1;
-                            frame_id <= frame_id + 1'b1;
-                            header_idx <= '0;
-                            payload_idx <= '0;
-                            pixel_cnt <= '0;
-                            segment_id <= '0;
-                            skip_sof_check <= 1'b1;
+                            if (skip_sof_seen) begin
+                                // The SECOND SOF: the skipped frame drained,
+                                // this pixel starts the next captured frame.
+                                // frame_id was incremented at the previous
+                                // pad end, so captured frames carry
+                                // consecutive ids.
+                                state <= ST_ACTIVE;
+                                capture_frame <= 1'b1;
+                                header_idx <= '0;
+                                payload_idx <= '0;
+                                pixel_cnt <= '0;
+                                segment_id <= '0;
+                                skip_sof_check <= 1'b1;
+                                skip_sof_seen <= 1'b0;
+                            end else begin
+                                // The FIRST SOF after the pad belongs to the
+                                // frame being skipped (its SOF pixel was
+                                // buffered while the pad ran). Consume it and
+                                // keep draining.
+                                skip_sof_seen <= 1'b1;
+                                skip_first <= 1'b1;
+                            end
                         end
                     end
 
@@ -279,20 +293,15 @@ module HDMI_Axis_Packetizer #(
                             pad_cnt <= pad_cnt - 1'b1;
                             if (pad_cnt == 9'd1) begin
                                 seg_complete = 1'b1;
-                                if (pending_skip) begin
-                                    state <= ST_SKIP;
-                                    skip_first <= 1'b1;
-                                end else begin
-                                    // Frame complete (the only pad user since
-                                    // the streaming fix): close it and start
-                                    // the next frame.
-                                    state <= ST_ACTIVE;
-                                    header_idx <= '0;
-                                    payload_idx <= '0;
-                                    pixel_cnt <= '0;
-                                    segment_id <= '0;
-                                    frame_id <= frame_id + 1'b1;
-                                end
+                                // Frame complete: 2:1 decimation. Skip the
+                                // NEXT frame entirely (ST_SKIP drains it at
+                                // full rate, no packing, so the coupler is
+                                // still consumed and never overflows) and
+                                // re-enter capture at that frame's SOF.
+                                // The wire carries 720p30 RGB888.
+                                state <= ST_SKIP;
+                                skip_first <= 1'b0;
+                                frame_id <= frame_id + 1'b1;
                             end
                         end
                         else if (s_axis_video_tvalid && skip_sof_check) begin
