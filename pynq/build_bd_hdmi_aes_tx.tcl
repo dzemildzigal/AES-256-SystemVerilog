@@ -160,6 +160,10 @@ ensure_local_rtl_source $repo_root "HDMI_Axis_Packetizer_wrapper.v"
 ensure_local_rtl_source $repo_root "HDMI_Axis_Packetizer.sv"
 ensure_local_rtl_source $repo_root "VideoBeatCounter_wrapper.v"
 ensure_local_rtl_source $repo_root "VideoBeatCounter.sv"
+ensure_local_rtl_source $repo_root "VideoFrontEndProbe_wrapper.v"
+ensure_local_rtl_source $repo_root "VideoFrontEndProbe.sv"
+ensure_local_rtl_source $repo_root "VideoStatusProbe_wrapper.v"
+ensure_local_rtl_source $repo_root "VideoStatusProbe.sv"
 ensure_local_rtl_source $repo_root "clk_mux_ctrl.v"
 ensure_local_constraint_source $repo_root "hdmi_aes_tx_pynq_z2.xdc"
 update_compile_order -fileset sources_1
@@ -213,6 +217,8 @@ create_bd_cell -type module -reference $WRITER_MODULE $WRITER_INST
 create_bd_cell -type module -reference $PACKETIZER_MODULE $PACKETIZER_INST
 create_bd_cell -type module -reference $SEQUENCER_MODULE $SEQUENCER_INST
 create_bd_cell -type module -reference VideoBeatCounter_wrapper video_beat_counter_0
+create_bd_cell -type module -reference VideoFrontEndProbe_wrapper video_fe_probe_0
+create_bd_cell -type module -reference VideoStatusProbe_wrapper video_status_probe_0
 create_bd_cell -type module -reference $CLK_MUX_MODULE $CLK_MUX_INST
 
 # Refresh module references from the current RTL on disk. BD module refs
@@ -221,7 +227,7 @@ create_bd_cell -type module -reference $CLK_MUX_MODULE $CLK_MUX_INST
 # [BD 41-84] "required object is not specified".
 # Pass instance NAMES (documented form), not cell objects: object form
 # returns failure silently in 2024.1.
-set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0 aes_clk_mux]
+set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0 aes_clk_mux video_beat_counter_0 video_fe_probe_0 video_status_probe_0]
 puts "INFO: update_module_reference rc=$_mrrc"
 create_bd_cell -type ip -vlnv digilentinc.com:ip:dvi2rgb:1.7 dvi2rgb_0
 set_property -dict [list \
@@ -272,6 +278,28 @@ set_property -dict [list \
     CONFIG.TUSER_WIDTH {1} \
     CONFIG.FIFO_DEPTH {2048} \
 ] [get_bd_cells hdmi_axis_cdc_fifo]
+
+# Packet FIFO between the packetizer and the sequencer: decouples the
+# packetizer output from the sequencer's per-packet control states
+# (setup, tag reads, GHASH reads). Store-and-forward packet mode keeps
+# complete 77-beat packets so the sequencer always sees whole packets.
+create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 packet_seq_fifo_0
+set_property -dict [list \
+    CONFIG.IS_ACLK_ASYNC {0} \
+    CONFIG.TDATA_NUM_BYTES {16} \
+    CONFIG.HAS_TKEEP {1} \
+    CONFIG.HAS_TSTRB {0} \
+    CONFIG.HAS_TLAST {1} \
+    CONFIG.TUSER_WIDTH {0} \
+    CONFIG.TID_WIDTH {0} \
+    CONFIG.TDEST_WIDTH {0} \
+    CONFIG.HAS_TREADY {1} \
+    CONFIG.FIFO_DEPTH {256} \
+    CONFIG.FIFO_MODE {2} \
+    CONFIG.FIFO_MEMORY_TYPE {auto} \
+    CONFIG.HAS_WR_DATA_COUNT {1} \
+    CONFIG.HAS_RD_DATA_COUNT {1} \
+] [get_bd_cells packet_seq_fifo_0]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 rst_const1
 set_property -dict [list \
@@ -374,6 +402,7 @@ foreach _p [list \
     connect_if_unconnected $design_clk_pin $_p
 }
 connect_if_unconnected $design_clk_pin [get_bd_pins hdmi_axis_cdc_fifo/m_axis_aclk]
+connect_if_unconnected $design_clk_pin [get_bd_pins packet_seq_fifo_0/s_axis_aclk]
 connect_if_unconnected $design_clk_pin [get_bd_pins rst_ps7_100m/slowest_sync_clk]
 
 # Stable-side clocking: clkctrl GPIO + stable reset controller stay on FCLK0.
@@ -505,9 +534,24 @@ set_property -dict [list \
 connect_bd_intf_net [get_bd_intf_pins $WRITER_INST/M_AXI] [get_bd_intf_pins hp0_mem_ic/S00_AXI]
 connect_bd_intf_net [get_bd_intf_pins hp0_mem_ic/M00_AXI] [get_bd_intf_pins ps7/S_AXI_HP0]
 connect_bd_intf_net [get_bd_intf_pins dvi2rgb_0/RGB] [get_bd_intf_pins color_swap_0/pixel_input]
-connect_bd_intf_net [get_bd_intf_pins color_swap_0/pixel_output] [get_bd_intf_pins v_vid_in_axi4s_0/vid_io_in]
+connect_bd_intf_net [get_bd_intf_pins color_swap_0/pixel_output] [get_bd_intf_pins video_fe_probe_0/vid_io_in]
+connect_bd_intf_net [get_bd_intf_pins video_fe_probe_0/vid_io_out] [get_bd_intf_pins v_vid_in_axi4s_0/vid_io_in]
+connect_bd_net [get_bd_pins video_fe_probe_0/pixel_clk_count] [get_bd_pins $SEQUENCER_INST/dbg_pixelclk_count]
+connect_bd_net [get_bd_pins video_fe_probe_0/de_count] [get_bd_pins $SEQUENCER_INST/dbg_de_count]
+# v_vid_in health probes: coupler overflow/underflow + vid_io_in_reset level.
+connect_bd_net [get_bd_pins v_vid_in_axi4s_0/overflow] [get_bd_pins video_status_probe_0/vid_overflow]
+connect_bd_net [get_bd_pins v_vid_in_axi4s_0/underflow] [get_bd_pins video_status_probe_0/vid_underflow]
+connect_bd_net [get_bd_pins rst_pixelclk/peripheral_reset] [get_bd_pins video_status_probe_0/vid_reset_async]
+connect_bd_net [get_bd_pins ps7/FCLK_CLK1] [get_bd_pins video_status_probe_0/aclk]
+connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins video_status_probe_0/aresetn]
+connect_bd_net [get_bd_pins video_status_probe_0/overflow_count] [get_bd_pins $SEQUENCER_INST/dbg_vid_overflow_count]
+connect_bd_net [get_bd_pins video_status_probe_0/underflow_count] [get_bd_pins $SEQUENCER_INST/dbg_vid_underflow_count]
+connect_bd_net [get_bd_pins video_status_probe_0/reset_pulse_count] [get_bd_pins $SEQUENCER_INST/dbg_vid_reset_pulse_count]
+connect_bd_net [get_bd_pins video_status_probe_0/reset_level] [get_bd_pins $SEQUENCER_INST/dbg_vid_reset_level]
 connect_bd_intf_net [get_bd_intf_pins v_vid_in_axi4s_0/vtiming_out] [get_bd_intf_pins vtc_in/vtiming_in]
-connect_bd_intf_net [get_bd_intf_pins v_vid_in_axi4s_0/video_out] [get_bd_intf_pins hdmi_axis_cdc_fifo/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins v_vid_in_axi4s_0/video_out] [get_bd_intf_pins video_beat_counter_0/s_axis_video]
+connect_bd_intf_net [get_bd_intf_pins video_beat_counter_0/m_axis_video] [get_bd_intf_pins hdmi_axis_cdc_fifo/S_AXIS]
+connect_bd_net [get_bd_pins video_beat_counter_0/count] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_beats]
 connect_bd_intf_net [get_bd_intf_pins hdmi_axis_cdc_fifo/M_AXIS] [get_bd_intf_pins $PACKETIZER_INST/s_axis_video]
 connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_session_id] [get_bd_pins $PACKETIZER_INST/cfg_session_id]
 connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_stream_id] [get_bd_pins $PACKETIZER_INST/cfg_stream_id]
@@ -556,7 +600,8 @@ if {[llength [get_bd_intf_ports -quiet hdmi_in_video_out]] > 0} {
     }
 }
 
-connect_bd_intf_net [get_bd_intf_pins $PACKETIZER_INST/m_axis_pkt] [get_bd_intf_pins $SEQUENCER_INST/s_axis]
+connect_bd_intf_net [get_bd_intf_pins $PACKETIZER_INST/m_axis_pkt] [get_bd_intf_pins packet_seq_fifo_0/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins packet_seq_fifo_0/M_AXIS] [get_bd_intf_pins $SEQUENCER_INST/s_axis]
 connect_bd_intf_net [get_bd_intf_pins $SEQUENCER_INST/m_axis] [get_bd_intf_pins $AES_INST/S_AXIS_PT]
 connect_bd_intf_net [get_bd_intf_pins $AES_INST/M_AXIS_CT] [get_bd_intf_pins $WRITER_INST/S_AXIS_SRC]
 connect_bd_intf_net [get_bd_intf_pins $SEQUENCER_INST/m_axi] [get_bd_intf_pins $AES_INST/s_axi]
@@ -657,6 +702,7 @@ force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins 
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins vtc_in/s_axi_aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins axi_gpio_hdmiin/s_axi_aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $PACKETIZER_INST/aresetn]
+force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins packet_seq_fifo_0/s_axis_aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins dvi2rgb_0/aRst_n]
 
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins v_vid_in_axi4s_0/aresetn]
@@ -690,6 +736,7 @@ connect_bd_net [get_bd_pins dvi2rgb_0/aPixelClkLckd] [get_bd_pins axi_gpio_hdmii
 connect_if_unconnected $ps_fclk2_pin [get_bd_pins dvi2rgb_0/RefClk]
 connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins v_vid_in_axi4s_0/vid_io_in_clk]
 connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins vtc_in/clk]
+connect_bd_net [get_bd_pins dvi2rgb_0/PixelClk] [get_bd_pins video_fe_probe_0/vid_clk]
 connect_bd_net [get_bd_pins rst_pixelclk/peripheral_reset] [get_bd_pins v_vid_in_axi4s_0/vid_io_in_reset]
 
 # AES tag-path debug probes -> sequencer mirror registers (REG_DBG_PUSH_* /
@@ -722,6 +769,14 @@ connect_bd_net [get_bd_pins $AES_INST/dbg_last_pt_blocked] [get_bd_pins $SEQUENC
 connect_bd_net [get_bd_pins $AES_INST/dbg_last_no_offer] [get_bd_pins $SEQUENCER_INST/dbg_last_no_offer]
 connect_bd_net [get_bd_pins $AES_INST/dbg_last_gh_not_ready] [get_bd_pins $SEQUENCER_INST/dbg_last_gh_not_ready]
 connect_bd_net [get_bd_pins $AES_INST/dbg_last_slot_blocked] [get_bd_pins $SEQUENCER_INST/dbg_last_slot_blocked]
+
+# Packetizer live probes -> sequencer mirror register REG_PKT_STATUS (0x154).
+connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_pkt_status] [get_bd_pins $SEQUENCER_INST/dbg_pkt_status]
+# Packet FIFO probes: occupancy, backpressure, and output-valid status.
+connect_bd_net [get_bd_pins packet_seq_fifo_0/axis_wr_data_count] [get_bd_pins $SEQUENCER_INST/dbg_pkt_fifo_wr_count]
+connect_bd_net [get_bd_pins packet_seq_fifo_0/axis_rd_data_count] [get_bd_pins $SEQUENCER_INST/dbg_pkt_fifo_rd_count]
+connect_bd_net [get_bd_pins packet_seq_fifo_0/s_axis_tready] [get_bd_pins $SEQUENCER_INST/dbg_pkt_fifo_s_ready]
+connect_bd_net [get_bd_pins packet_seq_fifo_0/m_axis_tvalid] [get_bd_pins $SEQUENCER_INST/dbg_pkt_fifo_m_valid]
 
 assign_bd_address
 regenerate_bd_layout
@@ -761,6 +816,12 @@ set bd_files [get_files -quiet "*/${BD_NAME}.bd"]
 if {[llength $bd_files] > 0} {
     set_property synth_checkpoint_mode None $bd_files
 }
+
+# Force-generate the module-reference synthesis wrappers. Vivado can leave a
+# carried-over module_ref OOC as a half-generated stub (xml only, no synth
+# .v), which later fails synthesis with [Synth 8-439] "module not found".
+puts "=== generating BD synthesis targets (module refs) ==="
+generate_target {synthesis} [get_files "*/${BD_NAME}.bd"]
 
 make_wrapper -files [get_files ${BD_NAME}.bd] -top
 set project_dir [file normalize [get_property DIRECTORY [current_project]]]

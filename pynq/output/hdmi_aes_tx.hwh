@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Fri Aug 21 19:01:49 2026" VIVADOVERSION="2024.1.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 23 09:23:36 2026" VIVADOVERSION="2024.1.2">
 
   <SYSTEMINFO ARCH="zynq" BOARD="tul.com.tw:pynq-z2:part0:1.0" DEVICE="7z020" NAME="hdmi_aes_tx" PACKAGE="clg400" SPEEDGRADE="-1"/>
 
@@ -235,7 +235,7 @@
     <MODULE COREREVISION="1" FULLNAME="/aes_clk_mux" HWVERSION="1.0" INSTANCE="aes_clk_mux" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="clk_mux_ctrl" VLNV="xilinx.com:module_ref:clk_mux_ctrl:1.0">
       <DOCUMENTS/>
       <PARAMETERS>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_aes_clk_mux_26"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_aes_clk_mux_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
@@ -259,6 +259,7 @@
             <CONNECTION INSTANCE="aes_gcm_0" PORT="S_AXI_ACLK"/>
             <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="aclk"/>
             <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_aclk"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_aclk"/>
             <CONNECTION INSTANCE="rst_ps7_100m" PORT="slowest_sync_clk"/>
             <CONNECTION INSTANCE="frame_writer_0" PORT="S_AXI_ACLK"/>
             <CONNECTION INSTANCE="aes_seq_0" PORT="aclk"/>
@@ -287,7 +288,7 @@
       <PARAMETERS>
         <PARAMETER NAME="C_S_AXI_ADDR_WIDTH" VALUE="8"/>
         <PARAMETER NAME="C_S_AXI_DATA_WIDTH" VALUE="32"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_aes_gcm_0_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_aes_gcm_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
         <PARAMETER NAME="C_BASEADDR" VALUE="0x00000000"/>
         <PARAMETER NAME="C_HIGHADDR" VALUE="0x000001FF"/>
@@ -688,7 +689,7 @@
       <PARAMETERS>
         <PARAMETER NAME="C_AXI_ADDR_WIDTH" VALUE="9"/>
         <PARAMETER NAME="C_AXI_DATA_WIDTH" VALUE="32"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_aes_seq_0_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_aes_seq_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
         <PARAMETER NAME="C_BASEADDR" VALUE="0x40001000"/>
         <PARAMETER NAME="C_HIGHADDR" VALUE="0x40001FFF"/>
@@ -752,6 +753,11 @@
         <PORT DIR="I" LEFT="31" NAME="dbg_ct_beats" RIGHT="0" SIGIS="undef" SIGNAME="aes_gcm_0_dbg_ct_beats">
           <CONNECTIONS>
             <CONNECTION INSTANCE="aes_gcm_0" PORT="dbg_ct_beats"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="63" NAME="dbg_de_count" RIGHT="0" SIGIS="undef" SIGNAME="video_fe_probe_0_de_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="de_count"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="63" NAME="dbg_empty_no_ct_cycles" RIGHT="0" SIGIS="undef" SIGNAME="aes_gcm_0_dbg_empty_no_ct_cycles">
@@ -839,7 +845,41 @@
             <CONNECTION INSTANCE="aes_gcm_0" PORT="dbg_no_offer_cycles"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="63" NAME="dbg_prefifo_beats" RIGHT="0" SIGIS="undef"/>
+        <PORT DIR="I" LEFT="63" NAME="dbg_pixelclk_count" RIGHT="0" SIGIS="undef" SIGNAME="video_fe_probe_0_pixel_clk_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="pixel_clk_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="dbg_pkt_fifo_m_valid" SIGIS="undef" SIGNAME="packet_seq_fifo_0_m_axis_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="m_axis_tvalid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="dbg_pkt_fifo_rd_count" RIGHT="0" SIGIS="undef" SIGNAME="packet_seq_fifo_0_axis_rd_data_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="axis_rd_data_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="dbg_pkt_fifo_s_ready" SIGIS="undef" SIGNAME="packet_seq_fifo_0_s_axis_tready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_tready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="dbg_pkt_fifo_wr_count" RIGHT="0" SIGIS="undef" SIGNAME="packet_seq_fifo_0_axis_wr_data_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="axis_wr_data_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="6" NAME="dbg_pkt_status" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_dbg_pkt_status">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="dbg_pkt_status"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="63" NAME="dbg_prefifo_beats" RIGHT="0" SIGIS="undef" SIGNAME="video_beat_counter_0_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="count"/>
+          </CONNECTIONS>
+        </PORT>
         <PORT DIR="I" LEFT="63" NAME="dbg_pt_blocked_cycles" RIGHT="0" SIGIS="undef" SIGNAME="aes_gcm_0_dbg_pt_blocked_cycles">
           <CONNECTIONS>
             <CONNECTION INSTANCE="aes_gcm_0" PORT="dbg_pt_blocked_cycles"/>
@@ -868,6 +908,26 @@
         <PORT DIR="I" LEFT="31" NAME="dbg_tag_pushes" RIGHT="0" SIGIS="undef" SIGNAME="aes_gcm_0_dbg_tag_pushes">
           <CONNECTIONS>
             <CONNECTION INSTANCE="aes_gcm_0" PORT="dbg_tag_pushes"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="63" NAME="dbg_vid_overflow_count" RIGHT="0" SIGIS="undef" SIGNAME="video_status_probe_0_overflow_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="overflow_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="dbg_vid_reset_level" POLARITY="ACTIVE_LOW" SIGIS="undef" SIGNAME="video_status_probe_0_reset_level">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="reset_level"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="63" NAME="dbg_vid_reset_pulse_count" RIGHT="0" SIGIS="undef" SIGNAME="video_status_probe_0_reset_pulse_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="reset_pulse_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="63" NAME="dbg_vid_underflow_count" RIGHT="0" SIGIS="undef" SIGNAME="video_status_probe_0_underflow_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="underflow_count"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="63" NAME="dbg_video_beat_count" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_dbg_video_beat_count">
@@ -1098,27 +1158,27 @@
         </PORT>
         <PORT DIR="I" LEFT="127" NAME="s_axis_tdata" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tdata">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tdata"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="m_axis_tdata"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="15" NAME="s_axis_tkeep" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tkeep">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tkeep"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="m_axis_tkeep"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="s_axis_tlast" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tlast">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tlast"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="m_axis_tlast"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="s_axis_tready" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tready"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="m_axis_tready"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="s_axis_tvalid" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tvalid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tvalid"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="m_axis_tvalid"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="seq_busy" SIGIS="undef"/>
@@ -1146,7 +1206,7 @@
             <PORTMAP LOGICAL="TVALID" PHYSICAL="m_axis_tvalid"/>
           </PORTMAPS>
         </BUSINTERFACE>
-        <BUSINTERFACE BUSNAME="hdmi_packetizer_0_m_axis_pkt" NAME="s_axis" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
+        <BUSINTERFACE BUSNAME="packet_seq_fifo_0_M_AXIS" NAME="s_axis" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
           <PARAMETER NAME="CLK_DOMAIN"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
           <PARAMETER NAME="HAS_TKEEP" VALUE="1"/>
@@ -1470,7 +1530,7 @@
         <PARAMETER NAME="C_S_AXI_DATA_WIDTH" VALUE="32"/>
         <PARAMETER NAME="C_TRI_DEFAULT" VALUE="0xFFFFFFFF"/>
         <PARAMETER NAME="C_TRI_DEFAULT_2" VALUE="0xFFFFFFFF"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_axi_gpio_clkctrl_26"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_axi_gpio_clkctrl_0"/>
         <PARAMETER NAME="GPIO2_BOARD_INTERFACE" VALUE="Custom"/>
         <PARAMETER NAME="GPIO_BOARD_INTERFACE" VALUE="Custom"/>
         <PARAMETER NAME="USE_BOARD_FLOW" VALUE="false"/>
@@ -1587,7 +1647,7 @@
           <PARAMETER NAME="ARUSER_WIDTH" VALUE="0"/>
           <PARAMETER NAME="AWUSER_WIDTH" VALUE="0"/>
           <PARAMETER NAME="BUSER_WIDTH" VALUE="0"/>
-          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_44_FCLK_CLK0"/>
+          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_0_FCLK_CLK0"/>
           <PARAMETER NAME="DATA_WIDTH" VALUE="32"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
           <PARAMETER NAME="HAS_BRESP" VALUE="1"/>
@@ -1827,7 +1887,7 @@
         <PARAMETER NAME="C_S_AXI_DATA_WIDTH" VALUE="32"/>
         <PARAMETER NAME="C_TRI_DEFAULT" VALUE="0xFFFFFFFF"/>
         <PARAMETER NAME="C_TRI_DEFAULT_2" VALUE="0xFFFFFFFF"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_axi_gpio_hdmiin_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_axi_gpio_hdmiin_0"/>
         <PARAMETER NAME="GPIO2_BOARD_INTERFACE" VALUE="Custom"/>
         <PARAMETER NAME="GPIO_BOARD_INTERFACE" VALUE="Custom"/>
         <PARAMETER NAME="USE_BOARD_FLOW" VALUE="false"/>
@@ -2332,7 +2392,7 @@
         <PARAMETER NAME="C_USE_STATUS" VALUE="0"/>
         <PARAMETER NAME="C_VCO_MAX" VALUE="1200.000"/>
         <PARAMETER NAME="C_VCO_MIN" VALUE="600.000"/>
-        <PARAMETER NAME="c_component_name" VALUE="hdmi_aes_tx_clk_wiz_aes_26"/>
+        <PARAMETER NAME="c_component_name" VALUE="hdmi_aes_tx_clk_wiz_aes_0"/>
         <PARAMETER NAME="AUTO_PRIMITIVE" VALUE="MMCM"/>
         <PARAMETER NAME="AXI_DRP" VALUE="false"/>
         <PARAMETER NAME="CALC_DONE" VALUE="empty"/>
@@ -2433,7 +2493,7 @@
         <PARAMETER NAME="CLK_OUT7_USE_FINE_PS_GUI" VALUE="false"/>
         <PARAMETER NAME="CLK_VALID_PORT" VALUE="CLK_VALID"/>
         <PARAMETER NAME="CLOCK_MGR_TYPE" VALUE="auto"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_clk_wiz_aes_26"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_clk_wiz_aes_0"/>
         <PARAMETER NAME="DADDR_PORT" VALUE="daddr"/>
         <PARAMETER NAME="DCLK_PORT" VALUE="dclk"/>
         <PARAMETER NAME="DEN_PORT" VALUE="den"/>
@@ -2621,7 +2681,7 @@
         <PARAMETER NAME="DIN_FROM" VALUE="0"/>
         <PARAMETER NAME="DIN_TO" VALUE="0"/>
         <PARAMETER NAME="DIN_WIDTH" VALUE="3"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_clkctrl_rst_slice_26"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_clkctrl_rst_slice_0"/>
         <PARAMETER NAME="DOUT_WIDTH" VALUE="1"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
@@ -2645,7 +2705,7 @@
         <PARAMETER NAME="DIN_FROM" VALUE="2"/>
         <PARAMETER NAME="DIN_TO" VALUE="1"/>
         <PARAMETER NAME="DIN_WIDTH" VALUE="3"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_clkctrl_sel_slice_26"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_clkctrl_sel_slice_0"/>
         <PARAMETER NAME="DOUT_WIDTH" VALUE="2"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
@@ -2668,7 +2728,7 @@
       <PARAMETERS>
         <PARAMETER NAME="input_format" VALUE="rbg"/>
         <PARAMETER NAME="output_format" VALUE="rgb"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_color_swap_0_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_color_swap_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
@@ -2679,7 +2739,7 @@
         </PORT>
         <PORT DIR="O" NAME="hsync_out" SIGIS="undef" SIGNAME="color_swap_0_hsync_out">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_hsync"/>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_io_in_HSYNC"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="23" NAME="pixel_in" RIGHT="0" SIGIS="undef" SIGNAME="color_swap_0_pixel_in">
@@ -2689,7 +2749,7 @@
         </PORT>
         <PORT DIR="O" LEFT="23" NAME="pixel_out" RIGHT="0" SIGIS="undef" SIGNAME="color_swap_0_pixel_out">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_data"/>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_io_in_DATA"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="vde_in" SIGIS="undef" SIGNAME="color_swap_0_vde_in">
@@ -2699,7 +2759,7 @@
         </PORT>
         <PORT DIR="O" NAME="vde_out" SIGIS="undef" SIGNAME="color_swap_0_vde_out">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_active_video"/>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_io_in_ACTIVE_VIDEO"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="vsync_in" SIGIS="undef" SIGNAME="color_swap_0_vsync_in">
@@ -2709,7 +2769,7 @@
         </PORT>
         <PORT DIR="O" NAME="vsync_out" SIGIS="undef" SIGNAME="color_swap_0_vsync_out">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_vsync"/>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_io_in_VSYNC"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
@@ -2744,7 +2804,7 @@
         <PARAMETER NAME="kIDLY_TapValuePs" VALUE="78"/>
         <PARAMETER NAME="kIDLY_TapWidth" VALUE="5"/>
         <PARAMETER NAME="kRstActiveHigh" VALUE="false"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_dvi2rgb_0_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_dvi2rgb_0_0"/>
         <PARAMETER NAME="IIC_BOARD_INTERFACE"/>
         <PARAMETER NAME="TMDS_BOARD_INTERFACE"/>
         <PARAMETER NAME="kEnableSerialClkOutput" VALUE="false"/>
@@ -2786,6 +2846,7 @@
             <CONNECTION INSTANCE="rst_pixelclk" PORT="slowest_sync_clk"/>
             <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_io_in_clk"/>
             <CONNECTION INSTANCE="vtc_in" PORT="clk"/>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_clk"/>
           </CONNECTIONS>
         </PORT>
         <PORT CLKFREQUENCY="200000000" DIR="I" NAME="RefClk" SIGIS="clk" SIGNAME="ps7_FCLK_CLK2">
@@ -2883,7 +2944,7 @@
       <PARAMETERS>
         <PARAMETER NAME="C_S_AXI_ADDR_WIDTH" VALUE="8"/>
         <PARAMETER NAME="C_S_AXI_DATA_WIDTH" VALUE="32"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_frame_writer_0_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_frame_writer_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
         <PARAMETER NAME="C_BASEADDR" VALUE="0x40000000"/>
         <PARAMETER NAME="C_HIGHADDR" VALUE="0x40000FFF"/>
@@ -3251,7 +3312,7 @@
         <PARAMETER NAME="C_SYNCHRONIZER_STAGE" VALUE="3"/>
         <PARAMETER NAME="C_USE_ADV_FEATURES" VALUE="825241648"/>
         <PARAMETER NAME="ACLKEN_CONV_MODE" VALUE="0"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_hdmi_axis_cdc_fifo_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_hdmi_axis_cdc_fifo_0"/>
         <PARAMETER NAME="ENABLE_ECC" VALUE="0"/>
         <PARAMETER NAME="FIFO_DEPTH" VALUE="2048"/>
         <PARAMETER NAME="FIFO_MEMORY_TYPE" VALUE="auto"/>
@@ -3320,40 +3381,40 @@
         </PORT>
         <PORT DIR="I" LEFT="23" NAME="s_axis_tdata" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tdata">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tdata"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="m_axis_video_tdata"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="s_axis_tlast" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tlast">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tlast"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="m_axis_video_tlast"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="s_axis_tready" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tready"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="m_axis_video_tready"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="0" NAME="s_axis_tuser" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tuser">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tuser"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="m_axis_video_tuser"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="s_axis_tvalid" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tvalid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tvalid"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="m_axis_video_tvalid"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
       <BUSINTERFACES>
-        <BUSINTERFACE BUSNAME="v_vid_in_axi4s_0_video_out" NAME="S_AXIS" TYPE="SLAVE" VLNV="xilinx.com:interface:axis:1.0">
-          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_44_FCLK_CLK1"/>
+        <BUSINTERFACE BUSNAME="video_beat_counter_0_m_axis_video" NAME="S_AXIS" TYPE="SLAVE" VLNV="xilinx.com:interface:axis:1.0">
+          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_0_FCLK_CLK1"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="142857132"/>
           <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
           <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
           <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
           <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
           <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
-          <PARAMETER NAME="LAYERED_METADATA" VALUE="xilinx.com:interface:datatypes:1.0 {TDATA {datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value xilinx.com:video:G_B_R_444:1.0} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} array_type {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value rows} size {attribs {resolve_type generated dependency active_rows format long minimum {} maximum {}} value 1} stride {attribs {resolve_type generated dependency active_rows_stride format long minimum {} maximum {}} value 24} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} array_type {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value cols} size {attribs {resolve_type generated dependency active_cols format long minimum {} maximum {}} value 1} stride {attribs {resolve_type generated dependency active_cols_stride format long minimum {} maximum {}} value 24} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} struct {field_G {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value G} enabled {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}} field_B {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value B} enabled {attribs {resolve_type generated dependency video_comp1_enabled format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type generated dependency video_comp1_offset format long minimum {} maximum {}} value 8} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}} field_R {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value R} enabled {attribs {resolve_type generated dependency video_comp2_enabled format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type generated dependency video_comp2_offset format long minimum {} maximum {}} value 16} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}}}}}}}}} TDATA_WIDTH 24}"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
           <PARAMETER NAME="PHASE" VALUE="0.0"/>
           <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="3"/>
           <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
@@ -3375,7 +3436,7 @@
           <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
           <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
           <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
-          <PARAMETER NAME="LAYERED_METADATA" VALUE="xilinx.com:interface:datatypes:1.0 {TDATA {datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value xilinx.com:video:G_B_R_444:1.0} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} array_type {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value rows} size {attribs {resolve_type generated dependency active_rows format long minimum {} maximum {}} value 1} stride {attribs {resolve_type generated dependency active_rows_stride format long minimum {} maximum {}} value 24} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} array_type {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value cols} size {attribs {resolve_type generated dependency active_cols format long minimum {} maximum {}} value 1} stride {attribs {resolve_type generated dependency active_cols_stride format long minimum {} maximum {}} value 24} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} struct {field_G {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value G} enabled {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}} field_B {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value B} enabled {attribs {resolve_type generated dependency video_comp1_enabled format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type generated dependency video_comp1_offset format long minimum {} maximum {}} value 8} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}} field_R {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value R} enabled {attribs {resolve_type generated dependency video_comp2_enabled format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type generated dependency video_comp2_offset format long minimum {} maximum {}} value 16} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}}}}}}}}} TDATA_WIDTH 24}"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
           <PARAMETER NAME="PHASE" VALUE="0.0"/>
           <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="3"/>
           <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
@@ -3395,7 +3456,7 @@
       <DOCUMENTS/>
       <PARAMETERS>
         <PARAMETER NAME="MAX_PAYLOAD_BYTES" VALUE="1200"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_hdmi_packetizer_0_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_hdmi_packetizer_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
@@ -3444,6 +3505,11 @@
             <CONNECTION INSTANCE="aes_seq_0" PORT="cfg_stream_id"/>
           </CONNECTIONS>
         </PORT>
+        <PORT DIR="O" LEFT="6" NAME="dbg_pkt_status" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_dbg_pkt_status">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_pkt_status"/>
+          </CONNECTIONS>
+        </PORT>
         <PORT DIR="O" LEFT="63" NAME="dbg_video_beat_count" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_dbg_video_beat_count">
           <CONNECTIONS>
             <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_video_beat_count"/>
@@ -3454,29 +3520,29 @@
             <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_video_frame_count"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="127" NAME="m_axis_pkt_tdata" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tdata">
+        <PORT DIR="O" LEFT="127" NAME="m_axis_pkt_tdata" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tdata">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tdata"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_tdata"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="15" NAME="m_axis_pkt_tkeep" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tkeep">
+        <PORT DIR="O" LEFT="15" NAME="m_axis_pkt_tkeep" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tkeep">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tkeep"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_tkeep"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="m_axis_pkt_tlast" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tlast">
+        <PORT DIR="O" NAME="m_axis_pkt_tlast" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tlast">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tlast"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_tlast"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="m_axis_pkt_tready" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tready">
+        <PORT DIR="I" NAME="m_axis_pkt_tready" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tready"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_tready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="m_axis_pkt_tvalid" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tvalid">
+        <PORT DIR="O" NAME="m_axis_pkt_tvalid" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tvalid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tvalid"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_tvalid"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="23" NAME="s_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tdata">
@@ -3536,7 +3602,7 @@
           <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
           <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
           <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
-          <PARAMETER NAME="LAYERED_METADATA" VALUE="xilinx.com:interface:datatypes:1.0 {TDATA {datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value xilinx.com:video:G_B_R_444:1.0} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} array_type {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value rows} size {attribs {resolve_type generated dependency active_rows format long minimum {} maximum {}} value 1} stride {attribs {resolve_type generated dependency active_rows_stride format long minimum {} maximum {}} value 24} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} array_type {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value cols} size {attribs {resolve_type generated dependency active_cols format long minimum {} maximum {}} value 1} stride {attribs {resolve_type generated dependency active_cols_stride format long minimum {} maximum {}} value 24} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} struct {field_G {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value G} enabled {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}} field_B {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value B} enabled {attribs {resolve_type generated dependency video_comp1_enabled format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type generated dependency video_comp1_offset format long minimum {} maximum {}} value 8} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}} field_R {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value R} enabled {attribs {resolve_type generated dependency video_comp2_enabled format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type generated dependency video_comp2_offset format long minimum {} maximum {}} value 16} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}}}}}}}}} TDATA_WIDTH 24}"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
           <PARAMETER NAME="PHASE" VALUE="0.0"/>
           <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="3"/>
           <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
@@ -3557,7 +3623,7 @@
         <DOCUMENT SOURCE="http://www.xilinx.com/cgi-bin/docs/ipdoc?c=axi_interconnect;v=v2_1;d=pg059-axi-interconnect.pdf"/>
       </DOCUMENTS>
       <PARAMETERS>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_hp0_mem_ic_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_hp0_mem_ic_0"/>
         <PARAMETER NAME="ENABLE_ADVANCED_OPTIONS" VALUE="0"/>
         <PARAMETER NAME="ENABLE_PROTOCOL_CHECKERS" VALUE="0"/>
         <PARAMETER NAME="M00_HAS_DATA_FIFO" VALUE="0"/>
@@ -4242,7 +4308,7 @@
         <PARAMETER NAME="IN9_WIDTH" VALUE="1"/>
         <PARAMETER NAME="NUM_PORTS" VALUE="3"/>
         <PARAMETER NAME="dout_width" VALUE="3"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_irq_concat_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_irq_concat_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
@@ -4268,6 +4334,175 @@
         </PORT>
       </PORTS>
       <BUSINTERFACES/>
+    </MODULE>
+    <MODULE COREREVISION="14" FULLNAME="/packet_seq_fifo_0" HWVERSION="2.0" INSTANCE="packet_seq_fifo_0" IPTYPE="BUS" IS_ENABLE="1" MODCLASS="BUS" MODTYPE="axis_data_fifo" VLNV="xilinx.com:ip:axis_data_fifo:2.0">
+      <DOCUMENTS>
+        <DOCUMENT SOURCE="https://www.xilinx.com/cgi-bin/docs/ipdoc?c=axis_data_fifo;v=v2_0;d=pg085-axi4stream-infrastructure.pdf"/>
+      </DOCUMENTS>
+      <PARAMETERS>
+        <PARAMETER NAME="C_ACLKEN_CONV_MODE" VALUE="0"/>
+        <PARAMETER NAME="C_AXIS_SIGNAL_SET" VALUE="0b00000000000000000000000000011011"/>
+        <PARAMETER NAME="C_AXIS_TDATA_WIDTH" VALUE="128"/>
+        <PARAMETER NAME="C_AXIS_TDEST_WIDTH" VALUE="1"/>
+        <PARAMETER NAME="C_AXIS_TID_WIDTH" VALUE="1"/>
+        <PARAMETER NAME="C_AXIS_TUSER_WIDTH" VALUE="1"/>
+        <PARAMETER NAME="C_ECC_MODE" VALUE="0"/>
+        <PARAMETER NAME="C_FAMILY" VALUE="zynq"/>
+        <PARAMETER NAME="C_FIFO_DEPTH" VALUE="256"/>
+        <PARAMETER NAME="C_FIFO_MEMORY_TYPE" VALUE="auto"/>
+        <PARAMETER NAME="C_FIFO_MODE" VALUE="2"/>
+        <PARAMETER NAME="C_IS_ACLK_ASYNC" VALUE="0"/>
+        <PARAMETER NAME="C_PROG_EMPTY_THRESH" VALUE="5"/>
+        <PARAMETER NAME="C_PROG_FULL_THRESH" VALUE="11"/>
+        <PARAMETER NAME="C_SYNCHRONIZER_STAGE" VALUE="3"/>
+        <PARAMETER NAME="C_USE_ADV_FEATURES" VALUE="826486851"/>
+        <PARAMETER NAME="ACLKEN_CONV_MODE" VALUE="0"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_packet_seq_fifo_0_0"/>
+        <PARAMETER NAME="ENABLE_ECC" VALUE="0"/>
+        <PARAMETER NAME="FIFO_DEPTH" VALUE="256"/>
+        <PARAMETER NAME="FIFO_MEMORY_TYPE" VALUE="auto"/>
+        <PARAMETER NAME="FIFO_MODE" VALUE="2"/>
+        <PARAMETER NAME="HAS_AEMPTY" VALUE="0"/>
+        <PARAMETER NAME="HAS_AFULL" VALUE="0"/>
+        <PARAMETER NAME="HAS_ECC_ERR_INJECT" VALUE="0"/>
+        <PARAMETER NAME="HAS_PROG_EMPTY" VALUE="0"/>
+        <PARAMETER NAME="HAS_PROG_FULL" VALUE="0"/>
+        <PARAMETER NAME="HAS_RD_DATA_COUNT" VALUE="1"/>
+        <PARAMETER NAME="HAS_TKEEP" VALUE="1"/>
+        <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
+        <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
+        <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
+        <PARAMETER NAME="HAS_WR_DATA_COUNT" VALUE="1"/>
+        <PARAMETER NAME="IS_ACLK_ASYNC" VALUE="0"/>
+        <PARAMETER NAME="PROG_EMPTY_THRESH" VALUE="5"/>
+        <PARAMETER NAME="PROG_FULL_THRESH" VALUE="11"/>
+        <PARAMETER NAME="SYNCHRONIZATION_STAGES" VALUE="3"/>
+        <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="16"/>
+        <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
+        <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
+        <PARAMETER NAME="TUSER_WIDTH" VALUE="0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="BUS"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT DIR="O" LEFT="31" NAME="axis_rd_data_count" RIGHT="0" SIGIS="undef" SIGNAME="packet_seq_fifo_0_axis_rd_data_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_pkt_fifo_rd_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="axis_wr_data_count" RIGHT="0" SIGIS="undef" SIGNAME="packet_seq_fifo_0_axis_wr_data_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_pkt_fifo_wr_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="127" NAME="m_axis_tdata" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tdata">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tdata"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="15" NAME="m_axis_tkeep" RIGHT="0" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tkeep">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tkeep"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="m_axis_tlast" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tlast">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tlast"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="m_axis_tready" SIGIS="undef" SIGNAME="aes_seq_0_s_axis_tready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="m_axis_tvalid" SIGIS="undef" SIGNAME="packet_seq_fifo_0_m_axis_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="s_axis_tvalid"/>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_pkt_fifo_m_valid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT CLKFREQUENCY="100000000" DIR="I" NAME="s_axis_aclk" SIGIS="clk" SIGNAME="aes_clk_mux_clk_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_clk_mux" PORT="clk_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_aresetn" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="rst_ps7_100m_peripheral_aresetn">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="rst_ps7_100m" PORT="peripheral_aresetn"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="127" NAME="s_axis_tdata" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tdata">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tdata"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="15" NAME="s_axis_tkeep" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tkeep">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tkeep"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_tlast" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tlast">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tlast"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="s_axis_tready" SIGIS="undef" SIGNAME="packet_seq_fifo_0_s_axis_tready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tready"/>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_pkt_fifo_s_ready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_tvalid" SIGIS="undef" SIGNAME="hdmi_packetizer_0_m_axis_pkt_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="m_axis_pkt_tvalid"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES>
+        <BUSINTERFACE BUSNAME="hdmi_packetizer_0_m_axis_pkt" NAME="S_AXIS" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
+          <PARAMETER NAME="CLK_DOMAIN"/>
+          <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
+          <PARAMETER NAME="HAS_TKEEP" VALUE="1"/>
+          <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
+          <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
+          <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
+          <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
+          <PARAMETER NAME="PHASE" VALUE="0.0"/>
+          <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="16"/>
+          <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TUSER_WIDTH" VALUE="0"/>
+          <PORTMAPS>
+            <PORTMAP LOGICAL="TDATA" PHYSICAL="s_axis_tdata"/>
+            <PORTMAP LOGICAL="TKEEP" PHYSICAL="s_axis_tkeep"/>
+            <PORTMAP LOGICAL="TLAST" PHYSICAL="s_axis_tlast"/>
+            <PORTMAP LOGICAL="TREADY" PHYSICAL="s_axis_tready"/>
+            <PORTMAP LOGICAL="TVALID" PHYSICAL="s_axis_tvalid"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+        <BUSINTERFACE BUSNAME="packet_seq_fifo_0_M_AXIS" NAME="M_AXIS" TYPE="INITIATOR" VLNV="xilinx.com:interface:axis:1.0">
+          <PARAMETER NAME="CLK_DOMAIN"/>
+          <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
+          <PARAMETER NAME="HAS_TKEEP" VALUE="1"/>
+          <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
+          <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
+          <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
+          <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
+          <PARAMETER NAME="PHASE" VALUE="0.0"/>
+          <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="16"/>
+          <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TUSER_WIDTH" VALUE="0"/>
+          <PORTMAPS>
+            <PORTMAP LOGICAL="TDATA" PHYSICAL="m_axis_tdata"/>
+            <PORTMAP LOGICAL="TKEEP" PHYSICAL="m_axis_tkeep"/>
+            <PORTMAP LOGICAL="TLAST" PHYSICAL="m_axis_tlast"/>
+            <PORTMAP LOGICAL="TREADY" PHYSICAL="m_axis_tready"/>
+            <PORTMAP LOGICAL="TVALID" PHYSICAL="m_axis_tvalid"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+      </BUSINTERFACES>
     </MODULE>
     <MODULE CONFIGURABLE="TRUE" COREREVISION="6" FULLNAME="/ps7" HWVERSION="5.5" INSTANCE="ps7" IPTYPE="PERIPHERAL" IS_ENABLE="1" IS_PL="FALSE" MODTYPE="processing_system7" VLNV="xilinx.com:ip:processing_system7:5.5">
       <DOCUMENTS>
@@ -4333,7 +4568,7 @@
         <PARAMETER NAME="C_USE_S_AXI_HP2" VALUE="0"/>
         <PARAMETER NAME="C_USE_S_AXI_HP3" VALUE="0"/>
         <PARAMETER NAME="USE_TRACE_DATA_EDGE_DETECTOR" VALUE="0"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_ps7_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_ps7_0"/>
         <PARAMETER NAME="PCW_ACT_APU_PERIPHERAL_FREQMHZ" VALUE="666.666687"/>
         <PARAMETER NAME="PCW_ACT_CAN0_PERIPHERAL_FREQMHZ" VALUE="23.8095"/>
         <PARAMETER NAME="PCW_ACT_CAN1_PERIPHERAL_FREQMHZ" VALUE="23.8095"/>
@@ -5317,6 +5552,7 @@
         </PORT>
         <PORT CLKFREQUENCY="142857132" DIR="O" NAME="FCLK_CLK1" SIGIS="clk" SIGNAME="ps7_FCLK_CLK1">
           <CONNECTIONS>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="aclk"/>
             <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="aclk"/>
             <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_aclk"/>
             <CONNECTION INSTANCE="rst_ps7_142m" PORT="slowest_sync_clk"/>
@@ -5715,7 +5951,7 @@
           <PARAMETER NAME="ARUSER_WIDTH" VALUE="0"/>
           <PARAMETER NAME="AWUSER_WIDTH" VALUE="0"/>
           <PARAMETER NAME="BUSER_WIDTH" VALUE="0"/>
-          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_44_FCLK_CLK0"/>
+          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_0_FCLK_CLK0"/>
           <PARAMETER NAME="DATA_WIDTH" VALUE="32"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
           <PARAMETER NAME="HAS_BRESP" VALUE="1"/>
@@ -5788,7 +6024,7 @@
           <PARAMETER NAME="ARUSER_WIDTH" VALUE="0"/>
           <PARAMETER NAME="AWUSER_WIDTH" VALUE="0"/>
           <PARAMETER NAME="BUSER_WIDTH" VALUE="0"/>
-          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_44_FCLK_CLK0"/>
+          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_0_FCLK_CLK0"/>
           <PARAMETER NAME="DATA_WIDTH" VALUE="64"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
           <PARAMETER NAME="HAS_BRESP" VALUE="1"/>
@@ -5857,7 +6093,7 @@
         <DOCUMENT SOURCE="http://www.xilinx.com/cgi-bin/docs/ipdoc?c=axi_interconnect;v=v2_1;d=pg059-axi-interconnect.pdf"/>
       </DOCUMENTS>
       <PARAMETERS>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_ps7_axi_periph_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_ps7_axi_periph_0"/>
         <PARAMETER NAME="ENABLE_ADVANCED_OPTIONS" VALUE="0"/>
         <PARAMETER NAME="ENABLE_PROTOCOL_CHECKERS" VALUE="0"/>
         <PARAMETER NAME="M00_HAS_DATA_FIFO" VALUE="0"/>
@@ -7040,7 +7276,7 @@
       <PARAMETERS>
         <PARAMETER NAME="CONST_VAL" VALUE="0x1"/>
         <PARAMETER NAME="CONST_WIDTH" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_const1_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_const1_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
@@ -7069,7 +7305,7 @@
         <PARAMETER NAME="C_NUM_INTERCONNECT_ARESETN" VALUE="1"/>
         <PARAMETER NAME="C_NUM_PERP_ARESETN" VALUE="1"/>
         <PARAMETER NAME="C_NUM_PERP_RST" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_pixelclk_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_pixelclk_0"/>
         <PARAMETER NAME="RESET_BOARD_INTERFACE" VALUE="Custom"/>
         <PARAMETER NAME="USE_BOARD_FLOW" VALUE="false"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
@@ -7102,6 +7338,7 @@
         </PORT>
         <PORT DIR="O" LEFT="0" NAME="peripheral_reset" POLARITY="ACTIVE_HIGH" RIGHT="0" SIGIS="rst" SIGNAME="rst_pixelclk_peripheral_reset">
           <CONNECTIONS>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="vid_reset_async"/>
             <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_io_in_reset"/>
           </CONNECTIONS>
         </PORT>
@@ -7127,7 +7364,7 @@
         <PARAMETER NAME="C_NUM_INTERCONNECT_ARESETN" VALUE="1"/>
         <PARAMETER NAME="C_NUM_PERP_ARESETN" VALUE="1"/>
         <PARAMETER NAME="C_NUM_PERP_RST" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_ps7_100m_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_ps7_100m_0"/>
         <PARAMETER NAME="RESET_BOARD_INTERFACE" VALUE="Custom"/>
         <PARAMETER NAME="USE_BOARD_FLOW" VALUE="false"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
@@ -7165,6 +7402,7 @@
             <CONNECTION INSTANCE="vtc_in" PORT="s_axi_aresetn"/>
             <CONNECTION INSTANCE="axi_gpio_hdmiin" PORT="s_axi_aresetn"/>
             <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="aresetn"/>
+            <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_aresetn"/>
             <CONNECTION INSTANCE="dvi2rgb_0" PORT="aRst_n"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="M00_ARESETN"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="M01_ARESETN"/>
@@ -7195,7 +7433,7 @@
         <PARAMETER NAME="C_NUM_INTERCONNECT_ARESETN" VALUE="1"/>
         <PARAMETER NAME="C_NUM_PERP_ARESETN" VALUE="1"/>
         <PARAMETER NAME="C_NUM_PERP_RST" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_ps7_142m_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_ps7_142m_0"/>
         <PARAMETER NAME="RESET_BOARD_INTERFACE" VALUE="Custom"/>
         <PARAMETER NAME="USE_BOARD_FLOW" VALUE="false"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
@@ -7218,6 +7456,7 @@
         <PORT DIR="O" NAME="mb_reset" POLARITY="ACTIVE_HIGH" SIGIS="rst"/>
         <PORT DIR="O" LEFT="0" NAME="peripheral_aresetn" POLARITY="ACTIVE_LOW" RIGHT="0" SIGIS="rst" SIGNAME="rst_ps7_142m_peripheral_aresetn">
           <CONNECTIONS>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="aresetn"/>
             <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="aresetn"/>
             <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_aresetn"/>
             <CONNECTION INSTANCE="video_beat_counter_0" PORT="aresetn"/>
@@ -7246,7 +7485,7 @@
         <PARAMETER NAME="C_NUM_INTERCONNECT_ARESETN" VALUE="1"/>
         <PARAMETER NAME="C_NUM_PERP_ARESETN" VALUE="1"/>
         <PARAMETER NAME="C_NUM_PERP_RST" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_ps7_stable_26"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rst_ps7_stable_0"/>
         <PARAMETER NAME="RESET_BOARD_INTERFACE" VALUE="Custom"/>
         <PARAMETER NAME="USE_BOARD_FLOW" VALUE="false"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
@@ -7292,7 +7531,7 @@
       <PARAMETERS>
         <PARAMETER NAME="C_OPERATION" VALUE="not"/>
         <PARAMETER NAME="C_SIZE" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rstn_to_rst_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_rstn_to_rst_0"/>
         <PARAMETER NAME="LOGO_FILE" VALUE="data/sym_notgate.png"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
@@ -7333,7 +7572,7 @@
         <PARAMETER NAME="C_VID_NATIVE_DE" VALUE="0"/>
         <PARAMETER NAME="C_M_AXIS_VIDEO_DATA_WIDTH" VALUE="8"/>
         <PARAMETER NAME="C_M_AXIS_VIDEO_FORMAT" VALUE="2"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_v_vid_in_axi4s_0_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_v_vid_in_axi4s_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
@@ -7350,46 +7589,54 @@
         </PORT>
         <PORT DIR="I" NAME="axis_enable" SIGIS="undef"/>
         <PORT DIR="O" NAME="fid" SIGIS="undef"/>
-        <PORT DIR="O" LEFT="23" NAME="m_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tdata">
+        <PORT DIR="O" LEFT="23" NAME="m_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tdata">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tdata"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="s_axis_video_tdata"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="m_axis_video_tlast" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tlast">
+        <PORT DIR="O" NAME="m_axis_video_tlast" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tlast">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tlast"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="s_axis_video_tlast"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="m_axis_video_tready" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tready">
+        <PORT DIR="I" NAME="m_axis_video_tready" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tready"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="s_axis_video_tready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="m_axis_video_tuser" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tuser">
+        <PORT DIR="O" NAME="m_axis_video_tuser" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tuser">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tuser"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="s_axis_video_tuser"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="m_axis_video_tvalid" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tvalid">
+        <PORT DIR="O" NAME="m_axis_video_tvalid" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tvalid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tvalid"/>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="s_axis_video_tvalid"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="overflow" SIGIS="undef"/>
-        <PORT DIR="O" NAME="underflow" SIGIS="undef"/>
-        <PORT DIR="I" NAME="vid_active_video" SIGIS="undef" SIGNAME="color_swap_0_vde_out">
+        <PORT DIR="O" NAME="overflow" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_overflow">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="color_swap_0" PORT="vde_out"/>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="vid_overflow"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="23" NAME="vid_data" RIGHT="0" SIGIS="undef" SIGNAME="color_swap_0_pixel_out">
+        <PORT DIR="O" NAME="underflow" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_underflow">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="color_swap_0" PORT="pixel_out"/>
+            <CONNECTION INSTANCE="video_status_probe_0" PORT="vid_underflow"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="vid_hsync" SIGIS="undef" SIGNAME="color_swap_0_hsync_out">
+        <PORT DIR="I" NAME="vid_active_video" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_active_video">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="color_swap_0" PORT="hsync_out"/>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_io_out_ACTIVE_VIDEO"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="23" NAME="vid_data" RIGHT="0" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_data">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_io_out_DATA"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="vid_hsync" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_hsync">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_io_out_HSYNC"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="vid_io_in_ce" POLARITY="ACTIVE_HIGH" SIGIS="ce"/>
@@ -7403,9 +7650,9 @@
             <CONNECTION INSTANCE="rst_pixelclk" PORT="peripheral_reset"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="vid_vsync" SIGIS="undef" SIGNAME="color_swap_0_vsync_out">
+        <PORT DIR="I" NAME="vid_vsync" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_vsync">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="color_swap_0" PORT="vsync_out"/>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_io_out_VSYNC"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="vtd_active_video" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vtd_active_video">
@@ -7425,8 +7672,8 @@
         </PORT>
       </PORTS>
       <BUSINTERFACES>
-        <BUSINTERFACE BUSNAME="v_vid_in_axi4s_0_video_out" NAME="video_out" TYPE="MASTER" VLNV="xilinx.com:interface:axis:1.0">
-          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_44_FCLK_CLK1"/>
+        <BUSINTERFACE BUSNAME="v_vid_in_axi4s_0_video_out" NAME="video_out" TYPE="INITIATOR" VLNV="xilinx.com:interface:axis:1.0">
+          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_0_FCLK_CLK1"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="142857132"/>
           <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
           <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
@@ -7454,7 +7701,7 @@
             <PORTMAP LOGICAL="VSYNC" PHYSICAL="vtd_vsync"/>
           </PORTMAPS>
         </BUSINTERFACE>
-        <BUSINTERFACE BUSNAME="color_swap_0_pixel_output" NAME="vid_io_in" TYPE="TARGET" VLNV="xilinx.com:interface:vid_io:1.0">
+        <BUSINTERFACE BUSNAME="video_fe_probe_0_vid_io_out" NAME="vid_io_in" TYPE="TARGET" VLNV="xilinx.com:interface:vid_io:1.0">
           <PORTMAPS>
             <PORTMAP LOGICAL="ACTIVE_VIDEO" PHYSICAL="vid_active_video"/>
             <PORTMAP LOGICAL="DATA" PHYSICAL="vid_data"/>
@@ -7467,7 +7714,7 @@
     <MODULE COREREVISION="1" FULLNAME="/video_beat_counter_0" HWVERSION="1.0" INSTANCE="video_beat_counter_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="VideoBeatCounter_wrapper" VLNV="xilinx.com:module_ref:VideoBeatCounter_wrapper:1.0">
       <DOCUMENTS/>
       <PARAMETERS>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_video_beat_counter_0_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_video_beat_counter_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
@@ -7481,8 +7728,243 @@
             <CONNECTION INSTANCE="rst_ps7_142m" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="63" NAME="count" RIGHT="0" SIGIS="undef"/>
-        <PORT DIR="I" NAME="s_axis_video_tvalid" SIGIS="undef"/>
+        <PORT DIR="O" LEFT="63" NAME="count" RIGHT="0" SIGIS="undef" SIGNAME="video_beat_counter_0_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_prefifo_beats"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="23" NAME="m_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tdata">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tdata"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="m_axis_video_tlast" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tlast">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tlast"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="m_axis_video_tready" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="m_axis_video_tuser" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tuser">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tuser"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="m_axis_video_tvalid" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_s_axis_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tvalid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="23" NAME="s_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tdata">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tdata"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_video_tlast" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tlast">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tlast"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="s_axis_video_tready" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_video_tuser" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tuser">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tuser"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_video_tvalid" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tvalid"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES>
+        <BUSINTERFACE BUSNAME="video_beat_counter_0_m_axis_video" NAME="m_axis_video" TYPE="MASTER" VLNV="xilinx.com:interface:axis:1.0">
+          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_0_FCLK_CLK1"/>
+          <PARAMETER NAME="FREQ_HZ" VALUE="142857132"/>
+          <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
+          <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
+          <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
+          <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
+          <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
+          <PARAMETER NAME="PHASE" VALUE="0.0"/>
+          <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="3"/>
+          <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TUSER_WIDTH" VALUE="1"/>
+          <PORTMAPS>
+            <PORTMAP LOGICAL="TDATA" PHYSICAL="m_axis_video_tdata"/>
+            <PORTMAP LOGICAL="TLAST" PHYSICAL="m_axis_video_tlast"/>
+            <PORTMAP LOGICAL="TREADY" PHYSICAL="m_axis_video_tready"/>
+            <PORTMAP LOGICAL="TUSER" PHYSICAL="m_axis_video_tuser"/>
+            <PORTMAP LOGICAL="TVALID" PHYSICAL="m_axis_video_tvalid"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+        <BUSINTERFACE BUSNAME="v_vid_in_axi4s_0_video_out" NAME="s_axis_video" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
+          <PARAMETER NAME="CLK_DOMAIN" VALUE="hdmi_aes_tx_ps7_0_FCLK_CLK1"/>
+          <PARAMETER NAME="FREQ_HZ" VALUE="142857132"/>
+          <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
+          <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
+          <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
+          <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
+          <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="xilinx.com:interface:datatypes:1.0 {TDATA {datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value xilinx.com:video:G_B_R_444:1.0} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} array_type {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value rows} size {attribs {resolve_type generated dependency active_rows format long minimum {} maximum {}} value 1} stride {attribs {resolve_type generated dependency active_rows_stride format long minimum {} maximum {}} value 24} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} array_type {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value cols} size {attribs {resolve_type generated dependency active_cols format long minimum {} maximum {}} value 1} stride {attribs {resolve_type generated dependency active_cols_stride format long minimum {} maximum {}} value 24} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type automatic dependency {} format long minimum {} maximum {}} value 24} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} struct {field_G {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value G} enabled {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}} field_B {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value B} enabled {attribs {resolve_type generated dependency video_comp1_enabled format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type generated dependency video_comp1_offset format long minimum {} maximum {}} value 8} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}} field_R {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value R} enabled {attribs {resolve_type generated dependency video_comp2_enabled format bool minimum {} maximum {}} value true} datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type generated dependency video_data_width format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type generated dependency video_comp2_offset format long minimum {} maximum {}} value 16} integer {signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value true}}}}}}}}}}} TDATA_WIDTH 24}"/>
+          <PARAMETER NAME="PHASE" VALUE="0.0"/>
+          <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="3"/>
+          <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TUSER_WIDTH" VALUE="1"/>
+          <PORTMAPS>
+            <PORTMAP LOGICAL="TDATA" PHYSICAL="s_axis_video_tdata"/>
+            <PORTMAP LOGICAL="TLAST" PHYSICAL="s_axis_video_tlast"/>
+            <PORTMAP LOGICAL="TREADY" PHYSICAL="s_axis_video_tready"/>
+            <PORTMAP LOGICAL="TUSER" PHYSICAL="s_axis_video_tuser"/>
+            <PORTMAP LOGICAL="TVALID" PHYSICAL="s_axis_video_tvalid"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+      </BUSINTERFACES>
+    </MODULE>
+    <MODULE COREREVISION="1" FULLNAME="/video_fe_probe_0" HWVERSION="1.0" INSTANCE="video_fe_probe_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="VideoFrontEndProbe_wrapper" VLNV="xilinx.com:module_ref:VideoFrontEndProbe_wrapper:1.0">
+      <DOCUMENTS/>
+      <PARAMETERS>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_video_fe_probe_0_0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT DIR="O" LEFT="63" NAME="de_count" RIGHT="0" SIGIS="undef" SIGNAME="video_fe_probe_0_de_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_de_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="63" NAME="pixel_clk_count" RIGHT="0" SIGIS="undef" SIGNAME="video_fe_probe_0_pixel_clk_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_pixelclk_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT CLKFREQUENCY="100000000" DIR="I" NAME="vid_clk" SIGIS="clk" SIGNAME="dvi2rgb_0_PixelClk">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="dvi2rgb_0" PORT="PixelClk"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="vid_io_in_ACTIVE_VIDEO" SIGIS="undef" SIGNAME="color_swap_0_vde_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="color_swap_0" PORT="vde_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="23" NAME="vid_io_in_DATA" RIGHT="0" SIGIS="undef" SIGNAME="color_swap_0_pixel_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="color_swap_0" PORT="pixel_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="vid_io_in_HSYNC" SIGIS="undef" SIGNAME="color_swap_0_hsync_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="color_swap_0" PORT="hsync_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="vid_io_in_VSYNC" SIGIS="undef" SIGNAME="color_swap_0_vsync_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="color_swap_0" PORT="vsync_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="vid_io_out_ACTIVE_VIDEO" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_active_video">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_active_video"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="23" NAME="vid_io_out_DATA" RIGHT="0" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_data">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_data"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="vid_io_out_HSYNC" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_hsync">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_hsync"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="vid_io_out_VSYNC" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_vsync">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_vsync"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES>
+        <BUSINTERFACE BUSNAME="color_swap_0_pixel_output" NAME="vid_io_in" TYPE="TARGET" VLNV="xilinx.com:interface:vid_io:1.0">
+          <PORTMAPS>
+            <PORTMAP LOGICAL="ACTIVE_VIDEO" PHYSICAL="vid_io_in_ACTIVE_VIDEO"/>
+            <PORTMAP LOGICAL="DATA" PHYSICAL="vid_io_in_DATA"/>
+            <PORTMAP LOGICAL="HSYNC" PHYSICAL="vid_io_in_HSYNC"/>
+            <PORTMAP LOGICAL="VSYNC" PHYSICAL="vid_io_in_VSYNC"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+        <BUSINTERFACE BUSNAME="video_fe_probe_0_vid_io_out" NAME="vid_io_out" TYPE="INITIATOR" VLNV="xilinx.com:interface:vid_io:1.0">
+          <PORTMAPS>
+            <PORTMAP LOGICAL="ACTIVE_VIDEO" PHYSICAL="vid_io_out_ACTIVE_VIDEO"/>
+            <PORTMAP LOGICAL="DATA" PHYSICAL="vid_io_out_DATA"/>
+            <PORTMAP LOGICAL="HSYNC" PHYSICAL="vid_io_out_HSYNC"/>
+            <PORTMAP LOGICAL="VSYNC" PHYSICAL="vid_io_out_VSYNC"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+      </BUSINTERFACES>
+    </MODULE>
+    <MODULE COREREVISION="1" FULLNAME="/video_status_probe_0" HWVERSION="1.0" INSTANCE="video_status_probe_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="VideoStatusProbe_wrapper" VLNV="xilinx.com:module_ref:VideoStatusProbe_wrapper:1.0">
+      <DOCUMENTS/>
+      <PARAMETERS>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_video_status_probe_0_0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT CLKFREQUENCY="142857132" DIR="I" NAME="aclk" SIGIS="clk" SIGNAME="ps7_FCLK_CLK1">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="ps7" PORT="FCLK_CLK1"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="aresetn" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="rst_ps7_142m_peripheral_aresetn">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="rst_ps7_142m" PORT="peripheral_aresetn"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="63" NAME="overflow_count" RIGHT="0" SIGIS="undef" SIGNAME="video_status_probe_0_overflow_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_vid_overflow_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="reset_level" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="video_status_probe_0_reset_level">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_vid_reset_level"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="63" NAME="reset_pulse_count" RIGHT="0" SIGIS="undef" SIGNAME="video_status_probe_0_reset_pulse_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_vid_reset_pulse_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="63" NAME="underflow_count" RIGHT="0" SIGIS="undef" SIGNAME="video_status_probe_0_underflow_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_vid_underflow_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="vid_overflow" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_overflow">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="overflow"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="vid_reset_async" POLARITY="ACTIVE_HIGH" SIGIS="undef" SIGNAME="rst_pixelclk_peripheral_reset">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="rst_pixelclk" PORT="peripheral_reset"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="vid_underflow" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_underflow">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="underflow"/>
+          </CONNECTIONS>
+        </PORT>
       </PORTS>
       <BUSINTERFACES/>
     </MODULE>
@@ -7580,7 +8062,7 @@
         <PARAMETER NAME="C_VID_PPC" VALUE="4"/>
         <PARAMETER NAME="ARBITRARY_RES_EN" VALUE="false"/>
         <PARAMETER NAME="C_FAMILY" VALUE="virtex7"/>
-        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_vtc_in_44"/>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_vtc_in_0"/>
         <PARAMETER NAME="DET_FIELDID_EN" VALUE="false"/>
         <PARAMETER NAME="FSYNC_HSTART0" VALUE="0"/>
         <PARAMETER NAME="FSYNC_HSTART1" VALUE="0"/>

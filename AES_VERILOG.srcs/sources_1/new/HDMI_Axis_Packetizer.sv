@@ -23,6 +23,7 @@ module HDMI_Axis_Packetizer #(
     // Free-running diagnostic counters, read back via aes_seq_0.
     output logic [63:0] dbg_video_beat_count,
     output logic [63:0] dbg_video_frame_count,
+    output logic [6:0]  dbg_pkt_status,
 
     output logic [127:0] m_axis_pkt_tdata,
     output logic [15:0]  m_axis_pkt_tkeep,
@@ -40,15 +41,21 @@ module HDMI_Axis_Packetizer #(
     //   payload = 1176 bytes = 392 pixels (40+1176 = 1216 = 76 x 16-byte beats)
     //   frame   = 921600 px = 2351 full segments + one 8-pixel segment
     //             -> SEGS_PER_FRAME = 2352 (last segment = 8 px + 384 px pad)
-    //   rate    = 30 fps: capture every 2nd source frame (720p60 in)
+    //   Streaming fix: SKIP_FRAMES=0 and SOF is IGNORED after the initial
+    //   ARM sync. A frame closes by pixel count (2351*392 + 8 = 921600 px),
+    //   never by SOF-abort. No frame is skipped or discarded, so the
+    //   packetizer consumes the video stream continuously and every
+    //   transported frame carries all 2352 segments.
     localparam int unsigned PX_PER_SEG     = 392;
     localparam logic [15:0] SEGS_PER_FRAME = 16'd2352;
-    localparam logic         SKIP_FRAMES   = 1'b1;
+    localparam logic [8:0]  LAST_SEG_PX    = 9'd8;   // 921600 - 2351*392
+    localparam logic         SKIP_FRAMES   = 1'b0;
 
     typedef enum logic [1:0] {
         ST_ARM    = 2'd0,   // wait for the first real SOF
         ST_ACTIVE = 2'd1,   // capture: header + 1176-byte segments
-        ST_SKIP   = 2'd2    // consume-and-discard one source frame (30 fps)
+        ST_SKIP   = 2'd2    // unreachable since the streaming fix (state
+                            // encoding kept stable for the PKT_STATUS probe)
     } state_t;
 
     state_t state;
@@ -76,6 +83,17 @@ module HDMI_Axis_Packetizer #(
 
     assign dbg_video_beat_count  = dbg_video_beat_count_r;
     assign dbg_video_frame_count = dbg_video_frame_count_r;
+
+    // Live packetizer probe: [6] video tvalid, [5] video tready,
+    // [4] video tuser/SOF, [3:2] state, [1] packet tvalid, [0] packet tready.
+    assign dbg_pkt_status = {
+        s_axis_video_tvalid,
+        s_axis_video_tready,
+        s_axis_video_tuser,
+        state,
+        m_axis_pkt_tvalid,
+        m_axis_pkt_tready
+    };
 
     function automatic logic [7:0] header_byte(
         input logic [7:0] idx,
@@ -265,11 +283,15 @@ module HDMI_Axis_Packetizer #(
                                     state <= ST_SKIP;
                                     skip_first <= 1'b1;
                                 end else begin
+                                    // Frame complete (the only pad user since
+                                    // the streaming fix): close it and start
+                                    // the next frame.
                                     state <= ST_ACTIVE;
                                     header_idx <= '0;
                                     payload_idx <= '0;
                                     pixel_cnt <= '0;
                                     segment_id <= '0;
+                                    frame_id <= frame_id + 1'b1;
                                 end
                             end
                         end
@@ -288,38 +310,25 @@ module HDMI_Axis_Packetizer #(
                                                 // path, so every segment counts
                                                 // identically (392 px each)
                         end
-                        else if (s_axis_video_tvalid && s_axis_video_tuser) begin
-                            // SOF: the next frame's first pixel. Close the
-                            // current segment, decide the next frame, do NOT
-                            // consume this pixel yet.
-                            capture_frame <= !capture_frame;
-                            pending_skip <= capture_frame;  // the NEXT frame skips
-                            frame_id <= frame_id + 1'b1;
-                            if (pixel_cnt != 9'd0) begin
-                                pad_cnt <= PX_PER_SEG - pixel_cnt;
-                            end else begin
-                                // exact segment boundary: no pad needed
-                                if (capture_frame) begin
-                                    state <= ST_SKIP;
-                                    skip_first <= 1'b1;
-                                end else begin
-                                    state <= ST_ACTIVE;
-                                    header_idx <= '0;
-                                    payload_idx <= '0;
-                                    pixel_cnt <= '0;
-                                    segment_id <= '0;
-                                end
-                            end
-                        end
                         else if (s_axis_video_tvalid) begin
-                            // payload phase: 3 bytes per cycle (1 pixel)
+                            // payload phase: 3 bytes per cycle (1 pixel).
+                            // The SOF/tuser flag is IGNORED here: the stream
+                            // is consumed continuously and frames close by
+                            // pixel count, never by SOF-abort.
                             fb_cnt = 2'd3;
                             fb0 = s_axis_video_tdata[23:16];
                             fb1 = s_axis_video_tdata[15:8];
                             fb2 = s_axis_video_tdata[7:0];
                             do_feed = 1'b1;
                             payload_idx <= payload_idx + 11'd3;
-                            if (pixel_cnt == PX_PER_SEG-1) begin
+                            if (segment_id == SEGS_PER_FRAME-1 && pixel_cnt == LAST_SEG_PX-1) begin
+                                // Frame's last real pixel fed: pad the final
+                                // segment to 392 px; the pad completion closes
+                                // the frame and starts the next one.
+                                pad_cnt <= PX_PER_SEG - LAST_SEG_PX;
+                                pixel_cnt <= pixel_cnt + 1'b1;
+                            end
+                            else if (pixel_cnt == PX_PER_SEG-1) begin
                                 seg_complete = 1'b1;
                                 segment_id <= segment_id + 1'b1;
                                 pixel_cnt <= '0;

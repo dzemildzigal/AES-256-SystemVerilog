@@ -86,6 +86,7 @@ module AES_GCM_Session_Sequencer #(
     // ever reach the packetizer.
     input  logic [63:0] dbg_video_beat_count,
     input  logic [63:0] dbg_video_frame_count,
+    input  logic [6:0]  dbg_pkt_status,
 
     // Debug probes from the AES wrapper (captured per tag beat).
     input  logic [127:0] dbg_push_data,
@@ -102,6 +103,20 @@ module AES_GCM_Session_Sequencer #(
     input  logic         aes_stream_empty,
     // Pre-FIFO probe counter (video_out tvalid) from video_beat_counter_0.
     input  logic [63:0] dbg_prefifo_beats,
+    // Pixel-domain front-end probes: recovered PixelClk cycles and DE pixels
+    // into v_vid_in (from video_fe_probe_0).
+    input  logic [63:0] dbg_pixelclk_count,
+    input  logic [63:0] dbg_de_count,
+    // v_vid_in health probes (from video_status_probe_0).
+    input  logic [63:0] dbg_vid_overflow_count,
+    input  logic [63:0] dbg_vid_underflow_count,
+    input  logic [63:0] dbg_vid_reset_pulse_count,
+    input  logic        dbg_vid_reset_level,
+    // Packet FIFO probes (packet_seq_fifo_0).
+    input  logic [31:0] dbg_pkt_fifo_wr_count,
+    input  logic [31:0] dbg_pkt_fifo_rd_count,
+    input  logic        dbg_pkt_fifo_s_ready,
+    input  logic        dbg_pkt_fifo_m_valid,
 
     // AES pipeline stall probes mirrored into this register map.
     input  logic [29:0] dbg_aes_stall_status,
@@ -223,6 +238,21 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [8:0] REG_LAST_NO_OFFER        = 9'h148;
     localparam logic [8:0] REG_LAST_GH_NOT_READY    = 9'h14C;
     localparam logic [8:0] REG_LAST_SLOT_BLOCKED    = 9'h150;
+    localparam logic [8:0] REG_PKT_STATUS            = 9'h154;
+    localparam logic [8:0] REG_PIXELCLK_COUNT_HI     = 9'h158;
+    localparam logic [8:0] REG_PIXELCLK_COUNT_LO     = 9'h15C;
+    localparam logic [8:0] REG_DE_COUNT_HI           = 9'h160;
+    localparam logic [8:0] REG_DE_COUNT_LO           = 9'h164;
+    localparam logic [8:0] REG_VID_OF_COUNT_HI       = 9'h168;
+    localparam logic [8:0] REG_VID_OF_COUNT_LO       = 9'h16C;
+    localparam logic [8:0] REG_VID_UF_COUNT_HI       = 9'h170;
+    localparam logic [8:0] REG_VID_UF_COUNT_LO       = 9'h174;
+    localparam logic [8:0] REG_VID_RESET_PULSE_HI    = 9'h178;
+    localparam logic [8:0] REG_VID_RESET_PULSE_LO    = 9'h17C;
+    localparam logic [8:0] REG_VID_PROBE_STATUS      = 9'h180;
+    localparam logic [8:0] REG_PKT_FIFO_WR_COUNT     = 9'h184;
+    localparam logic [8:0] REG_PKT_FIFO_RD_COUNT     = 9'h188;
+    localparam logic [8:0] REG_PKT_FIFO_STATUS       = 9'h18C;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -526,6 +556,23 @@ module AES_GCM_Session_Sequencer #(
                     REG_LAST_NO_OFFER: S_AXI_RDATA <= dbg_last_no_offer;
                     REG_LAST_GH_NOT_READY: S_AXI_RDATA <= dbg_last_gh_not_ready;
                     REG_LAST_SLOT_BLOCKED: S_AXI_RDATA <= dbg_last_slot_blocked;
+                    REG_PKT_STATUS: S_AXI_RDATA <= {25'd0, dbg_pkt_status};
+                    REG_PIXELCLK_COUNT_HI: S_AXI_RDATA <= dbg_pixelclk_count[63:32];
+                    REG_PIXELCLK_COUNT_LO: S_AXI_RDATA <= dbg_pixelclk_count[31:0];
+                    REG_DE_COUNT_HI: S_AXI_RDATA <= dbg_de_count[63:32];
+                    REG_DE_COUNT_LO: S_AXI_RDATA <= dbg_de_count[31:0];
+                    REG_VID_OF_COUNT_HI: S_AXI_RDATA <= dbg_vid_overflow_count[63:32];
+                    REG_VID_OF_COUNT_LO: S_AXI_RDATA <= dbg_vid_overflow_count[31:0];
+                    REG_VID_UF_COUNT_HI: S_AXI_RDATA <= dbg_vid_underflow_count[63:32];
+                    REG_VID_UF_COUNT_LO: S_AXI_RDATA <= dbg_vid_underflow_count[31:0];
+                    REG_VID_RESET_PULSE_HI: S_AXI_RDATA <= dbg_vid_reset_pulse_count[63:32];
+                    REG_VID_RESET_PULSE_LO: S_AXI_RDATA <= dbg_vid_reset_pulse_count[31:0];
+                    REG_VID_PROBE_STATUS: S_AXI_RDATA <= {31'd0, dbg_vid_reset_level};
+                    REG_PKT_FIFO_WR_COUNT: S_AXI_RDATA <= dbg_pkt_fifo_wr_count;
+                    REG_PKT_FIFO_RD_COUNT: S_AXI_RDATA <= dbg_pkt_fifo_rd_count;
+                    REG_PKT_FIFO_STATUS: S_AXI_RDATA <= {30'd0,
+                        dbg_pkt_fifo_m_valid,
+                        dbg_pkt_fifo_s_ready};
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;
