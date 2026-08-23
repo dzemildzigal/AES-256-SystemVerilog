@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 23 10:44:42 2026" VIVADOVERSION="2024.1.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 23 12:20:09 2026" VIVADOVERSION="2024.1.2">
 
   <SYSTEMINFO ARCH="zynq" BOARD="tul.com.tw:pynq-z2:part0:1.0" DEVICE="7z020" NAME="hdmi_aes_tx" PACKAGE="clg400" SPEEDGRADE="-1"/>
 
@@ -270,6 +270,7 @@
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="M02_ACLK"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="M03_ACLK"/>
             <CONNECTION INSTANCE="hp0_mem_ic" PORT="S00_ACLK"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="aclk"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="1" NAME="sel" RIGHT="0" SIGIS="undef" SIGNAME="clkctrl_sel_slice_Dout">
@@ -750,9 +751,19 @@
             <CONNECTION INSTANCE="aes_gcm_0" PORT="dbg_aes_stall_status"/>
           </CONNECTIONS>
         </PORT>
+        <PORT DIR="I" LEFT="63" NAME="dbg_cdcout_beats" RIGHT="0" SIGIS="undef" SIGNAME="cdc_out_probe_0_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="count"/>
+          </CONNECTIONS>
+        </PORT>
         <PORT DIR="I" LEFT="31" NAME="dbg_ct_beats" RIGHT="0" SIGIS="undef" SIGNAME="aes_gcm_0_dbg_ct_beats">
           <CONNECTIONS>
             <CONNECTION INSTANCE="aes_gcm_0" PORT="dbg_ct_beats"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="dbg_de_at_overflow" RIGHT="0" SIGIS="undef" SIGNAME="video_fe_probe_0_de_at_overflow">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="de_at_overflow"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="63" NAME="dbg_de_count" RIGHT="0" SIGIS="undef" SIGNAME="video_fe_probe_0_de_count">
@@ -868,6 +879,16 @@
         <PORT DIR="I" LEFT="63" NAME="dbg_prefifo_beats" RIGHT="0" SIGIS="undef" SIGNAME="video_beat_counter_0_count">
           <CONNECTIONS>
             <CONNECTION INSTANCE="video_beat_counter_0" PORT="count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="dbg_prefifo_ready_cycles" RIGHT="0" SIGIS="undef" SIGNAME="video_beat_counter_0_ready_cycles">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="ready_cycles"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="dbg_prefifo_valid_cycles" RIGHT="0" SIGIS="undef" SIGNAME="video_beat_counter_0_valid_cycles">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="video_beat_counter_0" PORT="valid_cycles"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="63" NAME="dbg_pt_blocked_cycles" RIGHT="0" SIGIS="undef" SIGNAME="aes_gcm_0_dbg_pt_blocked_cycles">
@@ -2058,6 +2079,128 @@
         <BUSINTERFACE BUSNAME="__NOC__" NAME="GPIO2" TYPE="INITIATOR" VLNV="xilinx.com:interface:gpio:1.0">
           <PORTMAPS>
             <PORTMAP LOGICAL="TRI_I" PHYSICAL="gpio2_io_i"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+      </BUSINTERFACES>
+    </MODULE>
+    <MODULE COREREVISION="1" FULLNAME="/cdc_out_probe_0" HWVERSION="1.0" INSTANCE="cdc_out_probe_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="VideoBeatCounter_wrapper" VLNV="xilinx.com:module_ref:VideoBeatCounter_wrapper:1.0">
+      <DOCUMENTS/>
+      <PARAMETERS>
+        <PARAMETER NAME="Component_Name" VALUE="hdmi_aes_tx_cdc_out_probe_0_0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT CLKFREQUENCY="100000000" DIR="I" NAME="aclk" SIGIS="clk" SIGNAME="aes_clk_mux_clk_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_clk_mux" PORT="clk_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="aresetn" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="rst_ps7_100m_peripheral_aresetn">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="rst_ps7_100m" PORT="peripheral_aresetn"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="63" NAME="count" RIGHT="0" SIGIS="undef" SIGNAME="cdc_out_probe_0_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_cdcout_beats"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="23" NAME="m_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tdata">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tdata"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="m_axis_video_tlast" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tlast">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tlast"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="m_axis_video_tready" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="m_axis_video_tuser" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tuser">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tuser"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="m_axis_video_tvalid" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tvalid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="ready_cycles" RIGHT="0" SIGIS="undef"/>
+        <PORT DIR="I" LEFT="23" NAME="s_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tdata">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tdata"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_video_tlast" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tlast">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tlast"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="s_axis_video_tready" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_video_tuser" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tuser">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tuser"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="s_axis_video_tvalid" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tvalid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="valid_cycles" RIGHT="0" SIGIS="undef"/>
+      </PORTS>
+      <BUSINTERFACES>
+        <BUSINTERFACE BUSNAME="cdc_out_probe_0_m_axis_video" NAME="m_axis_video" TYPE="INITIATOR" VLNV="xilinx.com:interface:axis:1.0">
+          <PARAMETER NAME="CLK_DOMAIN"/>
+          <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
+          <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
+          <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
+          <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
+          <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
+          <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
+          <PARAMETER NAME="PHASE" VALUE="0.0"/>
+          <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="3"/>
+          <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TUSER_WIDTH" VALUE="1"/>
+          <PORTMAPS>
+            <PORTMAP LOGICAL="TDATA" PHYSICAL="m_axis_video_tdata"/>
+            <PORTMAP LOGICAL="TLAST" PHYSICAL="m_axis_video_tlast"/>
+            <PORTMAP LOGICAL="TREADY" PHYSICAL="m_axis_video_tready"/>
+            <PORTMAP LOGICAL="TUSER" PHYSICAL="m_axis_video_tuser"/>
+            <PORTMAP LOGICAL="TVALID" PHYSICAL="m_axis_video_tvalid"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+        <BUSINTERFACE BUSNAME="hdmi_axis_cdc_fifo_M_AXIS" NAME="s_axis_video" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
+          <PARAMETER NAME="CLK_DOMAIN"/>
+          <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
+          <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
+          <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
+          <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
+          <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
+          <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
+          <PARAMETER NAME="PHASE" VALUE="0.0"/>
+          <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="3"/>
+          <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
+          <PARAMETER NAME="TUSER_WIDTH" VALUE="1"/>
+          <PORTMAPS>
+            <PORTMAP LOGICAL="TDATA" PHYSICAL="s_axis_video_tdata"/>
+            <PORTMAP LOGICAL="TLAST" PHYSICAL="s_axis_video_tlast"/>
+            <PORTMAP LOGICAL="TREADY" PHYSICAL="s_axis_video_tready"/>
+            <PORTMAP LOGICAL="TUSER" PHYSICAL="s_axis_video_tuser"/>
+            <PORTMAP LOGICAL="TVALID" PHYSICAL="s_axis_video_tvalid"/>
           </PORTMAPS>
         </BUSINTERFACE>
       </BUSINTERFACES>
@@ -3334,29 +3477,29 @@
             <CONNECTION INSTANCE="aes_clk_mux" PORT="clk_out"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="23" NAME="m_axis_tdata" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tdata">
+        <PORT DIR="O" LEFT="23" NAME="m_axis_tdata" RIGHT="0" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tdata">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tdata"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="s_axis_video_tdata"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="m_axis_tlast" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tlast">
+        <PORT DIR="O" NAME="m_axis_tlast" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tlast">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tlast"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="s_axis_video_tlast"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="m_axis_tready" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tready">
+        <PORT DIR="I" NAME="m_axis_tready" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tready"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="s_axis_video_tready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="0" NAME="m_axis_tuser" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tuser">
+        <PORT DIR="O" LEFT="0" NAME="m_axis_tuser" RIGHT="0" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tuser">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tuser"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="s_axis_video_tuser"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="m_axis_tvalid" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tvalid">
+        <PORT DIR="O" NAME="m_axis_tvalid" SIGIS="undef" SIGNAME="cdc_out_probe_0_s_axis_video_tvalid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="s_axis_video_tvalid"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="s_axis_video_tvalid"/>
           </CONNECTIONS>
         </PORT>
         <PORT CLKFREQUENCY="142857132" DIR="I" NAME="s_axis_aclk" SIGIS="clk" SIGNAME="ps7_FCLK_CLK1">
@@ -3418,7 +3561,7 @@
             <PORTMAP LOGICAL="TVALID" PHYSICAL="s_axis_tvalid"/>
           </PORTMAPS>
         </BUSINTERFACE>
-        <BUSINTERFACE BUSNAME="hdmi_axis_cdc_fifo_M_AXIS" NAME="M_AXIS" TYPE="MASTER" VLNV="xilinx.com:interface:axis:1.0">
+        <BUSINTERFACE BUSNAME="hdmi_axis_cdc_fifo_M_AXIS" NAME="M_AXIS" TYPE="INITIATOR" VLNV="xilinx.com:interface:axis:1.0">
           <PARAMETER NAME="CLK_DOMAIN"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
           <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
@@ -3535,29 +3678,29 @@
             <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_tvalid"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="23" NAME="s_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tdata">
+        <PORT DIR="I" LEFT="23" NAME="s_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tdata">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tdata"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="m_axis_video_tdata"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="s_axis_video_tlast" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tlast">
+        <PORT DIR="I" NAME="s_axis_video_tlast" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tlast">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tlast"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="m_axis_video_tlast"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="s_axis_video_tready" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tready">
+        <PORT DIR="O" NAME="s_axis_video_tready" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tready"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="m_axis_video_tready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="s_axis_video_tuser" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tuser">
+        <PORT DIR="I" NAME="s_axis_video_tuser" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tuser">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tuser"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="m_axis_video_tuser"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="s_axis_video_tvalid" SIGIS="undef" SIGNAME="hdmi_axis_cdc_fifo_m_axis_tvalid">
+        <PORT DIR="I" NAME="s_axis_video_tvalid" SIGIS="undef" SIGNAME="cdc_out_probe_0_m_axis_video_tvalid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="m_axis_tvalid"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="m_axis_video_tvalid"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
@@ -3584,7 +3727,7 @@
             <PORTMAP LOGICAL="TVALID" PHYSICAL="m_axis_pkt_tvalid"/>
           </PORTMAPS>
         </BUSINTERFACE>
-        <BUSINTERFACE BUSNAME="hdmi_axis_cdc_fifo_M_AXIS" NAME="s_axis_video" TYPE="SLAVE" VLNV="xilinx.com:interface:axis:1.0">
+        <BUSINTERFACE BUSNAME="cdc_out_probe_0_m_axis_video" NAME="s_axis_video" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
           <PARAMETER NAME="CLK_DOMAIN"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
           <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
@@ -7392,6 +7535,7 @@
             <CONNECTION INSTANCE="hdmi_packetizer_0" PORT="aresetn"/>
             <CONNECTION INSTANCE="packet_seq_fifo_0" PORT="s_axis_aresetn"/>
             <CONNECTION INSTANCE="dvi2rgb_0" PORT="aRst_n"/>
+            <CONNECTION INSTANCE="cdc_out_probe_0" PORT="aresetn"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="M00_ARESETN"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="M01_ARESETN"/>
             <CONNECTION INSTANCE="ps7_axi_periph" PORT="M02_ARESETN"/>
@@ -7605,6 +7749,7 @@
         <PORT DIR="O" NAME="overflow" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_overflow">
           <CONNECTIONS>
             <CONNECTION INSTANCE="video_status_probe_0" PORT="vid_overflow"/>
+            <CONNECTION INSTANCE="video_fe_probe_0" PORT="vid_overflow"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="underflow" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_underflow">
@@ -7746,6 +7891,11 @@
             <CONNECTION INSTANCE="hdmi_axis_cdc_fifo" PORT="s_axis_tvalid"/>
           </CONNECTIONS>
         </PORT>
+        <PORT DIR="O" LEFT="31" NAME="ready_cycles" RIGHT="0" SIGIS="undef" SIGNAME="video_beat_counter_0_ready_cycles">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_prefifo_ready_cycles"/>
+          </CONNECTIONS>
+        </PORT>
         <PORT DIR="I" LEFT="23" NAME="s_axis_video_tdata" RIGHT="0" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tdata">
           <CONNECTIONS>
             <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tdata"/>
@@ -7769,6 +7919,11 @@
         <PORT DIR="I" NAME="s_axis_video_tvalid" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_m_axis_video_tvalid">
           <CONNECTIONS>
             <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="m_axis_video_tvalid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="valid_cycles" RIGHT="0" SIGIS="undef" SIGNAME="video_beat_counter_0_valid_cycles">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_prefifo_valid_cycles"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
@@ -7826,6 +7981,11 @@
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
+        <PORT DIR="O" LEFT="31" NAME="de_at_overflow" RIGHT="0" SIGIS="undef" SIGNAME="video_fe_probe_0_de_at_overflow">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_de_at_overflow"/>
+          </CONNECTIONS>
+        </PORT>
         <PORT DIR="O" LEFT="63" NAME="de_count" RIGHT="0" SIGIS="undef" SIGNAME="video_fe_probe_0_de_count">
           <CONNECTIONS>
             <CONNECTION INSTANCE="aes_seq_0" PORT="dbg_de_count"/>
@@ -7879,6 +8039,11 @@
         <PORT DIR="O" NAME="vid_io_out_VSYNC" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_vid_vsync">
           <CONNECTIONS>
             <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="vid_vsync"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="vid_overflow" SIGIS="undef" SIGNAME="v_vid_in_axi4s_0_overflow">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="v_vid_in_axi4s_0" PORT="overflow"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
