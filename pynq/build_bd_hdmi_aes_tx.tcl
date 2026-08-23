@@ -217,6 +217,7 @@ create_bd_cell -type module -reference $WRITER_MODULE $WRITER_INST
 create_bd_cell -type module -reference $PACKETIZER_MODULE $PACKETIZER_INST
 create_bd_cell -type module -reference $SEQUENCER_MODULE $SEQUENCER_INST
 create_bd_cell -type module -reference VideoBeatCounter_wrapper video_beat_counter_0
+create_bd_cell -type module -reference VideoBeatCounter_wrapper cdc_out_probe_0
 create_bd_cell -type module -reference VideoFrontEndProbe_wrapper video_fe_probe_0
 create_bd_cell -type module -reference VideoStatusProbe_wrapper video_status_probe_0
 create_bd_cell -type module -reference $CLK_MUX_MODULE $CLK_MUX_INST
@@ -228,7 +229,6 @@ create_bd_cell -type module -reference $CLK_MUX_MODULE $CLK_MUX_INST
 # Pass instance NAMES (documented form), not cell objects: object form
 # returns failure silently in 2024.1.
 set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0 aes_clk_mux video_beat_counter_0 video_fe_probe_0 video_status_probe_0]
-puts "INFO: update_module_reference rc=$_mrrc"
 create_bd_cell -type ip -vlnv digilentinc.com:ip:dvi2rgb:1.7 dvi2rgb_0
 set_property -dict [list \
     CONFIG.kAddBUFG {false} \
@@ -552,7 +552,17 @@ connect_bd_intf_net [get_bd_intf_pins v_vid_in_axi4s_0/vtiming_out] [get_bd_intf
 connect_bd_intf_net [get_bd_intf_pins v_vid_in_axi4s_0/video_out] [get_bd_intf_pins video_beat_counter_0/s_axis_video]
 connect_bd_intf_net [get_bd_intf_pins video_beat_counter_0/m_axis_video] [get_bd_intf_pins hdmi_axis_cdc_fifo/S_AXIS]
 connect_bd_net [get_bd_pins video_beat_counter_0/count] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_beats]
-connect_bd_intf_net [get_bd_intf_pins hdmi_axis_cdc_fifo/M_AXIS] [get_bd_intf_pins $PACKETIZER_INST/s_axis_video]
+connect_bd_net [get_bd_pins video_beat_counter_0/valid_cycles] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_valid_cycles]
+connect_bd_net [get_bd_pins video_beat_counter_0/ready_cycles] [get_bd_pins $SEQUENCER_INST/dbg_prefifo_ready_cycles]
+# Second inline VideoBeatCounter between the CDC FIFO and the packetizer:
+# its handshake count is what actually reaches the packetizer, so comparing
+# it against video_beat_counter_0/count names the exact drop stage.
+connect_bd_intf_net [get_bd_intf_pins hdmi_axis_cdc_fifo/M_AXIS] [get_bd_intf_pins cdc_out_probe_0/s_axis_video]
+connect_bd_intf_net [get_bd_intf_pins cdc_out_probe_0/m_axis_video] [get_bd_intf_pins $PACKETIZER_INST/s_axis_video]
+connect_bd_net [get_bd_pins cdc_out_probe_0/count] [get_bd_pins $SEQUENCER_INST/dbg_cdcout_beats]
+# Latch the DE position at each coupler overflow, in the pixel domain.
+connect_bd_net [get_bd_pins v_vid_in_axi4s_0/overflow] [get_bd_pins video_fe_probe_0/vid_overflow]
+connect_bd_net [get_bd_pins video_fe_probe_0/de_at_overflow] [get_bd_pins $SEQUENCER_INST/dbg_de_at_overflow]
 connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_session_id] [get_bd_pins $PACKETIZER_INST/cfg_session_id]
 connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_stream_id] [get_bd_pins $PACKETIZER_INST/cfg_stream_id]
 connect_bd_net [get_bd_pins $SEQUENCER_INST/cfg_payload_type] [get_bd_pins $PACKETIZER_INST/cfg_payload_type]
@@ -568,10 +578,7 @@ connect_bd_net [get_bd_pins $PACKETIZER_INST/dbg_video_frame_count] [get_bd_pins
 # NOTE: do NOT tap hdmi_axis_cdc_fifo/S_AXIS_tvalid into a probe here. A BD pin
 # can only sit on one net, so such a tap DISCONNECTS tvalid from the video
 # interface connection and grounds it (BD 41-1271/41-166 warnings), killing
-# the real video path. The packetizer's own counters above are safe (they
-# observe their internal s_axis pins directly). The prefifo probe cell
-# (video_beat_counter_0) remains with its input tied low and reads 0 - left in
-# place to avoid touching sequencer ports again; ignore its register.
+# the real video path. Use inline passthrough probe cells instead.
 
 if {[llength [get_bd_intf_ports -quiet hdmi_in]] > 0} {
     connect_bd_intf_net [get_bd_intf_ports hdmi_in] [get_bd_intf_pins dvi2rgb_0/TMDS]
@@ -588,15 +595,6 @@ if {[llength [get_bd_intf_ports -quiet hdmi_in_ddc]] > 0} {
     set hdmi_in_ddc_ext [make_bd_intf_pins_external [get_bd_intf_pins dvi2rgb_0/DDC]]
     if {[llength $hdmi_in_ddc_ext] > 0} {
         set_property name hdmi_in_ddc [lindex $hdmi_in_ddc_ext 0]
-    }
-}
-
-if {[llength [get_bd_intf_ports -quiet hdmi_in_video_out]] > 0} {
-    connect_bd_intf_net [get_bd_intf_ports hdmi_in_video_out] [get_bd_intf_pins hdmi_axis_cdc_fifo/M_AXIS]
-} else {
-    set hdmi_in_video_out_ext [make_bd_intf_pins_external [get_bd_intf_pins hdmi_axis_cdc_fifo/M_AXIS]]
-    if {[llength $hdmi_in_video_out_ext] > 0} {
-        set_property name hdmi_in_video_out [lindex $hdmi_in_video_out_ext 0]
     }
 }
 
@@ -709,6 +707,9 @@ force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins 
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins hdmi_axis_cdc_fifo/s_axis_aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_142m/peripheral_aresetn] [get_bd_pins video_beat_counter_0/aresetn]
 connect_bd_net [get_bd_pins ps7/FCLK_CLK1] [get_bd_pins video_beat_counter_0/aclk]
+# cdc_out_probe_0 runs on the design clock with the packetizer.
+connect_bd_net $design_clk_pin [get_bd_pins cdc_out_probe_0/aclk]
+force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins cdc_out_probe_0/aresetn]
 # vtc_in/resetn now comes from rst_pixelclk (dvi2rgb_0_PixelClk domain, same
 # clock as vtc_in/clk) instead of the 142MHz PS-side reset. This matches the
 # official PYNQ-Z2 base overlay and removes the cross-domain reset entirely

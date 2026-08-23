@@ -17,7 +17,9 @@ module VideoBeatCounter_wrapper (
     output wire         m_axis_video_tlast,
     output wire         m_axis_video_tuser,
 
-    output wire [63:0]  count
+    output wire [63:0]  count,
+    output wire [31:0]  valid_cycles,
+    output wire [31:0]  ready_cycles
 );
 
     VideoBeatCounter u_counter (
@@ -33,7 +35,9 @@ module VideoBeatCounter_wrapper (
         .m_axis_video_tready  (m_axis_video_tready),
         .m_axis_video_tlast   (m_axis_video_tlast),
         .m_axis_video_tuser   (m_axis_video_tuser),
-        .count                (count)
+        .count                (count),
+        .valid_cycles         (valid_cycles),
+        .ready_cycles         (ready_cycles)
     );
 
 endmodule

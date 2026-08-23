@@ -117,6 +117,13 @@ module AES_GCM_Session_Sequencer #(
     // s_axis_tvalid and our s_axis_tready IS the FIFO's m_axis_tready.
     input  logic [31:0] dbg_pkt_fifo_wr_count,
     input  logic [31:0] dbg_pkt_fifo_rd_count,
+    // Drop-point probes: duty cycles at the coupler output (video_beat_counter_0),
+    // handshakes at the CDC FIFO output (cdc_out_probe_0), and the DE position
+    // latched at each coupler overflow (video_fe_probe_0).
+    input  logic [31:0] dbg_prefifo_valid_cycles,
+    input  logic [31:0] dbg_prefifo_ready_cycles,
+    input  logic [63:0] dbg_cdcout_beats,
+    input  logic [31:0] dbg_de_at_overflow,
 
     // AES pipeline stall probes mirrored into this register map.
     input  logic [29:0] dbg_aes_stall_status,
@@ -253,6 +260,11 @@ module AES_GCM_Session_Sequencer #(
     localparam logic [8:0] REG_PKT_FIFO_WR_COUNT     = 9'h184;
     localparam logic [8:0] REG_PKT_FIFO_RD_COUNT     = 9'h188;
     localparam logic [8:0] REG_PKT_FIFO_STATUS       = 9'h18C;
+    localparam logic [8:0] REG_PREFIFO_VALID_CYCLES  = 9'h190;
+    localparam logic [8:0] REG_PREFIFO_READY_CYCLES  = 9'h194;
+    localparam logic [8:0] REG_CDCOUT_BEATS_HI       = 9'h198;
+    localparam logic [8:0] REG_CDCOUT_BEATS_LO       = 9'h19C;
+    localparam logic [8:0] REG_DE_AT_OVERFLOW        = 9'h1A0;
 
     // Sequencer control bits.
     localparam logic [31:0] CTRL_ENABLE          = 32'h0000_0001;
@@ -575,6 +587,11 @@ module AES_GCM_Session_Sequencer #(
                     REG_PKT_FIFO_STATUS: S_AXI_RDATA <= {30'd0,
                         s_axis_tvalid,
                         s_axis_tready};
+                    REG_PREFIFO_VALID_CYCLES: S_AXI_RDATA <= dbg_prefifo_valid_cycles;
+                    REG_PREFIFO_READY_CYCLES: S_AXI_RDATA <= dbg_prefifo_ready_cycles;
+                    REG_CDCOUT_BEATS_HI: S_AXI_RDATA <= dbg_cdcout_beats[63:32];
+                    REG_CDCOUT_BEATS_LO: S_AXI_RDATA <= dbg_cdcout_beats[31:0];
+                    REG_DE_AT_OVERFLOW: S_AXI_RDATA <= dbg_de_at_overflow;
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
                 S_AXI_RVALID  <= 1'b1;

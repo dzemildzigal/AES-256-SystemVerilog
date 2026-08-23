@@ -12,6 +12,7 @@ module VideoFrontEndProbe_wrapper (
     input  wire         vid_io_in_HSYNC,
     (* X_INTERFACE_INFO = "xilinx.com:interface:vid_io:1.0 vid_io_in VSYNC" *)
     input  wire         vid_io_in_VSYNC,
+    input  wire         vid_overflow,
 
     (* X_INTERFACE_INFO = "xilinx.com:interface:vid_io:1.0 vid_io_out DATA" *)
     output wire [23:0]  vid_io_out_DATA,
@@ -23,7 +24,8 @@ module VideoFrontEndProbe_wrapper (
     output wire         vid_io_out_VSYNC,
 
     output wire [63:0]  pixel_clk_count,
-    output wire [63:0]  de_count
+    output wire [63:0]  de_count,
+    output wire [31:0]  de_at_overflow
 );
 
     VideoFrontEndProbe u_probe (
@@ -32,12 +34,14 @@ module VideoFrontEndProbe_wrapper (
         .vid_io_in_ACTIVE_VIDEO(vid_io_in_ACTIVE_VIDEO),
         .vid_io_in_HSYNC       (vid_io_in_HSYNC),
         .vid_io_in_VSYNC       (vid_io_in_VSYNC),
+        .vid_overflow          (vid_overflow),
         .vid_io_out_DATA       (vid_io_out_DATA),
         .vid_io_out_ACTIVE_VIDEO(vid_io_out_ACTIVE_VIDEO),
         .vid_io_out_HSYNC      (vid_io_out_HSYNC),
         .vid_io_out_VSYNC      (vid_io_out_VSYNC),
         .pixel_clk_count       (pixel_clk_count),
-        .de_count              (de_count)
+        .de_count              (de_count),
+        .de_at_overflow        (de_at_overflow)
     );
 
 endmodule
