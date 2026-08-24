@@ -79,6 +79,7 @@ module AES_GCM_Session_Sequencer #(
     output logic        cfg_enable,
 
     output logic [63:0] nonce_counter_out,
+    output logic [63:0] pkt_nonce,
     output logic        seq_busy,
 
     // Free-running diagnostic counters from hdmi_packetizer_0, exposed as
@@ -319,6 +320,7 @@ module AES_GCM_Session_Sequencer #(
 
     state_t state;
     logic [63:0] nonce_ctr;
+    logic [63:0] nonce_inflight;   // nonce of the packet currently streaming through the AES
     logic [63:0] tag_complete_count;
 
     // Per-packet sequencer cycle breakdown. Counters are reset when a packet
@@ -378,6 +380,7 @@ module AES_GCM_Session_Sequencer #(
     logic req_key_dirty;
 
     assign nonce_counter_out = nonce_ctr;
+    assign pkt_nonce = nonce_inflight;
     assign cfg_session_id = reg_session_id;
     assign cfg_stream_id = reg_stream_id;
     assign cfg_payload_type = reg_payload_type;
@@ -717,6 +720,7 @@ module AES_GCM_Session_Sequencer #(
         if (!aresetn) begin
             state       <= ST_IDLE;
             nonce_ctr   <= DEFAULT_NONCE_SEED;
+            nonce_inflight <= '0;
             tag_complete_count <= 64'd0;
             seq_total_cycles <= 32'd0;
             seq_setup_cycles <= 32'd0;
@@ -843,6 +847,11 @@ module AES_GCM_Session_Sequencer #(
 
                 ST_W_NONCE0: begin
                     tag_valid_flag <= 1'b0;
+                    // Capture the nonce for the packet we are about to stream.
+                    // nonce_ctr still holds this packet's nonce here. It
+                    // increments at the plaintext last-beat handshake; this
+                    // shadow remains stable while the AES emits CT and tag.
+                    nonce_inflight <= nonce_ctr;
                     mst_wr_addr   <= AES_REG_NONCE0;
                     mst_wr_data   <= reg_nonce_domain;
                     mst_wr_launch <= 1'b1;
