@@ -6,8 +6,10 @@
 //   one 8-byte nonce-prefix beat (TKEEP=00FF), followed by
 //   77 full 128-bit ciphertext/tag beats (TKEEP=FFFF).
 //
-// It stores one complete 1240-byte packet in one 1280-byte DDR ring slot.
-// The extra 40 bytes keep every slot start 128-byte burst aligned.
+// It stores one complete 1240-byte packet plus 40 explicit zero padding
+// bytes in one 1280-byte DDR ring slot. The padding is transport padding:
+// B.3 can send complete 1280-byte slots with UDP GSO without a PS gather
+// copy. The padding is outside the GCM-protected 1240-byte body.
 //
 // The writer checks the PS consume index before every packet. If the ring is
 // full, it drains the complete input packet without writing it and increments
@@ -77,6 +79,7 @@ module DDRRingWriter #(
 );
 
     localparam integer PACKET_WORDS = PACKET_BYTES / 8;
+    localparam integer SLOT_WORDS = SLOT_STRIDE / 8;
     localparam integer RING_SLOTS = (1 << RING_LOG2);
 
     localparam [3:0] ST_IDLE       = 4'd0;
@@ -177,8 +180,9 @@ module DDRRingWriter #(
     assign M_AXI_ARVALID = m_axi_arvalid;
     assign M_AXI_RREADY  = m_axi_rready;
 
-    // One packet buffer. PACKET_BYTES is exactly divisible by 8.
-    reg [63:0] packet_buf [0:PACKET_WORDS-1];
+    // One slot buffer. The input body is PACKET_WORDS words; the remaining
+    // words are written as explicit zero transport padding.
+    reg [63:0] packet_buf [0:SLOT_WORDS-1];
     reg [7:0]  capture_word_count;
     reg [10:0] burst_word_index;
     reg [4:0]  burst_word_count;
@@ -188,12 +192,19 @@ module DDRRingWriter #(
     reg [3:0]  writer_state;
 
     wire [31:0] ring_mask = RING_SLOTS - 1;
+    wire publish_fire = (writer_state == ST_PUB_B) &&
+                        M_AXI_BVALID && m_axi_bready &&
+                        (M_AXI_BRESP == 2'b00);
     wire [31:0] ring_slot_addr = ring_base_addr[31:0] +
                                   (target_slot * slot_stride_reg);
     wire base_invalid = (ring_base_addr[63:32] != 0) ||
                          (ctrl_base_addr[63:32] != 0) ||
                          (ring_base_addr[31:0] == 0) ||
-                         (ctrl_base_addr[31:0] == 0);
+                         (ctrl_base_addr[31:0] == 0) ||
+                         // Ten full 128-byte bursts per 1280-byte slot.
+                         // A 128-byte-aligned base keeps every burst inside
+                         // one 4 KiB AXI boundary.
+                         (ring_base_addr[6:0] != 0);
 
     assign S_AXIS_TREADY = control_enable && !writer_fault &&
                            ((writer_state == ST_CAPTURE) ||
@@ -259,10 +270,20 @@ module DDRRingWriter #(
                     6'd5: ctrl_base_addr[31:0] <= S_AXI_WDATA;
                     6'd6: ctrl_base_addr[63:32] <= S_AXI_WDATA;
                     6'd9: irq_enable_reg <= S_AXI_WDATA;
-                    6'd10: irq_status_reg <= irq_status_reg & ~S_AXI_WDATA;
                     default: begin end
                 endcase
             end
+
+            // Keep the IRQ status register in this single clocked block.
+            // A successful publication sets bit 0; a PS write at 0x44
+            // clears selected bits (RW1C). Publication wins if both happen
+            // on one clock, so an event is never lost.
+            if (publish_fire)
+                irq_status_reg <= (irq_status_reg &
+                                   ~((wr_fire && (wr_index == 6'd10)) ?
+                                     S_AXI_WDATA : 32'd0)) | 32'd1;
+            else if (wr_fire && (wr_index == 6'd10))
+                irq_status_reg <= irq_status_reg & ~S_AXI_WDATA;
 
             if (!axi_arready && S_AXI_ARVALID &&
                 (!axi_rvalid || S_AXI_RREADY)) begin
@@ -411,6 +432,15 @@ module DDRRingWriter #(
                                         error_count <= error_count + 1'b1;
                                         writer_state <= ST_ERROR;
                                     end else begin
+                                        // Convert the 1240-byte B.1 body into
+                                        // a complete 1280-byte slot. These
+                                        // five words are deliberately zero;
+                                        // they are sent as transport padding
+                                        // by B.3 and are not GCM data.
+                                        for (integer pad_word = PACKET_WORDS;
+                                             pad_word < SLOT_WORDS;
+                                             pad_word = pad_word + 1)
+                                            packet_buf[pad_word] <= 64'd0;
                                         burst_word_index <= 11'd0;
                                         writer_state <= ST_PREP;
                                     end
@@ -428,13 +458,13 @@ module DDRRingWriter #(
 
                     ST_PREP: begin
                         writer_busy <= 1'b1;
-                        if ((PACKET_WORDS - burst_word_index) > 16)
+                        if ((SLOT_WORDS - burst_word_index) > 16)
                             burst_word_count <= 5'd16;
                         else
-                            burst_word_count <= PACKET_WORDS - burst_word_index;
+                            burst_word_count <= SLOT_WORDS - burst_word_index;
                         m_axi_awaddr <= ring_slot_addr + (burst_word_index * 8);
-                        m_axi_awlen <= (((PACKET_WORDS - burst_word_index) > 16) ? 8'd16 :
-                                        (PACKET_WORDS - burst_word_index)) - 1'b1;
+                        m_axi_awlen <= (((SLOT_WORDS - burst_word_index) > 16) ? 8'd16 :
+                                        (SLOT_WORDS - burst_word_index)) - 1'b1;
                         m_axi_awvalid <= 1'b1;
                         writer_state <= ST_AW;
                     end
@@ -474,7 +504,7 @@ module DDRRingWriter #(
                                 fault_code <= FAULT_BRESP;
                                 error_count <= error_count + 1'b1;
                                 writer_state <= ST_ERROR;
-                            end else if (burst_word_index + burst_word_count >= PACKET_WORDS) begin
+                            end else if (burst_word_index + burst_word_count >= SLOT_WORDS) begin
                                 next_produce_slot <= (target_slot + 1'b1) & ring_mask;
                                 m_axi_awaddr <= ctrl_base_addr[31:0];
                                 m_axi_awlen <= 8'd0;
@@ -518,7 +548,6 @@ module DDRRingWriter #(
                             end else begin
                                 produce_idx <= next_produce_slot;
                                 complete_count <= complete_count + 1'b1;
-                                irq_status_reg[0] <= 1'b1;
                                 writer_busy <= 1'b0;
                                 writer_state <= ST_IDLE;
                             end

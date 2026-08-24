@@ -2,7 +2,9 @@
 
 module tb_ddr_ring_writer;
     localparam integer PACKET_BYTES = 1240;
+    localparam integer SLOT_BYTES = 1280;
     localparam integer PACKET_WORDS = 155;  // 1240 bytes / 8-byte AXI words
+    localparam integer SLOT_WORDS = 160;    // 1280 bytes / 8-byte AXI words
     localparam integer AXIS_BEATS = 78;     // 1 prefix beat + 77 CT/tag beats
     localparam integer RING_LOG2 = 11;
     localparam integer RING_SLOTS = 1 << RING_LOG2;
@@ -94,6 +96,9 @@ module tb_ddr_ring_writer;
     logic [31:0] ma_write_addr;
     integer ma_write_beats_left;
     integer mem_write_errors = 0;
+    integer axi_boundary_errors = 0;
+    integer slot_boundary_errors = 0;
+    integer data_burst_count = 0;
     integer ctrl_read_count = 0;
     integer ctrl_publish_count = 0;
 
@@ -106,6 +111,20 @@ module tb_ddr_ring_writer;
             ma_write_beats_left <= 0;
         end else begin
             if (ma_awvalid && ma_awready) begin
+                integer burst_bytes;
+                integer slot_offset;
+                burst_bytes = (ma_awlen + 1) * 8;
+                if (ma_awaddr >= RING_BASE &&
+                    ma_awaddr < RING_BASE + RING_SLOTS*SLOT_STRIDE) begin
+                    slot_offset = (ma_awaddr - RING_BASE) % SLOT_STRIDE;
+                    if (((ma_awaddr & 32'h00000FFF) + burst_bytes) > 4096)
+                        axi_boundary_errors = axi_boundary_errors + 1;
+                    if ((slot_offset + burst_bytes) > SLOT_STRIDE)
+                        slot_boundary_errors = slot_boundary_errors + 1;
+                    if (ma_awlen != 8'd15)
+                        slot_boundary_errors = slot_boundary_errors + 1;
+                    data_burst_count = data_burst_count + 1;
+                end
                 ma_aw_seen <= 1'b1;
                 ma_write_addr <= ma_awaddr;
                 ma_write_beats_left <= ma_awlen + 1;
@@ -203,8 +222,10 @@ module tb_ddr_ring_writer;
         begin
             if (byte_i < 8)
                 packet_byte = (p >> (8*(7-byte_i))) & 8'hFF;
-            else
+            else if (byte_i < PACKET_BYTES)
                 packet_byte = (p + byte_i) & 8'hFF;
+            else
+                packet_byte = 8'h00;
         end
     endfunction
 
@@ -255,7 +276,7 @@ module tb_ddr_ring_writer;
             verify_errors = 0;
             for (integer slot = 0; slot < RING_SLOTS; slot = slot + 1) begin
                 if (expected_last_packet[slot] >= 0) begin
-                    for (integer b = 0; b < PACKET_BYTES; b = b + 1) begin
+                    for (integer b = 0; b < SLOT_BYTES; b = b + 1) begin
                         if (mem[slot*SLOT_STRIDE+b] !==
                             packet_byte(expected_last_packet[slot], b))
                             verify_errors = verify_errors + 1;
@@ -300,6 +321,12 @@ module tb_ddr_ring_writer;
         end
         if (ctrl_publish_count != DRAIN_PACKETS) $fatal(1, "publish count %0d", ctrl_publish_count);
         if (mem_write_errors != 0) $fatal(1, "memory model errors %0d", mem_write_errors);
+        if (axi_boundary_errors != 0)
+            $fatal(1, "AXI 4KiB boundary errors %0d", axi_boundary_errors);
+        if (slot_boundary_errors != 0)
+            $fatal(1, "slot/burst geometry errors %0d", slot_boundary_errors);
+        if (data_burst_count != DRAIN_PACKETS * 10)
+            $fatal(1, "data burst count %0d (want %0d)", data_burst_count, DRAIN_PACKETS * 10);
         verify_slots();
         if (verify_errors != 0)
             $fatal(1, "slot data errors after drain: %0d", verify_errors);
@@ -317,12 +344,19 @@ module tb_ddr_ring_writer;
         if (dut.complete_count <= drop_start_complete)
             $fatal(1, "full ring did not publish initial slots");
         if (mem_write_errors != 0) $fatal(1, "memory model errors after drop");
+        if (axi_boundary_errors != 0)
+            $fatal(1, "AXI boundary errors after drop %0d", axi_boundary_errors);
+        if (slot_boundary_errors != 0)
+            $fatal(1, "slot geometry errors after drop %0d", slot_boundary_errors);
         if (dut.writer_fault) $fatal(1, "writer fault code %0d", dut.fault_code);
 
-        $display("B2_RING_TB PASS drain=%0d publishes=%0d verify=%0d verify_errors=%0d drops=%0d ctrl_reads=%0d",
+        $display("B2_RING_TB PASS drain=%0d publishes=%0d verify=%0d verify_errors=%0d drops=%0d ctrl_reads=%0d data_bursts=%0d",
                  source_sent, ctrl_publish_count, verify_count, verify_errors,
-                 dut.drop_count, ctrl_read_count);
-        if (verify_errors != 0) $fatal(1, "slot data errors %0d", verify_errors);
+                 dut.drop_count, ctrl_read_count, data_burst_count);
+        if (verify_errors != 0) $fatal(1, "slot data/padding errors %0d", verify_errors);
+        $display("B2 geometry: data_bursts=%0d expected=%0d boundary_errors=%0d slot_errors=%0d",
+                 data_burst_count, DRAIN_PACKETS * 10,
+                 axi_boundary_errors, slot_boundary_errors);
         $finish;
     end
 

@@ -119,6 +119,9 @@ module tb_fullchain;
     integer ring_publish_count = 0;
     integer ring_ctrl_read_count = 0;
     integer ring_mem_errors = 0;
+    integer ring_axi_boundary_errors = 0;
+    integer ring_slot_geometry_errors = 0;
+    integer ring_data_burst_count = 0;
     integer ring_last_packet [0:B2_RING_SLOTS-1];
 
     HDMI_Axis_Packetizer pkt (
@@ -249,6 +252,19 @@ module tb_fullchain;
             ring_write_beats_left <= 0;
         end else begin
             if (ring_m_axi_awvalid && ring_m_axi_awready) begin
+                integer burst_bytes;
+                integer slot_offset;
+                burst_bytes = (ring_m_axi_awlen + 1) * 8;
+                if (ring_m_axi_awaddr >= B2_RING_BASE &&
+                    ring_m_axi_awaddr < B2_RING_BASE + B2_RING_SLOTS*B2_SLOT_STRIDE) begin
+                    slot_offset = (ring_m_axi_awaddr - B2_RING_BASE) % B2_SLOT_STRIDE;
+                    if (((ring_m_axi_awaddr & 32'h00000FFF) + burst_bytes) > 4096)
+                        ring_axi_boundary_errors = ring_axi_boundary_errors + 1;
+                    if ((slot_offset + burst_bytes) > B2_SLOT_STRIDE ||
+                        ring_m_axi_awlen != 8'd15)
+                        ring_slot_geometry_errors = ring_slot_geometry_errors + 1;
+                    ring_data_burst_count = ring_data_burst_count + 1;
+                end
                 ring_aw_seen <= 1'b1;
                 ring_write_addr <= ring_m_axi_awaddr;
                 ring_write_beats_left <= ring_m_axi_awlen + 1;
@@ -644,21 +660,36 @@ module tb_fullchain;
                 end
                 for (int slot = 0; slot < B2_RING_SLOTS; slot++) begin
                     if (ring_last_packet[slot] >= 0) begin
-                        for (int b = 0; b < 1240; b++) begin
+                        for (int b = 0; b < 1280; b++) begin
                             if (ring_mem[slot*B2_SLOT_STRIDE+b] !==
-                                inj_bytes[ring_last_packet[slot]*1240+b]) begin
+                                ((b < 1240) ? inj_bytes[ring_last_packet[slot]*1240+b] : 8'h00)) begin
                                 inj_errors++;
                                 if (inj_errors < 8)
                                     $display("B.2 byte mismatch slot=%0d pkt=%0d byte=%0d got=%h want=%h",
                                              slot, ring_last_packet[slot], b,
                                              ring_mem[slot*B2_SLOT_STRIDE+b],
-                                             inj_bytes[ring_last_packet[slot]*1240+b]);
+                                             ((b < 1240) ? inj_bytes[ring_last_packet[slot]*1240+b] : 8'h00));
                             end
                         end
                     end
                 end
-                $display("B.2 ring: publishes=%0d ctrl_reads=%0d mem_errors=%0d",
-                         ring_publish_count, ring_ctrl_read_count, ring_mem_errors);
+                if (ring_axi_boundary_errors != 0) begin
+                    inj_errors++;
+                    $display("B.2 AXI boundary errors=%0d", ring_axi_boundary_errors);
+                end
+                if (ring_slot_geometry_errors != 0) begin
+                    inj_errors++;
+                    $display("B.2 slot geometry errors=%0d", ring_slot_geometry_errors);
+                end
+                if (ring_data_burst_count != TARGET_PKTS * 10) begin
+                    inj_errors++;
+                    $display("B.2 data burst count=%0d (want %0d)",
+                             ring_data_burst_count, TARGET_PKTS * 10);
+                end
+                $display("B.2 ring: publishes=%0d ctrl_reads=%0d mem_errors=%0d data_bursts=%0d boundary_errors=%0d geometry_errors=%0d",
+                         ring_publish_count, ring_ctrl_read_count, ring_mem_errors,
+                         ring_data_burst_count, ring_axi_boundary_errors,
+                         ring_slot_geometry_errors);
                 if (errors == 0 && inj_errors == 0) $display("B1_B2_CHAIN_TB PASS");
                 else $display("B1_B2_CHAIN_TB FAIL errors=%0d inj_errors=%0d", errors, inj_errors);
                 $finish;
