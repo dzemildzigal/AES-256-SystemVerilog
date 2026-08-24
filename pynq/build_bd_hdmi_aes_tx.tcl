@@ -159,9 +159,17 @@ set repo_root  [file dirname $script_dir]
 set edid_generator [file normalize [file join $repo_root "pynq" "generate_720p30_edid.py"]]
 set edid_hex       [file normalize [file join $repo_root "pynq" "720p30_edid.hex"]]
 set native_edid_src [file normalize [file join $repo_root "pynq" "720p30_edid.data"]]
+# Vivado prepends its bundled Python 3.8 to PATH. Use the system Python
+# explicitly; the bundled interpreter can fail with an SRE module mismatch.
+if {[info exists ::env(OSV_PYTHON)] && $::env(OSV_PYTHON) ne ""} {
+    set edid_python [file normalize $::env(OSV_PYTHON)]
+} else {
+    set edid_python "C:/Users/dzemi/AppData/Local/Programs/Python/Python312/python.exe"
+}
 require_file $edid_generator "720p30 EDID generator"
 require_file $edid_hex "720p30 EDID source"
-if {[catch {exec python $edid_generator --source $edid_hex --output $native_edid_src} _edid_result]} {
+require_file $edid_python "system Python for EDID generation"
+if {[catch {exec $edid_python $edid_generator --source $edid_hex --output $native_edid_src} _edid_result]} {
     error "720p30 EDID generation failed: $_edid_result"
 }
 puts $_edid_result
