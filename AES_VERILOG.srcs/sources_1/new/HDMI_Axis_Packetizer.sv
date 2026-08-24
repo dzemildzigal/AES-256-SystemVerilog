@@ -66,6 +66,10 @@ module HDMI_Axis_Packetizer #(
     reg [10:0]  payload_idx;   // payload bytes fed so far (0..1175)
     reg [8:0]   pixel_cnt;     // pixels in the current segment (0..391)
     reg [8:0]   pad_cnt;       // pad pixels remaining at the frame cut
+    // Packetizer headers can wait in packet_seq_fifo while AES processes an
+    // earlier packet. Keep a local header nonce sequence initialized from the
+    // sequencer seed so header nonce and AES/injector nonce stay aligned.
+    reg [63:0]  packet_nonce_ctr;
     reg [31:0]  frame_id;
     reg [15:0]  segment_id;
 
@@ -167,6 +171,7 @@ module HDMI_Axis_Packetizer #(
             payload_idx         <= '0;
             pixel_cnt           <= '0;
             pad_cnt             <= '0;
+            packet_nonce_ctr    <= '0;
             frame_id            <= '0;
             segment_id          <= '0;
             cur_beat            <= '0;
@@ -207,6 +212,7 @@ module HDMI_Axis_Packetizer #(
                             header_idx <= '0;
                             payload_idx <= '0;
                             pixel_cnt <= '0;
+                            packet_nonce_ctr <= cfg_nonce_counter;
                             frame_id <= '0;
                             segment_id <= '0;
                         end
@@ -224,7 +230,7 @@ module HDMI_Axis_Packetizer #(
                                 segment_id,
                                 cfg_payload_type,
                                 cfg_key_id,
-                                cfg_nonce_counter,
+                                packet_nonce_ctr,
                                 (cfg_payload_bytes == 16'd0) ? MAX_PAYLOAD_BYTES[15:0] : cfg_payload_bytes
                             );
                             do_feed = 1'b1;
@@ -285,6 +291,9 @@ module HDMI_Axis_Packetizer #(
                     end
                 endcase
             end
+
+            if (seg_complete)
+                packet_nonce_ctr <= packet_nonce_ctr + 1'b1;
 
             // ---- beat packer (1 or 3 bytes, carry across the beat boundary) ----
             cb = cur_beat; ck = cur_keep;

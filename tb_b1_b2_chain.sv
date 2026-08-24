@@ -422,6 +422,38 @@ module tb_fullchain;
 
     int stall_cycles = 0;
 
+    // Packetizer metadata check: the encrypted body and the B.1 prefix must
+    // use the same per-packet nonce even while packet_seq_fifo is buffered.
+    integer pkt_dbg_beat = 0;
+    integer pkt_dbg_index = 0;
+    integer pkt_header_nonce_errors = 0;
+    reg [63:0] pkt_expected_nonce;
+    reg [7:0] pkt_dbg_bytes [0:1215];
+    always @(posedge clk) begin
+        if (!rstn) begin
+            pkt_dbg_beat <= 0;
+            pkt_dbg_index <= 0;
+        end else if (pkt_tvalid && pkt_tready) begin
+            for (integer pb = 0; pb < 16; pb = pb + 1)
+                pkt_dbg_bytes[pkt_dbg_beat*16+pb] = pkt_tdata[8*pb +: 8];
+            if (pkt_tlast) begin
+                pkt_expected_nonce = 64'd1 + pkt_dbg_index;
+                for (integer nb = 0; nb < 8; nb = nb + 1)
+                    if (pkt_dbg_bytes[30+nb] !==
+                        pkt_expected_nonce[(63-8*nb) -: 8]) begin
+                        pkt_header_nonce_errors = pkt_header_nonce_errors + 1;
+                        if (pkt_header_nonce_errors < 8)
+                            $display("T%0t packet header nonce mismatch pkt=%0d byte=%0d got=%h",
+                                     $time, pkt_dbg_index, nb, pkt_dbg_bytes[30+nb]);
+                    end
+                pkt_dbg_index <= pkt_dbg_index + 1;
+                pkt_dbg_beat <= 0;
+            end else begin
+                pkt_dbg_beat <= pkt_dbg_beat + 1;
+            end
+        end
+    end
+
     always @(posedge clk) begin
         if (!rstn) begin
             beats_in_pkt <= 0;
@@ -685,6 +717,10 @@ module tb_fullchain;
                     inj_errors++;
                     $display("B.2 data burst count=%0d (want %0d)",
                              ring_data_burst_count, TARGET_PKTS * 10);
+                end
+                if (pkt_header_nonce_errors != 0) begin
+                    inj_errors++;
+                    $display("B.1 header nonce errors=%0d", pkt_header_nonce_errors);
                 end
                 $display("B.2 ring: publishes=%0d ctrl_reads=%0d mem_errors=%0d data_bursts=%0d boundary_errors=%0d geometry_errors=%0d",
                          ring_publish_count, ring_ctrl_read_count, ring_mem_errors,
