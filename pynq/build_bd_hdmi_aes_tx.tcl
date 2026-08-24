@@ -265,7 +265,7 @@ set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 nonce_prefix_
 create_bd_cell -type ip -vlnv digilentinc.com:ip:dvi2rgb:1.7 dvi2rgb_0
 set_property -dict [list \
     CONFIG.kAddBUFG {false} \
-    CONFIG.kClkRange {4} \
+    CONFIG.kClkRange {2} \
     CONFIG.kEdidFileName {720p_edid.data} \
     CONFIG.kRstActiveHigh {false} \
 ] [get_bd_cells dvi2rgb_0]

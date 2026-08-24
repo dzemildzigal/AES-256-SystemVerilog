@@ -3,7 +3,8 @@
 
 The Digilent dvi2rgb IP loads EDID with $readmemb: one 8-bit binary value per
 line. The checked-in .hex file is the fetched 128-byte source. This script
-only converts and validates it; it does not edit the PYNQ vendor checkout.
+derives the PYNQ-compatible preferred timing, writes the generated memory
+image, and validates it. It does not edit the PYNQ vendor checkout.
 """
 
 from __future__ import annotations
@@ -38,6 +39,24 @@ def read_hex_source(path: Path) -> bytes:
     return data
 
 
+def make_pynq_compatible_720p30(data: bytes) -> bytes:
+    """Derive the 74.25 MHz CTA-style 720p30 DTD for dvi2rgb.
+
+    The fetched source is a valid 37.13 MHz 720p30 EDID, but the PYNQ-Z2
+    dvi2rgb catalog exposes only TMDS clock ranges 1 and 2. Range 2 is the
+    valid 74.25 MHz path. Keep the source identity and descriptors, and
+    change only the preferred DTD clock/vertical blanking plus its checksum.
+    """
+    output = bytearray(data)
+    dtd = bytearray(output[54:72])
+    dtd[0:2] = (7425).to_bytes(2, "little")  # 74.25 MHz, 10 kHz units
+    dtd[6] = 780 & 0xFF                       # vertical blanking low byte
+    dtd[7] = (dtd[7] & 0xF0) | ((780 >> 8) & 0x0F)
+    output[54:72] = dtd
+    output[127] = (-sum(output[:127])) & 0xFF
+    return bytes(output)
+
+
 def decode_preferred_timing(data: bytes) -> tuple[int, int, int, int, int, float]:
     dtd = data[54:72]
     pixel_clock_hz = int.from_bytes(dtd[0:2], "little") * 10_000
@@ -56,7 +75,9 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=here / "720p30_edid.data")
     args = parser.parse_args()
 
-    data = read_hex_source(args.source)
+    source_data = read_hex_source(args.source)
+    source_timing = decode_preferred_timing(source_data)
+    data = make_pynq_compatible_720p30(source_data)
     timing = decode_preferred_timing(data)
     pixel_clock_hz, hactive, hblank, vactive, vblank, refresh_hz = timing
     if (hactive, vactive) != (WIDTH, HEIGHT):
@@ -70,11 +91,13 @@ def main() -> None:
         encoding="utf-8",
         newline="\n",
     )
+    source_clock, _, _, _, _, source_refresh = source_timing
     print(
         f"generated {args.output}: {len(data)} bytes, checksum=0x{sum(data) & 0xFF:02x}, "
         f"{hactive}x{vactive}@{refresh_hz:.6f} Hz, "
         f"pixel_clock={pixel_clock_hz / 1_000_000:.5f} MHz, "
-        f"Htotal={hactive + hblank}, Vtotal={vactive + vblank}"
+        f"Htotal={hactive + hblank}, Vtotal={vactive + vblank}; "
+        f"source={source_clock / 1_000_000:.5f} MHz/{source_refresh:.6f} Hz"
     )
 
 
