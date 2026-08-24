@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 // Verilog wrapper for DDRRingWriter (SystemVerilog).
+// Vivado block-design module references require a plain .v top file.
 
 module DDRRingWriter_wrapper #(
     parameter C_S_AXI_DATA_WIDTH = 32,

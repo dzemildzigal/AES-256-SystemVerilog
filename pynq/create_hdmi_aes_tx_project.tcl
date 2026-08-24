@@ -48,6 +48,10 @@ proc add_hdmi_aes_tx_sources {repo_root} {
         [file join $rtl_dir "HDMI_Axis_Packetizer.sv"] \
         [file join $rtl_dir "AXI_AES_GCM_Stream_wrapper.v"] \
         [file join $rtl_dir "AXI_AES_GCM_Stream.sv"] \
+        [file join $rtl_dir "DDRRingWriter_wrapper.v"] \
+        [file join $rtl_dir "DDRRingWriter.sv"] \
+        [file join $rtl_dir "NoncePrefixInject_wrapper.v"] \
+        [file join $rtl_dir "NoncePrefixInject.sv"] \
         [file join $rtl_dir "AXI_PingPong_Ctrl_wrapper.v"] \
         [file join $rtl_dir "AXI_PingPong_Ctrl.sv"] \
         [file join $rtl_dir "GcmMode.sv"] \

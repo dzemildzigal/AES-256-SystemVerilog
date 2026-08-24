@@ -41,22 +41,16 @@ module HDMI_Axis_Packetizer #(
     //   payload = 1176 bytes = 392 pixels (40+1176 = 1216 = 76 x 16-byte beats)
     //   frame   = 921600 px = 2351 full segments + one 8-pixel segment
     //             -> SEGS_PER_FRAME = 2352 (last segment = 8 px + 384 px pad)
-    //   Wire rate: 30 fps (2:1 frame decimation, see the pad-end state
-    //   transition) -> 2352*30 = 70560 packets/s = 663 Mbit/s payload, fits
-    //   Gigabit Ethernet with ~25% headroom. Frames close by pixel count,
-    //   never by SOF-abort, so the packetizer consumes the video stream
-    //   continuously at full rate and the v_vid_in coupler overflow loop
-    //   never triggers.
-    localparam int unsigned PX_PER_SEG     = 392;
-    localparam logic [15:0] SEGS_PER_FRAME = 16'd2352;
-    localparam logic [8:0]  LAST_SEG_PX    = 9'd8;   // 921600 - 2351*392
-    localparam logic         SKIP_FRAMES   = 1'b0;
+    //   Wire rate: native 720p30 input -> 2352*30 = 70560 packets/s.
+    //   Frames close by pixel count, never by SOF-abort, so the packetizer
+    //   consumes the video stream continuously at the source frame rate.
+    localparam int unsigned PX_PER_SEG      = 392;
+    localparam logic [15:0] SEGS_PER_FRAME  = 16'd2352;
+    localparam logic [8:0]  LAST_SEG_PX     = 9'd8;   // 921600 - 2351*392
 
     typedef enum logic [1:0] {
         ST_ARM    = 2'd0,   // wait for the first real SOF
-        ST_ACTIVE = 2'd1,   // capture: header + 1176-byte segments
-        ST_SKIP   = 2'd2    // unreachable since the streaming fix (state
-                            // encoding kept stable for the PKT_STATUS probe)
+        ST_ACTIVE = 2'd1    // capture: header + 1176-byte segments
     } state_t;
 
     state_t state;
@@ -72,10 +66,6 @@ module HDMI_Axis_Packetizer #(
     reg [10:0]  payload_idx;   // payload bytes fed so far (0..1175)
     reg [8:0]   pixel_cnt;     // pixels in the current segment (0..391)
     reg [8:0]   pad_cnt;       // pad pixels remaining at the frame cut
-    reg         capture_frame; // frame parity: capture or skip
-    reg         skip_sof_seen; // first SOF in ST_SKIP belongs to the skipped frame
-    reg         skip_first;    // consume the held first pixel of a skipped frame
-    reg         skip_sof_check;// the held pixel after ARM/SKIP carries a stale SOF
     reg [31:0]  frame_id;
     reg [15:0]  segment_id;
 
@@ -172,10 +162,6 @@ module HDMI_Axis_Packetizer #(
 
         if (!aresetn) begin
             state               <= ST_ARM;
-            capture_frame       <= 1'b0;
-            skip_sof_seen       <= 1'b0;
-            skip_first          <= 1'b0;
-            skip_sof_check      <= 1'b0;
             seg_last_pending    <= 1'b0;
             header_idx          <= HEADER_BYTES;
             payload_idx         <= '0;
@@ -218,47 +204,11 @@ module HDMI_Axis_Packetizer #(
                     ST_ARM: begin
                         if (cfg_enable && s_axis_video_tvalid && s_axis_video_tuser) begin
                             state <= ST_ACTIVE;
-                            capture_frame <= 1'b1;
                             header_idx <= '0;
                             payload_idx <= '0;
                             pixel_cnt <= '0;
                             frame_id <= '0;
                             segment_id <= '0;
-                            skip_sof_check <= 1'b1;
-                        end
-                    end
-
-                    ST_SKIP: begin
-                        if (skip_first) begin
-                            // Consume the held first pixel of the discarded
-                            // frame (it carries the SOF of the frame being
-                            // skipped, not of the next one).
-                            if (s_axis_video_tvalid) begin
-                                skip_first <= 1'b0;
-                            end
-                        end else if (s_axis_video_tvalid && s_axis_video_tuser) begin
-                            if (skip_sof_seen) begin
-                                // The SECOND SOF: the skipped frame drained,
-                                // this pixel starts the next captured frame.
-                                // frame_id was incremented at the previous
-                                // pad end, so captured frames carry
-                                // consecutive ids.
-                                state <= ST_ACTIVE;
-                                capture_frame <= 1'b1;
-                                header_idx <= '0;
-                                payload_idx <= '0;
-                                pixel_cnt <= '0;
-                                segment_id <= '0;
-                                skip_sof_check <= 1'b1;
-                                skip_sof_seen <= 1'b0;
-                            end else begin
-                                // The FIRST SOF after the pad belongs to the
-                                // frame being skipped (its SOF pixel was
-                                // buffered while the pad ran). Consume it and
-                                // keep draining.
-                                skip_sof_seen <= 1'b1;
-                                skip_first <= 1'b1;
-                            end
                         end
                     end
 
@@ -293,31 +243,17 @@ module HDMI_Axis_Packetizer #(
                             pad_cnt <= pad_cnt - 1'b1;
                             if (pad_cnt == 9'd1) begin
                                 seg_complete = 1'b1;
-                                // Frame complete: 2:1 decimation. Skip the
-                                // NEXT frame entirely (ST_SKIP drains it at
-                                // full rate, no packing, so the coupler is
-                                // still consumed and never overflows) and
-                                // re-enter capture at that frame's SOF.
-                                // The wire carries 720p30 RGB888.
-                                state <= ST_SKIP;
-                                skip_first <= 1'b0;
+                                // Native 720p30 EDID supplies one frame per
+                                // source period. Start the next frame without
+                                // dropping it; its first SOF pixel is held by
+                                // the ready signal during this packet's pad.
+                                state <= ST_ACTIVE;
                                 frame_id <= frame_id + 1'b1;
+                                segment_id <= '0;
+                                header_idx <= '0;
+                                payload_idx <= '0;
+                                pixel_cnt <= '0;
                             end
-                        end
-                        else if (s_axis_video_tvalid && skip_sof_check) begin
-                            // The held pixel after the ARM/SKIP transition: its
-                            // SOF flag is stale and must not re-trigger the
-                            // frame-boundary logic.
-                            skip_sof_check <= 1'b0;
-                            fb_cnt = 2'd3;
-                            fb0 = s_axis_video_tdata[23:16];
-                            fb1 = s_axis_video_tdata[15:8];
-                            fb2 = s_axis_video_tdata[7:0];
-                            do_feed = 1'b1;
-                            payload_idx <= payload_idx + 11'd3;
-                            pixel_cnt <= 9'd1;  // same increment as the normal
-                                                // path, so every segment counts
-                                                // identically (392 px each)
                         end
                         else if (s_axis_video_tvalid) begin
                             // payload phase: 3 bytes per cycle (1 pixel).
@@ -423,10 +359,9 @@ module HDMI_Axis_Packetizer #(
     end
 
     // Consume pixels in the active payload phase (not during the header/pad,
-    // not when the packer stalls) and in the skip state (except the SOF
-    // pixel, which is the next frame's first pixel).
+    // not when the packer stalls). The first pixel of the next native frame
+    // remains held until the next segment header is ready.
     assign s_axis_video_tready =
-        (state == ST_SKIP && (skip_first || !(s_axis_video_tvalid && s_axis_video_tuser))) ||
         (state == ST_ACTIVE && cfg_enable && (header_idx == HEADER_BYTES) &&
          (pad_cnt == 9'd0) && !m_axis_pkt_tvalid);
 

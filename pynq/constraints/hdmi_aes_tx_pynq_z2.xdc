@@ -1,8 +1,9 @@
 # PYNQ-Z2 constraints for hdmi_aes_tx_wrapper external HDMI RX ports.
 # Pin mapping derived from the official PYNQ base constraints.
 
-# HDMI RX TMDS reference clock (120 MHz for 1080p60 class signaling).
-create_clock -period 8.334 -waveform {0.000 4.167} [get_ports TMDS_0_clk_p]
+# HDMI RX TMDS reference clock for the generated native 720p30 EDID:
+# 37.13 MHz pixel/TMDS clock, period 26.9324 ns.
+create_clock -period 26.932 -waveform {0.000 13.466} [get_ports TMDS_0_clk_p]
 
 set_property -dict {PACKAGE_PIN P19 IOSTANDARD TMDS_33} [get_ports TMDS_0_clk_n]
 set_property -dict {PACKAGE_PIN N18 IOSTANDARD TMDS_33} [get_ports TMDS_0_clk_p]

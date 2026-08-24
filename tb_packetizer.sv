@@ -2,7 +2,7 @@
 // tb_packetizer - full-frame packetizer self-check.
 // Feeds 3 synthetic 720p frames (921600 px each, SOF on pixel 0) and checks:
 //   - 2352 segments (tlasts) per CAPTURED frame, 76 beats per segment
-//   - header: MAGIC, frame_id = 0 then 2 (frame 1 skipped), segment_id 0..2351,
+//   - header: MAGIC, frame_id = 0, 1, 2, 3, segment_id 0..2351,
 //     segment_count = 2352
 //   - payload bytes = the known pixel pattern; last segment = 24 real + pad
 module tb_packetizer;
@@ -79,7 +79,7 @@ module tb_packetizer;
     int tlast_total = 0;
     int beats_in_seg = 0;
     int segs_in_this_frame = 0;
-    int expect_frame = 0;   // 0, then 2 (frame 1 skipped)
+    int expect_frame = 0;   // native 30-FPS path: every source frame captured
     longint beats_total = 0;
 
     // Handshake-driven feeder: the pixel advances exactly when consumed
@@ -135,12 +135,15 @@ module tb_packetizer;
         #20 cfg_enable = 1;
         wait (feed_active == 1'b1);
         wait (feed_active == 1'b0);
+        // The final source pixel is accepted before the last padded segment
+        // can emit its TLAST. Allow that segment to drain completely.
+        wait (tlast_total == FRAMES * SEGS);
         #2000;
         $display("DONE beats=%0d", beats_total);
-        $display("DONE tlasts=%0d (expect %0d)", tlast_total, 2 * SEGS);
+        $display("DONE tlasts=%0d (expect %0d)", tlast_total, FRAMES * SEGS);
         $display("DONE errors=%0d", errors);
         $display("DONE dbg_frames=%0d (fed %0d)", dbg_frames, FRAMES);
-        if (tlast_total != 2 * SEGS) errors++;
+        if (tlast_total != FRAMES * SEGS) errors++;
         if (errors == 0) $display("PACKETIZER_TB PASS");
         else             $display("PACKETIZER_TB FAIL errors=%0d", errors);
         $finish;
@@ -151,7 +154,7 @@ module tb_packetizer;
         if (!rstn) begin
             beats_in_seg <= 0;
             segs_in_this_frame <= 0;
-        end else if (m_valid && m_ready && tlast_total < 2 * SEGS) begin
+        end else if (m_valid && m_ready && tlast_total < FRAMES * SEGS) begin
             beats_total = beats_total + 1;
             if (beats_total <= 6)
                 $display("T%0t BEAT %0d data=%h keep=%h", $time, beats_total, m_tdata, m_tkeep);
@@ -194,7 +197,7 @@ module tb_packetizer;
                 beats_in_seg <= 0;
                 if (segs_in_this_frame == SEGS - 1) begin
                     segs_in_this_frame <= 0;
-                    if (expect_frame == 0) expect_frame = 2;
+                    expect_frame = expect_frame + 1;
                 end else begin
                     segs_in_this_frame <= segs_in_this_frame + 1;
                 end

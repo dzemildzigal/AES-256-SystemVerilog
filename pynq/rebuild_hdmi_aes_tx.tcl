@@ -24,7 +24,8 @@ puts "======================================================"
 source pynq/create_hdmi_aes_tx_project.tcl
 
 # 2. Rebuild the BD from scratch (HDMI in -> packetizer -> sequencer -> AES ->
-#    DDR writer, clocks/resets/IRQs, validate, save, wrapper).
+#    nonce injector -> padded DDR ring writer, clocks/resets/IRQs, validate,
+#    save, wrapper).
 puts "=== STEP 2: REBUILD BLOCK DESIGN ==="
 source pynq/build_bd_hdmi_aes_tx.tcl
 puts "=== block design ready ==="

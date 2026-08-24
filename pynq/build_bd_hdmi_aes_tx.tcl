@@ -14,8 +14,10 @@
 
 set AES_MODULE   "AXI_AES_GCM_Stream_wrapper"
 set AES_INST     "aes_gcm_0"
-set WRITER_MODULE "AXI_PingPong_Ctrl_wrapper"
+set WRITER_MODULE "DDRRingWriter_wrapper"
 set WRITER_INST  "frame_writer_0"
+set INJECTOR_MODULE "NoncePrefixInject_wrapper"
+set INJECTOR_INST "nonce_prefix_0"
 set PACKETIZER_MODULE  "HDMI_Axis_Packetizer_wrapper"
 set PACKETIZER_INST    "hdmi_packetizer_0"
 set SEQUENCER_MODULE   "AES_GCM_Session_Sequencer_wrapper"
@@ -152,6 +154,18 @@ if {$current_project_name ne "HDMI_AES_TX"} {
 set script_dir [file dirname [file normalize [info script]]]
 set repo_root  [file dirname $script_dir]
 
+# Generate the 128-line dvi2rgb EDID from the checked-in fetched source.
+# This never modifies the PYNQ vendor checkout.
+set edid_generator [file normalize [file join $repo_root "pynq" "generate_720p30_edid.py"]]
+set edid_hex       [file normalize [file join $repo_root "pynq" "720p30_edid.hex"]]
+set native_edid_src [file normalize [file join $repo_root "pynq" "720p30_edid.data"]]
+require_file $edid_generator "720p30 EDID generator"
+require_file $edid_hex "720p30 EDID source"
+if {[catch {exec python $edid_generator --source $edid_hex --output $native_edid_src} _edid_result]} {
+    error "720p30 EDID generation failed: $_edid_result"
+}
+puts $_edid_result
+
 # Ensure module-reference RTL is present even when this script is sourced
 # without re-running create_hdmi_aes_tx_project.tcl.
 ensure_local_rtl_source $repo_root "AES_GCM_Session_Sequencer_wrapper.v"
@@ -164,6 +178,10 @@ ensure_local_rtl_source $repo_root "VideoFrontEndProbe_wrapper.v"
 ensure_local_rtl_source $repo_root "VideoFrontEndProbe.sv"
 ensure_local_rtl_source $repo_root "VideoStatusProbe_wrapper.v"
 ensure_local_rtl_source $repo_root "VideoStatusProbe.sv"
+ensure_local_rtl_source $repo_root "DDRRingWriter_wrapper.v"
+ensure_local_rtl_source $repo_root "DDRRingWriter.sv"
+ensure_local_rtl_source $repo_root "NoncePrefixInject_wrapper.v"
+ensure_local_rtl_source $repo_root "NoncePrefixInject.sv"
 ensure_local_rtl_source $repo_root "clk_mux_ctrl.v"
 ensure_local_constraint_source $repo_root "hdmi_aes_tx_pynq_z2.xdc"
 update_compile_order -fileset sources_1
@@ -214,6 +232,7 @@ set_property -dict [list \
 
 create_bd_cell -type module -reference $AES_MODULE $AES_INST
 create_bd_cell -type module -reference $WRITER_MODULE $WRITER_INST
+create_bd_cell -type module -reference $INJECTOR_MODULE $INJECTOR_INST
 create_bd_cell -type module -reference $PACKETIZER_MODULE $PACKETIZER_INST
 create_bd_cell -type module -reference $SEQUENCER_MODULE $SEQUENCER_INST
 create_bd_cell -type module -reference VideoBeatCounter_wrapper video_beat_counter_0
@@ -228,14 +247,23 @@ create_bd_cell -type module -reference $CLK_MUX_MODULE $CLK_MUX_INST
 # [BD 41-84] "required object is not specified".
 # Pass instance NAMES (documented form), not cell objects: object form
 # returns failure silently in 2024.1.
-set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 hdmi_packetizer_0 aes_seq_0 aes_clk_mux video_beat_counter_0 video_fe_probe_0 video_status_probe_0]
+set _mrrc [update_module_reference -quiet aes_gcm_0 frame_writer_0 nonce_prefix_0 hdmi_packetizer_0 aes_seq_0 aes_clk_mux video_beat_counter_0 video_fe_probe_0 video_status_probe_0]
 create_bd_cell -type ip -vlnv digilentinc.com:ip:dvi2rgb:1.7 dvi2rgb_0
 set_property -dict [list \
     CONFIG.kAddBUFG {false} \
-    CONFIG.kClkRange {1} \
+    CONFIG.kClkRange {4} \
     CONFIG.kEdidFileName {720p_edid.data} \
     CONFIG.kRstActiveHigh {false} \
 ] [get_bd_cells dvi2rgb_0]
+# The stock PYNQ file is a 720p60 DTD. Copy the generated native 720p30
+# file into this module-reference source tree before synthesis generation.
+set native_edid_dst [file normalize [file join \
+    [get_property DIRECTORY [current_project]] \
+    "HDMI_AES_TX.gen" "sources_1" "bd" $BD_NAME "ip" \
+    "hdmi_aes_tx_dvi2rgb_0_0" "src" "720p_edid.data"]]
+file mkdir [file dirname $native_edid_dst]
+file copy -force $native_edid_src $native_edid_dst
+
 
 create_bd_cell -type ip -vlnv xilinx.com:user:color_swap:1.1 color_swap_0
 set_property -dict [list \
@@ -509,12 +537,13 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 \
         master_apm {0}
     } [get_bd_intf_pins axi_gpio_clkctrl/S_AXI]
 
-# Re-route the four design-domain slaves and their interconnect master ports
-# from FCLK0 (wired by the automation) to the switchable design clock.
-# The interconnect S00 side and the clkctrl branch stay on stable FCLK0.
+# Re-route the design-domain slaves and the injector clock from FCLK0
+# (wired by the automation) to the switchable design clock. The interconnect
+# S00 side and the clkctrl branch stay on stable FCLK0.
 foreach _p [list \
     [get_bd_pins $WRITER_INST/S_AXI_ACLK] \
     [get_bd_pins $SEQUENCER_INST/aclk] \
+    [get_bd_pins $INJECTOR_INST/aclk] \
     [get_bd_pins vtc_in/s_axi_aclk] \
     [get_bd_pins axi_gpio_hdmiin/s_axi_aclk] \
     [get_bd_pins ps7_axi_periph/M00_ACLK] \
@@ -601,7 +630,9 @@ if {[llength [get_bd_intf_ports -quiet hdmi_in_ddc]] > 0} {
 connect_bd_intf_net [get_bd_intf_pins $PACKETIZER_INST/m_axis_pkt] [get_bd_intf_pins packet_seq_fifo_0/S_AXIS]
 connect_bd_intf_net [get_bd_intf_pins packet_seq_fifo_0/M_AXIS] [get_bd_intf_pins $SEQUENCER_INST/s_axis]
 connect_bd_intf_net [get_bd_intf_pins $SEQUENCER_INST/m_axis] [get_bd_intf_pins $AES_INST/S_AXIS_PT]
-connect_bd_intf_net [get_bd_intf_pins $AES_INST/M_AXIS_CT] [get_bd_intf_pins $WRITER_INST/S_AXIS_SRC]
+connect_bd_intf_net [get_bd_intf_pins $AES_INST/M_AXIS_CT] [get_bd_intf_pins $INJECTOR_INST/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins $INJECTOR_INST/M_AXIS] [get_bd_intf_pins $WRITER_INST/S_AXIS]
+connect_bd_net [get_bd_pins $SEQUENCER_INST/pkt_nonce] [get_bd_pins $INJECTOR_INST/pkt_nonce]
 connect_bd_intf_net [get_bd_intf_pins $SEQUENCER_INST/m_axi] [get_bd_intf_pins $AES_INST/s_axi]
 
 # Remove any stale top-level IRQ ports from previous BD runs
@@ -684,6 +715,7 @@ connect_if_unconnected $design_clk_pin [get_bd_pins hp0_mem_ic/S00_ACLK]
 foreach p [list \
     [get_bd_pins $AES_INST/S_AXI_ACLK] \
     [get_bd_pins $WRITER_INST/S_AXI_ACLK] \
+    [get_bd_pins $INJECTOR_INST/aclk] \
     [get_bd_pins $SEQUENCER_INST/aclk] \
     [get_bd_pins vtc_in/s_axi_aclk] \
     [get_bd_pins axi_gpio_hdmiin/s_axi_aclk] \
@@ -696,6 +728,7 @@ force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins 
 force_connect_bd_net [get_bd_pins rst_ps7_stable/peripheral_aresetn] [get_bd_pins hp0_mem_ic/M00_ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $AES_INST/S_AXI_ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $WRITER_INST/S_AXI_ARESETN]
+force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $INJECTOR_INST/aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $SEQUENCER_INST/aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins vtc_in/s_axi_aresetn]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins axi_gpio_hdmiin/s_axi_aresetn]
@@ -826,6 +859,10 @@ if {[llength $bd_files] > 0} {
 # .v), which later fails synthesis with [Synth 8-439] "module not found".
 puts "=== generating BD synthesis targets (module refs) ==="
 generate_target {synthesis} [get_files "*/${BD_NAME}.bd"]
+# generate_target may refresh module-reference sources. Re-apply the generated
+# 720p30 memory image after that operation, before synthesis starts.
+file mkdir [file dirname $native_edid_dst]
+file copy -force $native_edid_src $native_edid_dst
 
 make_wrapper -files [get_files ${BD_NAME}.bd] -top
 set project_dir [file normalize [get_property DIRECTORY [current_project]]]
@@ -847,7 +884,9 @@ puts ""
 puts "  What is real in this slice:"
 puts "    - PS7 control plane"
 puts "    - AES-GCM stream wrapper"
-puts "    - Existing DDR writer path"
+puts "    - B.1 nonce-prefix injector"
+puts "    - B.2 padded DDR packet ring writer"
+puts "    - native 720p30 HDMI input path"
 puts "    - HDMI ingress chain: dvi2rgb -> color_swap -> v_vid_in_axi4s"
 puts "    - CDC + packetizer: axis_data_fifo(async) -> HDMI_Axis_Packetizer_wrapper"
 puts "    - PS->sequencer AXI-Lite control path for session/key/nonce/payload policy"
