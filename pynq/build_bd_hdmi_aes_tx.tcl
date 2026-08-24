@@ -166,10 +166,16 @@ if {[info exists ::env(OSV_PYTHON)] && $::env(OSV_PYTHON) ne ""} {
 } else {
     set edid_python "C:/Users/dzemi/AppData/Local/Programs/Python/Python312/python.exe"
 }
+if {[info exists ::env(OSV_CLEAN_ENV)] && $::env(OSV_CLEAN_ENV) ne ""} {
+    set clean_env [file normalize $::env(OSV_CLEAN_ENV)]
+} else {
+    set clean_env "C:/Program Files/Git/usr/bin/env.exe"
+}
 require_file $edid_generator "720p30 EDID generator"
 require_file $edid_hex "720p30 EDID source"
 require_file $edid_python "system Python for EDID generation"
-if {[catch {exec $edid_python $edid_generator --source $edid_hex --output $native_edid_src} _edid_result]} {
+require_file $clean_env "clean environment helper"
+if {[catch {exec $clean_env -u PYTHONHOME -u PYTHONPATH $edid_python $edid_generator --source $edid_hex --output $native_edid_src} _edid_result]} {
     error "720p30 EDID generation failed: $_edid_result"
 }
 puts $_edid_result
