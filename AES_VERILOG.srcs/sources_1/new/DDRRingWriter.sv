@@ -11,10 +11,11 @@
 // B.3 can send complete 1280-byte slots with UDP GSO without a PS gather
 // copy. The padding is outside the GCM-protected 1240-byte body.
 //
-// The writer checks the PS consume index before every packet. If the ring is
-// full, it drains the complete input packet without writing it and increments
-// drop_count once. A successfully written slot is published by writing the
-// new produce index to CTRL_BASE + 0 only after the final AXI B response.
+// The writer refreshes the PS consume index periodically and before a
+// possible full-ring decision. If the ring is full, it drains the complete
+// input packet without writing it and increments drop_count once. A
+// successfully written slot is published by writing the new produce index to
+// CTRL_BASE + 0 only after the final AXI B response.
 module DDRRingWriter #(
     parameter integer C_S_AXI_DATA_WIDTH = 32,
     parameter integer C_S_AXI_ADDR_WIDTH = 8,
@@ -138,6 +139,10 @@ module DDRRingWriter #(
     reg [31:0]  slot_stride_reg;
     reg [31:0]  produce_idx;
     reg [31:0]  consume_idx_shadow;
+    // Refresh the PS-owned consume index periodically and whenever the
+    // cached value says the ring may be full. This keeps the normal path
+    // from paying one AXI read for every packet while retaining safe drops.
+    reg [5:0]   consume_read_age;
     reg [31:0]  drop_count;
     reg [31:0]  error_count;
     reg [63:0]  complete_count;
@@ -192,6 +197,9 @@ module DDRRingWriter #(
     reg [3:0]  writer_state;
 
     wire [31:0] ring_mask = RING_SLOTS - 1;
+    wire consume_refresh = (consume_read_age >= 6'd31) ||
+                           ((((produce_idx + 1'b1) & ring_mask) ==
+                             (consume_idx_shadow & ring_mask)));
     wire publish_fire = (writer_state == ST_PUB_B) &&
                         M_AXI_BVALID && m_axi_bready &&
                         (M_AXI_BRESP == 2'b00);
@@ -327,6 +335,7 @@ module DDRRingWriter #(
         if (rst) begin
             produce_idx        <= 32'd0;
             consume_idx_shadow <= 32'd0;
+            consume_read_age   <= 6'd31;
             drop_count         <= 32'd0;
             error_count        <= 32'd0;
             complete_count     <= 64'd0;
@@ -371,10 +380,16 @@ module DDRRingWriter #(
                             writer_state <= ST_ERROR;
                         end else begin
                             target_slot <= produce_idx[RING_LOG2-1:0];
-                            m_axi_araddr <= ctrl_base_addr[31:0] + 32'd4;
-                            m_axi_arvalid <= 1'b1;
-                            m_axi_rready <= 1'b1;
-                            writer_state <= ST_CTRL_AR;
+                            if (consume_refresh) begin
+                                m_axi_araddr <= ctrl_base_addr[31:0] + 32'd4;
+                                m_axi_arvalid <= 1'b1;
+                                m_axi_rready <= 1'b1;
+                                writer_state <= ST_CTRL_AR;
+                            end else begin
+                                capture_word_count <= 8'd0;
+                                writer_busy <= 1'b1;
+                                writer_state <= ST_CAPTURE;
+                            end
                         end
                     end
 
@@ -384,6 +399,7 @@ module DDRRingWriter #(
                         if (M_AXI_RVALID && m_axi_rready) begin
                             m_axi_rready <= 1'b0;
                             consume_idx_shadow <= M_AXI_RDATA;
+                            consume_read_age <= 6'd0;
                             if ((((produce_idx + 1) & ring_mask) ==
                                  (M_AXI_RDATA & ring_mask))) begin
                                 drop_count <= drop_count + 1'b1;
@@ -547,6 +563,7 @@ module DDRRingWriter #(
                                 writer_state <= ST_ERROR;
                             end else begin
                                 produce_idx <= next_produce_slot;
+                                consume_read_age <= consume_read_age + 1'b1;
                                 complete_count <= complete_count + 1'b1;
                                 writer_busy <= 1'b0;
                                 writer_state <= ST_IDLE;
