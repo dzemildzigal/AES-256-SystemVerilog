@@ -363,6 +363,47 @@ module AES_GCM_Session_Sequencer #(
 
     logic slv_aw_seen;
     logic [C_AXI_ADDR_WIDTH-1:0] slv_awaddr;
+    logic slv_ar_seen;
+    logic [C_AXI_ADDR_WIDTH-1:0] slv_araddr;
+
+    // Two-stage synchronizers for the cross-domain debug probes.
+    // video_beat_counter_0 and video_status_probe_0 run on clk_fpga_1
+    // (142.86 MHz); video_fe_probe_0 runs on the recovered 74.25 MHz pixel
+    // clock. Sampling these counters directly into the readback mux was the
+    // entire inter-clock timing violation group (32 endpoints).
+    reg [63:0] s1_prefifo_beats,  s2_prefifo_beats;
+    reg [31:0] s1_prefifo_valid,  s2_prefifo_valid;
+    reg [31:0] s1_prefifo_ready,  s2_prefifo_ready;
+    reg [63:0] s1_pixelclk_count, s2_pixelclk_count;
+    reg [63:0] s1_de_count,       s2_de_count;
+    reg [31:0] s1_de_at_of,       s2_de_at_of;
+    reg [63:0] s1_vid_of,         s2_vid_of;
+    reg [63:0] s1_vid_uf,         s2_vid_uf;
+    reg [63:0] s1_vid_rst_pulse,  s2_vid_rst_pulse;
+    reg        s1_vid_rst_level,  s2_vid_rst_level;
+
+    always_ff @(posedge aclk) begin
+        s1_prefifo_beats  <= dbg_prefifo_beats;
+        s2_prefifo_beats  <= s1_prefifo_beats;
+        s1_prefifo_valid  <= dbg_prefifo_valid_cycles;
+        s2_prefifo_valid  <= s1_prefifo_valid;
+        s1_prefifo_ready  <= dbg_prefifo_ready_cycles;
+        s2_prefifo_ready  <= s1_prefifo_ready;
+        s1_pixelclk_count <= dbg_pixelclk_count;
+        s2_pixelclk_count <= s1_pixelclk_count;
+        s1_de_count       <= dbg_de_count;
+        s2_de_count       <= s1_de_count;
+        s1_de_at_of       <= dbg_de_at_overflow;
+        s2_de_at_of       <= s1_de_at_of;
+        s1_vid_of         <= dbg_vid_overflow_count;
+        s2_vid_of         <= s1_vid_of;
+        s1_vid_uf         <= dbg_vid_underflow_count;
+        s2_vid_uf         <= s1_vid_uf;
+        s1_vid_rst_pulse  <= dbg_vid_reset_pulse_count;
+        s2_vid_rst_pulse  <= s1_vid_rst_pulse;
+        s1_vid_rst_level  <= dbg_vid_reset_level;
+        s2_vid_rst_level  <= s1_vid_rst_level;
+    end
 
     logic mst_wr_pending;
     logic mst_wr_done;
@@ -410,6 +451,8 @@ module AES_GCM_Session_Sequencer #(
         if (!aresetn) begin
             slv_aw_seen       <= 1'b0;
             slv_awaddr        <= '0;
+            slv_ar_seen       <= 1'b0;
+            slv_araddr        <= '0;
             S_AXI_AWREADY     <= 1'b1;
             S_AXI_WREADY      <= 1'b0;
             S_AXI_BRESP       <= 2'b00;
@@ -480,7 +523,19 @@ module AES_GCM_Session_Sequencer #(
             end
 
             if (S_AXI_ARREADY && S_AXI_ARVALID) begin
-                case (S_AXI_ARADDR)
+                // Stage 1: latch the read address. The data mux runs from
+                // this register in the NEXT cycle so the high-fanout address
+                // decode does not sit between the interconnect's clock-
+                // converter register and S_AXI_RDATA inside one period (the
+                // old single-cycle flat case was the entire intra-100 MHz
+                // timing violation group, 193 endpoints).
+                slv_araddr   <= S_AXI_ARADDR;
+                slv_ar_seen  <= 1'b1;
+                S_AXI_ARREADY <= 1'b0;
+            end
+
+            if (slv_ar_seen) begin
+                case (slv_araddr)
                     REG_CTRL: S_AXI_RDATA <= reg_ctrl;
                     REG_STATUS: S_AXI_RDATA <= {
                         12'd0,
@@ -511,8 +566,8 @@ module AES_GCM_Session_Sequencer #(
                     REG_VIDEO_BEAT_COUNT_LO:  S_AXI_RDATA <= dbg_video_beat_count[31:0];
                     REG_VIDEO_FRAME_COUNT_HI: S_AXI_RDATA <= dbg_video_frame_count[63:32];
                     REG_VIDEO_FRAME_COUNT_LO: S_AXI_RDATA <= dbg_video_frame_count[31:0];
-                    REG_PREFIFO_BEAT_HI: S_AXI_RDATA <= dbg_prefifo_beats[63:32];
-                    REG_PREFIFO_BEAT_LO: S_AXI_RDATA <= dbg_prefifo_beats[31:0];
+                    REG_PREFIFO_BEAT_HI: S_AXI_RDATA <= s2_prefifo_beats[63:32];
+                    REG_PREFIFO_BEAT_LO: S_AXI_RDATA <= s2_prefifo_beats[31:0];
                     REG_TAG0: S_AXI_RDATA <= reg_tag_word[0];
                     REG_TAG1: S_AXI_RDATA <= reg_tag_word[1];
                     REG_TAG2: S_AXI_RDATA <= reg_tag_word[2];
@@ -572,17 +627,17 @@ module AES_GCM_Session_Sequencer #(
                     REG_LAST_GH_NOT_READY: S_AXI_RDATA <= dbg_last_gh_not_ready;
                     REG_LAST_SLOT_BLOCKED: S_AXI_RDATA <= dbg_last_slot_blocked;
                     REG_PKT_STATUS: S_AXI_RDATA <= {25'd0, dbg_pkt_status};
-                    REG_PIXELCLK_COUNT_HI: S_AXI_RDATA <= dbg_pixelclk_count[63:32];
-                    REG_PIXELCLK_COUNT_LO: S_AXI_RDATA <= dbg_pixelclk_count[31:0];
-                    REG_DE_COUNT_HI: S_AXI_RDATA <= dbg_de_count[63:32];
-                    REG_DE_COUNT_LO: S_AXI_RDATA <= dbg_de_count[31:0];
-                    REG_VID_OF_COUNT_HI: S_AXI_RDATA <= dbg_vid_overflow_count[63:32];
-                    REG_VID_OF_COUNT_LO: S_AXI_RDATA <= dbg_vid_overflow_count[31:0];
-                    REG_VID_UF_COUNT_HI: S_AXI_RDATA <= dbg_vid_underflow_count[63:32];
-                    REG_VID_UF_COUNT_LO: S_AXI_RDATA <= dbg_vid_underflow_count[31:0];
-                    REG_VID_RESET_PULSE_HI: S_AXI_RDATA <= dbg_vid_reset_pulse_count[63:32];
-                    REG_VID_RESET_PULSE_LO: S_AXI_RDATA <= dbg_vid_reset_pulse_count[31:0];
-                    REG_VID_PROBE_STATUS: S_AXI_RDATA <= {31'd0, dbg_vid_reset_level};
+                    REG_PIXELCLK_COUNT_HI: S_AXI_RDATA <= s2_pixelclk_count[63:32];
+                    REG_PIXELCLK_COUNT_LO: S_AXI_RDATA <= s2_pixelclk_count[31:0];
+                    REG_DE_COUNT_HI: S_AXI_RDATA <= s2_de_count[63:32];
+                    REG_DE_COUNT_LO: S_AXI_RDATA <= s2_de_count[31:0];
+                    REG_VID_OF_COUNT_HI: S_AXI_RDATA <= s2_vid_of[63:32];
+                    REG_VID_OF_COUNT_LO: S_AXI_RDATA <= s2_vid_of[31:0];
+                    REG_VID_UF_COUNT_HI: S_AXI_RDATA <= s2_vid_uf[63:32];
+                    REG_VID_UF_COUNT_LO: S_AXI_RDATA <= s2_vid_uf[31:0];
+                    REG_VID_RESET_PULSE_HI: S_AXI_RDATA <= s2_vid_rst_pulse[63:32];
+                    REG_VID_RESET_PULSE_LO: S_AXI_RDATA <= s2_vid_rst_pulse[31:0];
+                    REG_VID_PROBE_STATUS: S_AXI_RDATA <= {31'd0, s2_vid_rst_level};
                     REG_PKT_FIFO_WR_COUNT: S_AXI_RDATA <= dbg_pkt_fifo_wr_count;
                     REG_PKT_FIFO_RD_COUNT: S_AXI_RDATA <= dbg_pkt_fifo_rd_count;
                     // bit1 = FIFO output valid (== s_axis_tvalid);
@@ -590,15 +645,15 @@ module AES_GCM_Session_Sequencer #(
                     REG_PKT_FIFO_STATUS: S_AXI_RDATA <= {30'd0,
                         s_axis_tvalid,
                         s_axis_tready};
-                    REG_PREFIFO_VALID_CYCLES: S_AXI_RDATA <= dbg_prefifo_valid_cycles;
-                    REG_PREFIFO_READY_CYCLES: S_AXI_RDATA <= dbg_prefifo_ready_cycles;
+                    REG_PREFIFO_VALID_CYCLES: S_AXI_RDATA <= s2_prefifo_valid;
+                    REG_PREFIFO_READY_CYCLES: S_AXI_RDATA <= s2_prefifo_ready;
                     REG_CDCOUT_BEATS_HI: S_AXI_RDATA <= dbg_cdcout_beats[63:32];
                     REG_CDCOUT_BEATS_LO: S_AXI_RDATA <= dbg_cdcout_beats[31:0];
-                    REG_DE_AT_OVERFLOW: S_AXI_RDATA <= dbg_de_at_overflow;
+                    REG_DE_AT_OVERFLOW: S_AXI_RDATA <= s2_de_at_of;
                     default: S_AXI_RDATA <= 32'h00000000;
                 endcase
-                S_AXI_RVALID  <= 1'b1;
-                S_AXI_ARREADY <= 1'b0;
+                slv_ar_seen  <= 1'b0;
+                S_AXI_RVALID <= 1'b1;
             end
 
             if (S_AXI_RVALID && S_AXI_RREADY) begin
