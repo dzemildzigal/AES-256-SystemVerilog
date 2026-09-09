@@ -1,15 +1,18 @@
 `timescale 1ns / 1ps
 // tb_packetizer - full-frame packetizer self-check.
-// Feeds 3 synthetic 720p frames (921600 px each, SOF on pixel 0) and checks:
+// Feeds 4 synthetic 720p SOURCE frames (921600 px each, SOF on pixel 0) at
+// the real 60 Hz source rate. 2:1 decimation (ST_DISCARD) publishes every
+// other one, so 2 of the 4 fed frames are captured. Checks:
 //   - 2352 segments (tlasts) per CAPTURED frame, 76 beats per segment
-//   - header: MAGIC, frame_id = 0, 1, 2, 3, segment_id 0..2351,
-//     segment_count = 2352
+//   - header: MAGIC, frame_id = 0, 1 (sequential per published frame),
+//     segment_id 0..2351, segment_count = 2352
 //   - payload bytes = the known pixel pattern; last segment = 24 real + pad
 module tb_packetizer;
 
     localparam int FRAME_PX = 1280 * 720;
-    localparam int FRAMES   = 4;      // feed 4 source frames (the 4th SOF closes
-                                      // the 3rd frame's final padded segment)
+    localparam int FRAMES   = 4;      // 4 SOURCE frames fed; 2:1 decimation
+                                      // publishes 2 of them
+    localparam int PUBLISHED = FRAMES / 2;
     localparam int SEGS     = 2352;
     localparam int BEATS    = 76;
 
@@ -79,7 +82,11 @@ module tb_packetizer;
     int tlast_total = 0;
     int beats_in_seg = 0;
     int segs_in_this_frame = 0;
-    int expect_frame = 0;   // native 30-FPS path: every source frame captured
+    int expect_frame = 0;   // sequential per PUBLISHED frame (every other
+                            // source frame is discarded); checked against
+                            // the header frame_id byte
+    int expect_source_frame = 0;  // real SOURCE frame index (0, 2, 4, ...)
+                                   // whose pixel pattern the payload carries
     longint beats_total = 0;
 
     // Handshake-driven feeder: the pixel advances exactly when consumed
@@ -137,13 +144,13 @@ module tb_packetizer;
         wait (feed_active == 1'b0);
         // The final source pixel is accepted before the last padded segment
         // can emit its TLAST. Allow that segment to drain completely.
-        wait (tlast_total == FRAMES * SEGS);
+        wait (tlast_total == PUBLISHED * SEGS);
         #2000;
         $display("DONE beats=%0d", beats_total);
-        $display("DONE tlasts=%0d (expect %0d)", tlast_total, FRAMES * SEGS);
+        $display("DONE tlasts=%0d (expect %0d)", tlast_total, PUBLISHED * SEGS);
         $display("DONE errors=%0d", errors);
         $display("DONE dbg_frames=%0d (fed %0d)", dbg_frames, FRAMES);
-        if (tlast_total != FRAMES * SEGS) errors++;
+        if (tlast_total != PUBLISHED * SEGS) errors++;
         if (errors == 0) $display("PACKETIZER_TB PASS");
         else             $display("PACKETIZER_TB FAIL errors=%0d", errors);
         $finish;
@@ -154,7 +161,7 @@ module tb_packetizer;
         if (!rstn) begin
             beats_in_seg <= 0;
             segs_in_this_frame <= 0;
-        end else if (m_valid && m_ready && tlast_total < FRAMES * SEGS) begin
+        end else if (m_valid && m_ready && tlast_total < PUBLISHED * SEGS) begin
             beats_total = beats_total + 1;
             if (beats_total <= 6)
                 $display("T%0t BEAT %0d data=%h keep=%h", $time, beats_total, m_tdata, m_tkeep);
@@ -177,12 +184,12 @@ module tb_packetizer;
                     px_in_seg = (byte_idx - 40) / 3;
                     bin_px    = (byte_idx - 40) % 3;
                     px_global = segs_in_this_frame * 392 + px_in_seg;
-                    if (m_tdata[8*b +: 8] != exp_byte(expect_frame, px_global, bin_px)) begin
+                    if (m_tdata[8*b +: 8] != exp_byte(expect_source_frame, px_global, bin_px)) begin
                         errors++;
                         if (errors < 8)
                             $display("T%0t payload bad: beat=%0d b=%0d got=%h exp=%h seg=%0d px=%0d",
                                      $time, beats_total, b, m_tdata[8*b +: 8],
-                                     exp_byte(expect_frame, px_global, bin_px),
+                                     exp_byte(expect_source_frame, px_global, bin_px),
                                      segs_in_this_frame, px_global);
                     end
                 end
@@ -198,6 +205,7 @@ module tb_packetizer;
                 if (segs_in_this_frame == SEGS - 1) begin
                     segs_in_this_frame <= 0;
                     expect_frame = expect_frame + 1;
+                    expect_source_frame = expect_source_frame + 2;
                 end else begin
                     segs_in_this_frame <= segs_in_this_frame + 1;
                 end

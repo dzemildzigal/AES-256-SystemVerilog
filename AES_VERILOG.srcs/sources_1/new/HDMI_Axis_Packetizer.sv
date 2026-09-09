@@ -41,16 +41,23 @@ module HDMI_Axis_Packetizer #(
     //   payload = 1176 bytes = 392 pixels (40+1176 = 1216 = 76 x 16-byte beats)
     //   frame   = 921600 px = 2351 full segments + one 8-pixel segment
     //             -> SEGS_PER_FRAME = 2352 (last segment = 8 px + 384 px pad)
-    //   Wire rate: native 720p30 input -> 2352*30 = 70560 packets/s.
-    //   Frames close by pixel count, never by SOF-abort, so the packetizer
-    //   consumes the video stream continuously at the source frame rate.
+    //   Source: 1280x720 at 60 Hz. This GPU has no 720p30 output mode at all
+    //   (confirmed from its own mode list: only 50/59/60/75 Hz). 2:1 frame
+    //   decimation (ST_DISCARD) halves the real 60 Hz source to the wire
+    //   rate: 2352*30 = 70560 packets/s.
+    //   Captured frames close by pixel count, never by SOF-abort. The
+    //   discarded frame also closes by pixel count (FRAME_PX), not by
+    //   waiting for the next SOF, so no stale-SOF handling is needed.
     localparam int unsigned PX_PER_SEG      = 392;
     localparam logic [15:0] SEGS_PER_FRAME  = 16'd2352;
     localparam logic [8:0]  LAST_SEG_PX     = 9'd8;   // 921600 - 2351*392
+    localparam int unsigned FRAME_PX        = 1280 * 720;  // 921600
 
     typedef enum logic [1:0] {
-        ST_ARM    = 2'd0,   // wait for the first real SOF
-        ST_ACTIVE = 2'd1    // capture: header + 1176-byte segments
+        ST_ARM     = 2'd0,   // wait for the first real SOF
+        ST_ACTIVE  = 2'd1,   // capture: header + 1176-byte segments
+        ST_DISCARD = 2'd2    // 2:1 decimation: drain one full source frame,
+                             // no packing, closed by pixel count
     } state_t;
 
     state_t state;
@@ -66,6 +73,7 @@ module HDMI_Axis_Packetizer #(
     reg [10:0]  payload_idx;   // payload bytes fed so far (0..1175)
     reg [8:0]   pixel_cnt;     // pixels in the current segment (0..391)
     reg [8:0]   pad_cnt;       // pad pixels remaining at the frame cut
+    reg [19:0]  discard_px_cnt;// pixels discarded so far in ST_DISCARD
     // Packetizer headers can wait in packet_seq_fifo while AES processes an
     // earlier packet. Keep a local header nonce sequence initialized from the
     // sequencer seed so header nonce and AES/injector nonce stay aligned.
@@ -171,6 +179,7 @@ module HDMI_Axis_Packetizer #(
             payload_idx         <= '0;
             pixel_cnt           <= '0;
             pad_cnt             <= '0;
+            discard_px_cnt      <= '0;
             packet_nonce_ctr    <= '0;
             frame_id            <= '0;
             segment_id          <= '0;
@@ -249,16 +258,15 @@ module HDMI_Axis_Packetizer #(
                             pad_cnt <= pad_cnt - 1'b1;
                             if (pad_cnt == 9'd1) begin
                                 seg_complete = 1'b1;
-                                // Native 720p30 EDID supplies one frame per
-                                // source period. Start the next frame without
-                                // dropping it; its first SOF pixel is held by
-                                // the ready signal during this packet's pad.
-                                state <= ST_ACTIVE;
+                                // This GPU has no 30 fps output; the source
+                                // runs at 60 Hz. Discard exactly one full
+                                // source frame (ST_DISCARD, closed by pixel
+                                // count) before capturing the next one.
+                                // frame_id counts published frames only.
+                                state <= ST_DISCARD;
+                                discard_px_cnt <= '0;
                                 frame_id <= frame_id + 1'b1;
                                 segment_id <= '0;
-                                header_idx <= '0;
-                                payload_idx <= '0;
-                                pixel_cnt <= '0;
                             end
                         end
                         else if (s_axis_video_tvalid) begin
@@ -286,6 +294,22 @@ module HDMI_Axis_Packetizer #(
                                 header_idx <= '0;
                             end else begin
                                 pixel_cnt <= pixel_cnt + 1'b1;
+                            end
+                        end
+                    end
+
+                    ST_DISCARD: begin
+                        // Drain one full source frame at 1 pixel/cycle,
+                        // closed by pixel count (never by waiting for the
+                        // next SOF, so no stale-SOF handling is needed).
+                        if (s_axis_video_tvalid) begin
+                            if (discard_px_cnt == FRAME_PX-1) begin
+                                state <= ST_ACTIVE;
+                                header_idx <= '0;
+                                payload_idx <= '0;
+                                pixel_cnt <= '0;
+                            end else begin
+                                discard_px_cnt <= discard_px_cnt + 1'b1;
                             end
                         end
                     end
@@ -368,9 +392,12 @@ module HDMI_Axis_Packetizer #(
     end
 
     // Consume pixels in the active payload phase (not during the header/pad,
-    // not when the packer stalls). The first pixel of the next native frame
-    // remains held until the next segment header is ready.
+    // not when the packer stalls), and while discarding the skipped source
+    // frame (ST_DISCARD). Both paths gate on !m_axis_pkt_tvalid so a source
+    // pixel is never silently dropped while the final beat of the previous
+    // frame is still waiting for its downstream ack.
     assign s_axis_video_tready =
+        (state == ST_DISCARD && !m_axis_pkt_tvalid) ||
         (state == ST_ACTIVE && cfg_enable && (header_idx == HEADER_BYTES) &&
          (pad_cnt == 9'd0) && !m_axis_pkt_tvalid);
 
