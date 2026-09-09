@@ -1,7 +1,7 @@
 # PYNQ-Z2 constraints for hdmi_aes_tx_wrapper external HDMI RX ports.
 # Pin mapping derived from the official PYNQ base constraints.
 
-# HDMI RX TMDS reference clock for the generated native 720p30 EDID:
+# HDMI RX TMDS reference clock (74.25 MHz for 720p60).
 # 74.25 MHz pixel/TMDS clock, period 13.4680 ns.
 create_clock -period 13.468 -waveform {0.000 6.734} [get_ports TMDS_0_clk_p]
 
@@ -35,6 +35,17 @@ set_clock_groups -physically_exclusive \
     -group [get_clocks {clk_out1_*}] \
     -group [get_clocks {clk_out2_*}] \
     -group [get_clocks {clk_out3_*}]
+
+# Debug-probe CDC exceptions. The 142.86 MHz video-domain probes
+# (video_beat_counter_0, video_status_probe_0) and the pixel-domain probes
+# (video_fe_probe_0) cross into the design domain ONLY as debug counters,
+# and every such input is now two-stage synchronized inside aes_seq_0
+# (commit 7891225). The domains are asynchronous; without this exception the
+# correctly-synchronized crossings still report -3.7 ns of false violation
+# because the clock edges have no phase relationship.
+set_clock_groups -asynchronous \
+    -group [get_clocks {clk_fpga_1 dvi2rgb_0_PixelClk}] \
+    -group [get_clocks {clk_out1_* clk_out2_* clk_out3_*}]
 
 # The 3-way clock mux = two cascaded BUFGMUX_CTRLs fed by the wizard's BUFGs.
 # The placer's rule_cascaded_bufg wants the BUFG->BUFG pairs adjacent; with

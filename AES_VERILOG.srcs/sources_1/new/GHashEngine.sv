@@ -88,8 +88,53 @@ module GHashEngine #(
     logic [PTR_W-1:0] rd_ptr;
     logic [PTR_W:0]   fifo_count;
 
-    // Combinational FIFO read port.
-    wire [0:127]  fifo_head = fifo_mem[rd_ptr];
+    // Can we launch a multiply this cycle?
+    wire          can_process = busy_o && !done_emitted && (fifo_count > 0);
+
+    // Combinational FIFO read port (retired from the multiply path).
+    // The registered read-ahead head below replaces it: the rd_ptr -> RAMD32
+    // access was part of the multiply's critical path (the intra-100 MHz
+    // timing violation group).
+    //
+    // Read-ahead: at cycle N the launch (can_process) consumes the block at
+    // rd_ptr(N). The register must therefore capture the block the NEXT
+    // launch will need, i.e. the block at rd_ptr + can_process. A bypass
+    // handles the write/read address collision: the asynchronous distributed
+    // RAM read returns OLD data in a cycle where the enqueue writes the same
+    // address, which happens exactly when fifo_count == can_process.
+    wire [PTR_W-1:0] rd_lookahead = rd_ptr + {{(PTR_W-1){1'b0}}, can_process};
+    wire             head_collide = (fifo_count == {{PTR_W{1'b0}}, can_process});
+    reg  [0:127]     fifo_head_reg;
+
+    logic        do_enq;
+    logic [0:127] enq_data;
+
+    always_comb begin
+        do_enq   = 1'b0;
+        enq_data = '0;
+        if (busy_o) begin
+            if ((phase == PH_AAD) && aad_valid_i && aad_ready_o) begin
+                do_enq   = 1'b1;
+                enq_data = aad_data_i;
+            end else if ((phase == PH_CT) && ct_valid_i && ct_ready_o) begin
+                do_enq   = 1'b1;
+                enq_data = ct_data_i;
+            end else if ((phase == PH_DONE) && recv_done && !len_block_enqueued
+                         && (fifo_count < FIFO_DEPTH)) begin
+                do_enq   = 1'b1;
+                enq_data = {aad_len_bits_reg, ct_len_bits_reg};
+            end
+        end
+    end
+
+    always_ff @(posedge clk) begin
+        if (rst)
+            fifo_head_reg <= '0;
+        else if (do_enq && head_collide)
+            fifo_head_reg <= enq_data;
+        else
+            fifo_head_reg <= fifo_mem[rd_lookahead];
+    end
 
     // ----------------------------------------------------------------
     // Single GF(2^128) multiplier (1-cycle latency)
@@ -101,11 +146,8 @@ module GHashEngine #(
     wire          mul_completing = mul_valid && busy_o;
     wire [0:127]  y_fwd = mul_completing ? mul_out : y_acc;
 
-    // Can we launch a multiply this cycle?
-    wire          can_process = busy_o && !done_emitted && (fifo_count > 0);
-
     // Combinational drive to multiplier (enables 1-block/cycle forwarding).
-    wire [0:127]  mul_a = y_fwd ^ fifo_head;
+    wire [0:127]  mul_a = y_fwd ^ fifo_head_reg;
     wire [0:127]  mul_b = h_reg;
 
     GFMult128 mul(
@@ -155,16 +197,9 @@ module GHashEngine #(
             tag_valid_o        <= 1'b0;
         end
         else begin
-            logic         do_enq;
-            logic [0:127] enq_data;
-            int           count_next;
-
             // 1-cycle pulse defaults
             ghash_valid_o <= 1'b0;
             tag_valid_o   <= 1'b0;
-
-            do_enq        = 1'b0;
-            enq_data      = '0;
 
             // Start a new session only when idle.
             if (start_i && ready_o) begin
@@ -195,35 +230,23 @@ module GHashEngine #(
                     y_acc <= mul_out;
 
                 // ----------------------------------------------------
-                // Ingest AAD/CT stream into FIFO (plus length block)
+                // Phase transitions on last AAD/CT blocks.
                 // ----------------------------------------------------
-                if ((phase == PH_AAD) && aad_valid_i && aad_ready_o) begin
-                    do_enq   = 1'b1;
-                    enq_data = aad_data_i;
-
-                    if (aad_last_i) begin
-                        if (ct_len_bits_reg != 64'd0)
-                            phase <= PH_CT;
-                        else begin
-                            phase     <= PH_DONE;
-                            recv_done <= 1'b1;
-                        end
-                    end
-                end
-                else if ((phase == PH_CT) && ct_valid_i && ct_ready_o) begin
-                    do_enq   = 1'b1;
-                    enq_data = ct_data_i;
-
-                    if (ct_last_i) begin
+                if ((phase == PH_AAD) && aad_valid_i && aad_ready_o && aad_last_i) begin
+                    if (ct_len_bits_reg != 64'd0)
+                        phase <= PH_CT;
+                    else begin
                         phase     <= PH_DONE;
                         recv_done <= 1'b1;
                     end
                 end
+                else if ((phase == PH_CT) && ct_valid_i && ct_ready_o && ct_last_i) begin
+                    phase     <= PH_DONE;
+                    recv_done <= 1'b1;
+                end
                 else if ((phase == PH_DONE) && recv_done && !len_block_enqueued
                          && (fifo_count < FIFO_DEPTH)) begin
-                    do_enq            = 1'b1;
-                    enq_data          = {aad_len_bits_reg, ct_len_bits_reg};
-                    len_block_enqueued<= 1'b1;
+                    len_block_enqueued <= 1'b1;
                 end
 
                 if (do_enq) begin
@@ -240,12 +263,9 @@ module GHashEngine #(
                 // ----------------------------------------------------
                 // FIFO count accounting
                 // ----------------------------------------------------
-                count_next = fifo_count;
-                if (do_enq)
-                    count_next = count_next + 1;
-                if (can_process)
-                    count_next = count_next - 1;
-                fifo_count <= count_next[PTR_W:0];
+                fifo_count <= fifo_count
+                              + {{PTR_W{1'b0}}, do_enq}
+                              - {{PTR_W{1'b0}}, can_process};
 
                 // ----------------------------------------------------
                 // Session complete: emit GHASH + TAG pulse
