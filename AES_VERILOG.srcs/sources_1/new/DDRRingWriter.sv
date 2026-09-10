@@ -63,6 +63,9 @@ module DDRRingWriter #(
     output wire                                M_AXI_BREADY,
     output wire [31:0]                         M_AXI_ARADDR,
     output wire [2:0]                          M_AXI_ARPROT,
+    output wire [7:0]                          M_AXI_ARLEN,
+    output wire [2:0]                          M_AXI_ARSIZE,
+    output wire [1:0]                          M_AXI_ARBURST,
     output wire                                M_AXI_ARVALID,
     input  wire                                M_AXI_ARREADY,
     input  wire [31:0]                         M_AXI_RDATA,
@@ -182,6 +185,13 @@ module DDRRingWriter #(
 
     assign M_AXI_ARADDR  = m_axi_araddr;
     assign M_AXI_ARPROT  = 3'b000;
+    // Complete the read-address channel: single 4-byte INCR burst. The
+    // wrapper used to expose only ADDR/PROT/VALID, so the block-design
+    // elaboration mis-sized the consume-index read and the full-ring drop
+    // protection never worked on hardware (the ring silently overflowed).
+    assign M_AXI_ARLEN   = 8'd0;
+    assign M_AXI_ARSIZE  = 3'b010;
+    assign M_AXI_ARBURST = 2'b01;
     assign M_AXI_ARVALID = m_axi_arvalid;
     assign M_AXI_RREADY  = m_axi_rready;
 
