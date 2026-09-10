@@ -276,6 +276,11 @@ module DDRRingWriter #(
                         if (S_AXI_WDATA[1]) begin
                             control_enable <= 1'b0;
                             irq_status_reg <= 32'd0;
+                            // A soft reset must also clear the PS-pushed
+                            // consume index, or a restarted sender inherits
+                            // the previous session's value and the writer
+                            // drops every packet forever.
+                            ps_consume_reg <= 32'd0;
                         end
                     end
                     6'd3: ring_base_addr[31:0] <= S_AXI_WDATA;
@@ -327,6 +332,10 @@ module DDRRingWriter #(
                     6'd15: axi_rdata <= fault_code;
                     6'd16: axi_rdata <= irq_enable_reg;
                     6'd17: axi_rdata <= irq_status_reg;
+                    // 6'd19: coherent-build flag. This writer reaches DDR
+                    // through the PS ACP, so its writes snoop the CPU caches
+                    // and software needs no invalidate before reading slots.
+                    6'd19: axi_rdata <= 32'd1;
                     default: axi_rdata <= 32'd0;
                 endcase
                 axi_rvalid  <= 1'b1;

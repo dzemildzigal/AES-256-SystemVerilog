@@ -220,7 +220,8 @@ set_property -dict [list \
     CONFIG.PCW_FCLK_CLK1_BUF {TRUE} \
     CONFIG.PCW_FCLK_CLK2_BUF {TRUE} \
     CONFIG.PCW_USE_M_AXI_GP0 {1} \
-    CONFIG.PCW_USE_S_AXI_HP0 {1} \
+    CONFIG.PCW_USE_S_AXI_HP0 {0} \
+    CONFIG.PCW_USE_S_AXI_ACP {1} \
     CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100} \
     CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {142} \
     CONFIG.PCW_FPGA2_PERIPHERAL_FREQMHZ {200} \
@@ -545,14 +546,19 @@ foreach _p [list \
     force_connect_bd_net $design_clk_pin $_p
 }
 
-create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 hp0_mem_ic
+create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 acp_mem_ic
 set_property -dict [list \
     CONFIG.NUM_MI {1} \
     CONFIG.NUM_SI {1} \
-] [get_bd_cells hp0_mem_ic]
+] [get_bd_cells acp_mem_ic]
 
-connect_bd_intf_net [get_bd_intf_pins $WRITER_INST/M_AXI] [get_bd_intf_pins hp0_mem_ic/S00_AXI]
-connect_bd_intf_net [get_bd_intf_pins hp0_mem_ic/M00_AXI] [get_bd_intf_pins ps7/S_AXI_HP0]
+connect_bd_intf_net [get_bd_intf_pins $WRITER_INST/M_AXI] [get_bd_intf_pins acp_mem_ic/S00_AXI]
+# The writer reaches DDR through the ACP so its writes snoop the CPU
+# caches. Without coherency the shim pays 2.6 us of invalidate per
+# packet (plus zocl ioctl serialization between the two sender
+# threads), which caps the chain below the 70,560 packets/s that
+# 2352 segments x 30 fps needs.
+connect_bd_intf_net [get_bd_intf_pins acp_mem_ic/M00_AXI] [get_bd_intf_pins ps7/S_AXI_ACP]
 connect_bd_intf_net [get_bd_intf_pins dvi2rgb_0/RGB] [get_bd_intf_pins color_swap_0/pixel_input]
 connect_bd_intf_net [get_bd_intf_pins color_swap_0/pixel_output] [get_bd_intf_pins video_fe_probe_0/vid_io_in]
 connect_bd_intf_net [get_bd_intf_pins video_fe_probe_0/vid_io_out] [get_bd_intf_pins v_vid_in_axi4s_0/vid_io_in]
@@ -660,13 +666,13 @@ set ps_fclk0_pin       [get_bd_pins ps7/FCLK_CLK0]
 set ps_fclk1_pin       [get_bd_pins ps7/FCLK_CLK1]
 set ps_fclk2_pin       [get_bd_pins ps7/FCLK_CLK2]
 set ps_fclk_resetn_pin [get_bd_pins ps7/FCLK_RESET0_N]
-set ps_hp0_aclk_pin    [get_bd_pins ps7/S_AXI_HP0_ACLK]
+set ps_acp_aclk_pin    [get_bd_pins ps7/S_AXI_ACP_ACLK]
 
 # The design clock (mux output) feeds the design-domain logic; the PS-side
-# HP0 port stays on stable FCLK0 and hp0_mem_ic bridges the two (S00 = mux
+# ACP port stays on stable FCLK0 and acp_mem_ic bridges the two (S00 = mux
 # clock from the writer, M00 = FCLK0 to the PS). M_AXI_GP0 stays on FCLK0
 # via the automation.
-connect_if_unconnected $ps_fclk0_pin $ps_hp0_aclk_pin
+connect_if_unconnected $ps_fclk0_pin $ps_acp_aclk_pin
 connect_if_unconnected $ps_fclk1_pin [get_bd_pins v_vid_in_axi4s_0/aclk]
 
 connect_if_unconnected $design_clk_pin [get_bd_pins hdmi_axis_cdc_fifo/m_axis_aclk]
@@ -697,12 +703,12 @@ connect_if_unconnected [get_bd_pins rst_const1/dout] [get_bd_pins rst_pixelclk/d
 connect_bd_net [get_bd_pins dvi2rgb_0/aPixelClkLckd] [get_bd_pins rst_pixelclk/aux_reset_in]
 
 foreach p [list \
-    [get_bd_pins hp0_mem_ic/ACLK] \
-    [get_bd_pins hp0_mem_ic/M00_ACLK] \
+    [get_bd_pins acp_mem_ic/ACLK] \
+    [get_bd_pins acp_mem_ic/M00_ACLK] \
 ] {
     connect_if_unconnected $ps_fclk0_pin $p
 }
-connect_if_unconnected $design_clk_pin [get_bd_pins hp0_mem_ic/S00_ACLK]
+connect_if_unconnected $design_clk_pin [get_bd_pins acp_mem_ic/S00_ACLK]
 foreach p [list \
     [get_bd_pins $AES_INST/S_AXI_ACLK] \
     [get_bd_pins $WRITER_INST/S_AXI_ACLK] \
@@ -714,9 +720,9 @@ foreach p [list \
     connect_if_unconnected $design_clk_pin $p
 }
 
-force_connect_bd_net [get_bd_pins rst_ps7_100m/interconnect_aresetn] [get_bd_pins hp0_mem_ic/ARESETN]
-force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins hp0_mem_ic/S00_ARESETN]
-force_connect_bd_net [get_bd_pins rst_ps7_stable/peripheral_aresetn] [get_bd_pins hp0_mem_ic/M00_ARESETN]
+force_connect_bd_net [get_bd_pins rst_ps7_100m/interconnect_aresetn] [get_bd_pins acp_mem_ic/ARESETN]
+force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins acp_mem_ic/S00_ARESETN]
+force_connect_bd_net [get_bd_pins rst_ps7_stable/peripheral_aresetn] [get_bd_pins acp_mem_ic/M00_ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $AES_INST/S_AXI_ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $WRITER_INST/S_AXI_ARESETN]
 force_connect_bd_net [get_bd_pins rst_ps7_100m/peripheral_aresetn] [get_bd_pins $INJECTOR_INST/aresetn]
