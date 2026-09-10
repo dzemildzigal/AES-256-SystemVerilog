@@ -328,6 +328,23 @@ module tb_fullchain;
         end
     endtask
 
+    // PS-side consume push: the writer takes its full-ring decision from
+    // AXI-Lite register 0x48, pushed here after every publication, so the
+    // 16-slot ring never fills during this composition test.
+    logic        ring_pusher_enabled = 1'b0;
+    logic [31:0] ring_pushed_consume = 32'hFFFFFFFF;
+
+    initial begin
+        wait (ring_pusher_enabled);
+        forever begin
+            @(posedge clk);
+            if (ring_ctrl_consume !== ring_pushed_consume) begin
+                ring_pushed_consume = ring_ctrl_consume;
+                ring_axi_write(8'h48, ring_ctrl_consume);
+            end
+        end
+    end
+
     // ---- AXI-Lite master tasks (the sequencer's config port) ----
     task axi_write(input [7:0] addr, input [31:0] data);
         begin
@@ -618,6 +635,7 @@ module tb_fullchain;
         ring_axi_write(8'h0C, B2_RING_BASE);
         ring_axi_write(8'h14, B2_CTRL_BASE);
         ring_axi_write(8'h04, 32'h00000001);
+        ring_pusher_enabled = 1'b1;
         $display("T%0t B2 RING CONFIGURED", $time);
         $display("T%0t CONFIG START", $time);
 

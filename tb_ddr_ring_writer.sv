@@ -203,6 +203,27 @@ module tb_ddr_ring_writer;
         end
     endtask
 
+    // PS-side consume push. The writer no longer reads the consume index over
+    // its AXI master port; the PS pushes it to register 0x48. In the drain
+    // phase every publication is consumed immediately, so the ring never
+    // fills. In the forced-full phase consume_enabled drops, the pushed value
+    // freezes, and the ring must fill and count drops.
+    logic        pusher_enabled = 1'b0;
+    logic [31:0] pushed_consume = 32'hFFFFFFFF;
+    integer      consume_push_count = 0;
+
+    initial begin
+        wait (pusher_enabled);
+        forever begin
+            @(posedge clk);
+            if (consume_enabled && (ctrl_consume !== pushed_consume)) begin
+                pushed_consume = ctrl_consume;
+                axi_write(8'h48, ctrl_consume);
+                consume_push_count = consume_push_count + 1;
+            end
+        end
+    end
+
     // Packet source. Byte k of packet p is p+k, except the first 8 bytes are
     // the B.1 nonce prefix p in big-endian form.
     integer src_packet = 0;
@@ -306,6 +327,7 @@ module tb_ddr_ring_writer;
         repeat (10) @(posedge clk);
         rstn = 1'b1;
         configure();
+        pusher_enabled = 1'b1;
         record_expected = 1'b1;
 
         // Drain mode: 10,000 packets, every slot consumed at publication.

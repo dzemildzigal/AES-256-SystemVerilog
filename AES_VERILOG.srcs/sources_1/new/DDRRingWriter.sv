@@ -141,11 +141,14 @@ module DDRRingWriter #(
     reg [31:0]  ring_log2_reg;
     reg [31:0]  slot_stride_reg;
     reg [31:0]  produce_idx;
-    reg [31:0]  consume_idx_shadow;
-    // Refresh the PS-owned consume index periodically and whenever the
-    // cached value says the ring may be full. This keeps the normal path
-    // from paying one AXI read for every packet while retaining safe drops.
-    reg [5:0]   consume_read_age;
+    // PS-pushed consume index (AXI-Lite register 0x48). The writer used to
+    // READ the consume word from the control page over its AXI master port.
+    // On hardware that read returns the writer's own produce word (the HP0
+    // read path mis-answers a 4-byte read at +4 inside the 8-byte region the
+    // publish write touches), so the full-ring test could never fire and the
+    // ring silently overwrote unconsumed slots. The PS now pushes the value
+    // over the proven AXI-Lite path; no master read remains.
+    reg [31:0]  ps_consume_reg;
     reg [31:0]  drop_count;
     reg [31:0]  error_count;
     reg [63:0]  complete_count;
@@ -178,22 +181,16 @@ module DDRRingWriter #(
     assign M_AXI_WVALID  = m_axi_wvalid;
     assign M_AXI_BREADY  = m_axi_bready;
 
-    // AXI master read channel. It reads CTRL_BASE+4 before each packet.
-    reg [31:0] m_axi_araddr;
-    reg        m_axi_arvalid;
-    reg        m_axi_rready;
-
-    assign M_AXI_ARADDR  = m_axi_araddr;
+    // AXI master read channel: retired. The PS pushes the consume index over
+    // AXI-Lite (register 0x48) instead of the writer reading it. The ports
+    // stay for block-design interface compatibility and are tied off.
+    assign M_AXI_ARADDR  = 32'd0;
     assign M_AXI_ARPROT  = 3'b000;
-    // Complete the read-address channel: single 4-byte INCR burst. The
-    // wrapper used to expose only ADDR/PROT/VALID, so the block-design
-    // elaboration mis-sized the consume-index read and the full-ring drop
-    // protection never worked on hardware (the ring silently overflowed).
     assign M_AXI_ARLEN   = 8'd0;
     assign M_AXI_ARSIZE  = 3'b010;
     assign M_AXI_ARBURST = 2'b01;
-    assign M_AXI_ARVALID = m_axi_arvalid;
-    assign M_AXI_RREADY  = m_axi_rready;
+    assign M_AXI_ARVALID = 1'b0;
+    assign M_AXI_RREADY  = 1'b0;
 
     // One slot buffer. The input body is PACKET_WORDS words; the remaining
     // words are written as explicit zero transport padding.
@@ -207,9 +204,6 @@ module DDRRingWriter #(
     reg [3:0]  writer_state;
 
     wire [31:0] ring_mask = RING_SLOTS - 1;
-    wire consume_refresh = (consume_read_age >= 6'd31) ||
-                           ((((produce_idx + 1'b1) & ring_mask) ==
-                             (consume_idx_shadow & ring_mask)));
     wire publish_fire = (writer_state == ST_PUB_B) &&
                         M_AXI_BVALID && m_axi_bready &&
                         (M_AXI_BRESP == 2'b00);
@@ -262,6 +256,7 @@ module DDRRingWriter #(
     always @(posedge clk) begin
         if (rst) begin
             control_enable    <= 1'b0;
+            ps_consume_reg    <= 32'd0;
             ring_base_addr    <= 64'd0;
             ctrl_base_addr    <= 64'd0;
             ring_log2_reg     <= RING_LOG2;
@@ -288,6 +283,7 @@ module DDRRingWriter #(
                     6'd5: ctrl_base_addr[31:0] <= S_AXI_WDATA;
                     6'd6: ctrl_base_addr[63:32] <= S_AXI_WDATA;
                     6'd9: irq_enable_reg <= S_AXI_WDATA;
+                    6'd18: ps_consume_reg <= S_AXI_WDATA;
                     default: begin end
                 endcase
             end
@@ -323,7 +319,7 @@ module DDRRingWriter #(
                     6'd7:  axi_rdata <= RING_LOG2;
                     6'd8:  axi_rdata <= SLOT_STRIDE;
                     6'd9:  axi_rdata <= produce_idx;
-                    6'd10: axi_rdata <= consume_idx_shadow;
+                    6'd10: axi_rdata <= ps_consume_reg;
                     6'd11: axi_rdata <= drop_count;
                     6'd12: axi_rdata <= complete_count[31:0];
                     6'd13: axi_rdata <= complete_count[63:32];
@@ -344,8 +340,6 @@ module DDRRingWriter #(
     always @(posedge clk) begin
         if (rst) begin
             produce_idx        <= 32'd0;
-            consume_idx_shadow <= 32'd0;
-            consume_read_age   <= 6'd31;
             drop_count         <= 32'd0;
             error_count        <= 32'd0;
             complete_count     <= 64'd0;
@@ -367,9 +361,6 @@ module DDRRingWriter #(
             m_axi_wlast        <= 1'b0;
             m_axi_wvalid       <= 1'b0;
             m_axi_bready       <= 1'b0;
-            m_axi_araddr       <= 32'd0;
-            m_axi_arvalid     <= 1'b0;
-            m_axi_rready       <= 1'b0;
         end else begin
             if (!control_enable || writer_fault) begin
                 writer_state <= writer_fault ? ST_ERROR : ST_IDLE;
@@ -377,8 +368,6 @@ module DDRRingWriter #(
                 m_axi_awvalid <= 1'b0;
                 m_axi_wvalid  <= 1'b0;
                 m_axi_bready  <= 1'b0;
-                m_axi_arvalid <= 1'b0;
-                m_axi_rready  <= 1'b0;
             end else begin
                 case (writer_state)
                     ST_IDLE: begin
@@ -390,49 +379,23 @@ module DDRRingWriter #(
                             writer_state <= ST_ERROR;
                         end else begin
                             target_slot <= produce_idx[RING_LOG2-1:0];
-                            if (consume_refresh) begin
-                                m_axi_araddr <= ctrl_base_addr[31:0] + 32'd4;
-                                m_axi_arvalid <= 1'b1;
-                                m_axi_rready <= 1'b1;
-                                writer_state <= ST_CTRL_AR;
-                            end else begin
-                                capture_word_count <= 8'd0;
-                                writer_busy <= 1'b1;
-                                writer_state <= ST_CAPTURE;
-                            end
-                        end
-                    end
-
-                    ST_CTRL_AR: begin
-                        if (m_axi_arvalid && M_AXI_ARREADY)
-                            m_axi_arvalid <= 1'b0;
-                        if (M_AXI_RVALID && m_axi_rready) begin
-                            m_axi_rready <= 1'b0;
-                            consume_idx_shadow <= M_AXI_RDATA;
-                            consume_read_age <= 6'd0;
-                            if ((((produce_idx + 1) & ring_mask) ==
-                                 (M_AXI_RDATA & ring_mask))) begin
-                                drop_count <= drop_count + 1'b1;
+                            // Full-ring test against the PS-pushed consume
+                            // index (AXI-Lite register 0x48). No master read.
+                            if ((((produce_idx + 1'b1) & ring_mask) ==
+                                 (ps_consume_reg & ring_mask))) begin
+                                drop_count   <= drop_count + 1'b1;
                                 writer_state <= ST_DROP;
                             end else begin
                                 capture_word_count <= 8'd0;
                                 writer_busy <= 1'b1;
                                 writer_state <= ST_CAPTURE;
                             end
-                            if (M_AXI_RRESP != 2'b00) begin
-                                writer_fault <= 1'b1;
-                                fault_code <= FAULT_CTRL_R;
-                                error_count <= error_count + 1'b1;
-                                writer_state <= ST_ERROR;
-                            end
                         end
                     end
 
-                    ST_CTRL_R: begin
-                        // Reserved state. Reads complete in ST_CTRL_AR so the
-                        // AXI read channel cannot be mistaken for packet data.
-                        writer_state <= ST_IDLE;
-                    end
+                    // ST_CTRL_AR / ST_CTRL_R are retired: the consume index
+                    // arrives by AXI-Lite push, so no read state is needed.
+                    // Their encodings stay reserved for the state probe.
 
                     ST_DROP: begin
                         // Drain exactly one complete packet. No DDR write is
@@ -573,7 +536,6 @@ module DDRRingWriter #(
                                 writer_state <= ST_ERROR;
                             end else begin
                                 produce_idx <= next_produce_slot;
-                                consume_read_age <= consume_read_age + 1'b1;
                                 complete_count <= complete_count + 1'b1;
                                 writer_busy <= 1'b0;
                                 writer_state <= ST_IDLE;
@@ -586,8 +548,6 @@ module DDRRingWriter #(
                         m_axi_awvalid <= 1'b0;
                         m_axi_wvalid <= 1'b0;
                         m_axi_bready <= 1'b0;
-                        m_axi_arvalid <= 1'b0;
-                        m_axi_rready <= 1'b0;
                     end
 
                     default: writer_state <= ST_IDLE;
