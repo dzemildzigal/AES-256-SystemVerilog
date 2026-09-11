@@ -9,7 +9,7 @@ module AES_GCM_Session_Sequencer #(
     parameter logic [7:0]  DEFAULT_KEY_ID = 8'd1,
     parameter logic [31:0] DEFAULT_NONCE_DOMAIN = 32'h0000_0001,
     parameter logic [63:0] DEFAULT_NONCE_SEED = 64'd1,
-    parameter logic [15:0] DEFAULT_PAYLOAD_BYTES = 16'd1200,
+    parameter logic [15:0] DEFAULT_PAYLOAD_BYTES = 16'd1320,
     parameter logic [15:0] HEADER_BYTES = 16'd40
 ) (
     input  logic         aclk,

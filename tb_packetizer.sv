@@ -3,9 +3,9 @@
 // Feeds 4 synthetic 720p SOURCE frames (921600 px each, SOF on pixel 0) at
 // the real 60 Hz source rate. 2:1 decimation (ST_DISCARD) publishes every
 // other one, so 2 of the 4 fed frames are captured. Checks:
-//   - 2352 segments (tlasts) per CAPTURED frame, 76 beats per segment
+//   - 2095 segments (tlasts) per CAPTURED frame, 85 beats per segment
 //   - header: MAGIC, frame_id = 0, 1 (sequential per published frame),
-//     segment_id 0..2351, segment_count = 2352
+//     segment_id 0..2094, segment_count = 2095
 //   - payload bytes = the known pixel pattern; last segment = 24 real + pad
 module tb_packetizer;
 
@@ -13,8 +13,8 @@ module tb_packetizer;
     localparam int FRAMES   = 4;      // 4 SOURCE frames fed; 2:1 decimation
                                       // publishes 2 of them
     localparam int PUBLISHED = FRAMES / 2;
-    localparam int SEGS     = 2352;
-    localparam int BEATS    = 76;
+    localparam int SEGS     = 2095;
+    localparam int BEATS    = 85;
 
     logic clk = 0; always #5 clk = ~clk;   // 100 MHz
     logic rstn = 0;
@@ -29,7 +29,7 @@ module tb_packetizer;
     logic [15:0] cfg_stream_id  = 16'hA5A5;
     logic [7:0]  cfg_ptype      = 8'h01;
     logic [7:0]  cfg_kid        = 8'h01;
-    logic [15:0] cfg_pbytes     = 16'd1176;
+    logic [15:0] cfg_pbytes     = 16'd1320;
     logic [63:0] cfg_nonce      = 64'h1122334455667788;
     logic        cfg_enable     = 0;
 
@@ -183,7 +183,7 @@ module tb_packetizer;
                     int px_in_seg, px_global, bin_px;
                     px_in_seg = (byte_idx - 40) / 3;
                     bin_px    = (byte_idx - 40) % 3;
-                    px_global = segs_in_this_frame * 392 + px_in_seg;
+                    px_global = segs_in_this_frame * 440 + px_in_seg;
                     if (m_tdata[8*b +: 8] != exp_byte(expect_source_frame, px_global, bin_px)) begin
                         errors++;
                         if (errors < 8)

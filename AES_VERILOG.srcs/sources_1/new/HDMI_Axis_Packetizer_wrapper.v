@@ -3,7 +3,7 @@
 // Vivado block-design module references require a plain .v top file.
 
 module HDMI_Axis_Packetizer_wrapper #(
-    parameter MAX_PAYLOAD_BYTES = 1200
+    parameter MAX_PAYLOAD_BYTES = 1400
 )(
     input  wire         aclk,
     input  wire         aresetn,

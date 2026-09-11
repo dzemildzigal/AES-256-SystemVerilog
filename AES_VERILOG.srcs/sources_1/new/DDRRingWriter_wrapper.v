@@ -6,8 +6,8 @@ module DDRRingWriter_wrapper #(
     parameter C_S_AXI_DATA_WIDTH = 32,
     parameter C_S_AXI_ADDR_WIDTH = 8,
     parameter VERSION_VALUE = 32'h0002_0000,
-    parameter PACKET_BYTES = 1240,
-    parameter SLOT_STRIDE = 1280,
+    parameter PACKET_BYTES = 1384,
+    parameter SLOT_STRIDE = 1408,
     parameter RING_LOG2 = 11
 )(
     input wire S_AXI_ACLK,

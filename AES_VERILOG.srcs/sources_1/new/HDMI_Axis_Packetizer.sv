@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module HDMI_Axis_Packetizer #(
-    parameter int unsigned MAX_PAYLOAD_BYTES = 1200
+    parameter int unsigned MAX_PAYLOAD_BYTES = 1400
 ) (
     input  logic         aclk,
     input  logic         aresetn,
@@ -38,24 +38,30 @@ module HDMI_Axis_Packetizer #(
     localparam int unsigned HEADER_BYTES = 40;
 
     // Full-frame transport geometry (1280x720 RGB888, fixed):
-    //   payload = 1176 bytes = 392 pixels (40+1176 = 1216 = 76 x 16-byte beats)
-    //   frame   = 921600 px = 2351 full segments + one 8-pixel segment
-    //             -> SEGS_PER_FRAME = 2352 (last segment = 8 px + 384 px pad)
+    //   slot    = 1408 bytes = 1280 payload region... see below. The slot is a
+    //             whole number of 128-byte AXI bursts (11) and stays 64 bytes
+    //             under the 1500-byte MTU, so no VLAN tag can force fragments.
+    //   payload = 1320 bytes = 440 pixels (40+1320 = 1360 = 85 x 16-byte beats)
+    //   frame   = 921600 px = 2094 full segments + one 240-pixel segment
+    //             -> SEGS_PER_FRAME = 2095 (last = 240 px + 200 px pad)
     //   Source: 1280x720 at 60 Hz. This GPU has no 720p30 output mode at all
     //   (confirmed from its own mode list: only 50/59/60/75 Hz). 2:1 frame
     //   decimation (ST_DISCARD) halves the real 60 Hz source to the wire
-    //   rate: 2352*30 = 70560 packets/s.
+    //   rate: 2095*30 = 62850 packets/s. The larger slot exists because the
+    //   PS sender is CPU bound at the kernel TX path: 2352 segments/frame
+    //   needed 70560 packets/s and left the chain 2% short, while the
+    //   coherent ACP write path costs 3.5%.
     //   Captured frames close by pixel count, never by SOF-abort. The
     //   discarded frame also closes by pixel count (FRAME_PX), not by
     //   waiting for the next SOF, so no stale-SOF handling is needed.
-    localparam int unsigned PX_PER_SEG      = 392;
-    localparam logic [15:0] SEGS_PER_FRAME  = 16'd2352;
-    localparam logic [8:0]  LAST_SEG_PX     = 9'd8;   // 921600 - 2351*392
+    localparam int unsigned PX_PER_SEG      = 440;
+    localparam logic [15:0] SEGS_PER_FRAME  = 16'd2095;
+    localparam logic [8:0]  LAST_SEG_PX     = 9'd240;  // 921600 - 2094*440
     localparam int unsigned FRAME_PX        = 1280 * 720;  // 921600
 
     typedef enum logic [1:0] {
         ST_ARM     = 2'd0,   // wait for the first real SOF
-        ST_ACTIVE  = 2'd1,   // capture: header + 1176-byte segments
+        ST_ACTIVE  = 2'd1,   // capture: header + 1320-byte segments
         ST_DISCARD = 2'd2    // 2:1 decimation: drain one full source frame,
                              // no packing, closed by pixel count
     } state_t;
@@ -71,7 +77,7 @@ module HDMI_Axis_Packetizer #(
 
     reg [7:0]   header_idx;    // < 40 = header phase; == 40 = payload phase
     reg [10:0]  payload_idx;   // payload bytes fed so far (0..1175)
-    reg [8:0]   pixel_cnt;     // pixels in the current segment (0..391)
+    reg [8:0]   pixel_cnt;     // pixels in the current segment (0..439)
     reg [8:0]   pad_cnt;       // pad pixels remaining at the frame cut
     reg [19:0]  discard_px_cnt;// pixels discarded so far in ST_DISCARD
     // Packetizer headers can wait in packet_seq_fifo while AES processes an
@@ -282,7 +288,7 @@ module HDMI_Axis_Packetizer #(
                             payload_idx <= payload_idx + 11'd3;
                             if (segment_id == SEGS_PER_FRAME-1 && pixel_cnt == LAST_SEG_PX-1) begin
                                 // Frame's last real pixel fed: pad the final
-                                // segment to 392 px; the pad completion closes
+                                // segment to 440 px; the pad completion closes
                                 // the frame and starts the next one.
                                 pad_cnt <= PX_PER_SEG - LAST_SEG_PX;
                                 pixel_cnt <= pixel_cnt + 1'b1;

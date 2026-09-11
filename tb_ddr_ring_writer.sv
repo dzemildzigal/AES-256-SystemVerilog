@@ -1,14 +1,14 @@
 `timescale 1ns / 1ps
 
 module tb_ddr_ring_writer;
-    localparam integer PACKET_BYTES = 1240;
-    localparam integer SLOT_BYTES = 1280;
-    localparam integer PACKET_WORDS = 155;  // 1240 bytes / 8-byte AXI words
-    localparam integer SLOT_WORDS = 160;    // 1280 bytes / 8-byte AXI words
-    localparam integer AXIS_BEATS = 78;     // 1 prefix beat + 77 CT/tag beats
+    localparam integer PACKET_BYTES = 1384;
+    localparam integer SLOT_BYTES = 1408;
+    localparam integer PACKET_WORDS = 173;  // 1384 bytes / 8-byte AXI words
+    localparam integer SLOT_WORDS = 176;    // 1408 bytes / 8-byte AXI words
+    localparam integer AXIS_BEATS = 1 + (PACKET_BYTES - 8) / 16;  // 1 prefix beat + CT/tag beats
     localparam integer RING_LOG2 = 11;
     localparam integer RING_SLOTS = 1 << RING_LOG2;
-    localparam integer SLOT_STRIDE = 1280;
+    localparam integer SLOT_STRIDE = 1408;
     localparam [31:0] RING_BASE = 32'h1000_0000;
     localparam [31:0] CTRL_BASE = 32'h2000_0000;
     localparam integer DRAIN_PACKETS = 10000;
@@ -87,7 +87,7 @@ module tb_ddr_ring_writer;
         .S_AXIS_TREADY(axis_tready), .irq(irq)
     );
 
-    // Sparse enough for this test: 2048 x 1280 = 2.5 MiB.
+    // Sparse enough for this test: 2048 x 1408 = 2.75 MiB.
     logic [7:0] mem [0:RING_SLOTS*SLOT_STRIDE-1];
     logic [31:0] ctrl_consume = 0;
     logic [31:0] ctrl_produce = 0;
@@ -347,8 +347,8 @@ module tb_ddr_ring_writer;
             $fatal(1, "AXI 4KiB boundary errors %0d", axi_boundary_errors);
         if (slot_boundary_errors != 0)
             $fatal(1, "slot/burst geometry errors %0d", slot_boundary_errors);
-        if (data_burst_count != DRAIN_PACKETS * 10)
-            $fatal(1, "data burst count %0d (want %0d)", data_burst_count, DRAIN_PACKETS * 10);
+        if (data_burst_count != DRAIN_PACKETS * 11)
+            $fatal(1, "data burst count %0d (want %0d)", data_burst_count, DRAIN_PACKETS * 11);
         verify_slots();
         if (verify_errors != 0)
             $fatal(1, "slot data errors after drain: %0d", verify_errors);
@@ -376,8 +376,8 @@ module tb_ddr_ring_writer;
                  source_sent, ctrl_publish_count, verify_count, verify_errors,
                  dut.drop_count, ctrl_read_count, data_burst_count);
         if (verify_errors != 0) $fatal(1, "slot data/padding errors %0d", verify_errors);
-        $display("B2 geometry: data_bursts=%0d expected=%0d boundary_errors=%0d slot_errors=%0d",
-                 data_burst_count, DRAIN_PACKETS * 10,
+        $display("B2 geometry: data_bursts=%0d (= publishes %0d x %0d bursts) boundary_errors=%0d slot_errors=%0d",
+                 data_burst_count, ctrl_publish_count, SLOT_WORDS/16 + ((SLOT_WORDS % 16) ? 1 : 0),
                  axi_boundary_errors, slot_boundary_errors);
         $finish;
     end

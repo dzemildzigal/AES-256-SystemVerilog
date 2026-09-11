@@ -2,15 +2,15 @@
 // tb_fullchain - packetizer -> sequencer -> AES full-chain check.
 // Feeds 4 synthetic 720p frames and watches the AES's ciphertext stream:
 //   - every beat TKEEP == 0xFFFF
-//   - exactly 77 beats per packet (76 CT + 1 tag), tlast on the tag beat
-//   - 4704 packets (2 captured frames x 2352 segments)
+//   - exactly 86 beats per packet (85 CT + 1 tag), tlast on the tag beat
+//   - 4190 packets (2 captured frames x 2095 segments)
 // Also flags the sequencer's inter-packet behavior at the full back-to-back
 // rate (the first time it runs without the old 200k-cycle pacer).
 module tb_fullchain;
 
     localparam int FRAME_PX = 1280 * 720;
     localparam int FRAMES   = 4;
-    localparam int SEGS     = 2352;
+    localparam int SEGS     = 2095;
     localparam int TARGET_PKTS = 100;
 
     logic clk = 0; always #5 clk = ~clk;
@@ -71,7 +71,8 @@ module tb_fullchain;
     // ---- B.2 DDR ring writer composition model ---------------------------
     localparam integer B2_RING_LOG2 = 4;
     localparam integer B2_RING_SLOTS = 1 << B2_RING_LOG2;
-    localparam integer B2_SLOT_STRIDE = 1280;
+    localparam integer B2_SLOT_STRIDE = 1408;
+    localparam integer B2_BURSTS_PER_SLOT = 11;   // 1408 bytes / 128-byte bursts
     localparam [31:0] B2_RING_BASE = 32'h1000_0000;
     localparam [31:0] B2_CTRL_BASE = 32'h2000_0000;
 
@@ -210,7 +211,7 @@ module tb_fullchain;
     );
 
     DDRRingWriter #(
-        .PACKET_BYTES(1240), .SLOT_STRIDE(B2_SLOT_STRIDE),
+        .PACKET_BYTES(1384), .SLOT_STRIDE(B2_SLOT_STRIDE),
         .RING_LOG2(B2_RING_LOG2)
     ) ring_writer (
         .S_AXI_ACLK(clk), .S_AXI_ARESETN(rstn),
@@ -483,7 +484,7 @@ module tb_fullchain;
             end
             beats_in_pkt <= beats_in_pkt + 1;
             if (ct_tlast) begin
-                if (beats_in_pkt + 1 != 77) begin
+                if (beats_in_pkt + 1 != 86) begin
                     errors++;
                     if (errors < 8)
                         $display("T%0t packet beat count bad: %0d (pkt %0d)", $time, beats_in_pkt + 1, tlast_total);
@@ -515,8 +516,8 @@ module tb_fullchain;
     longint inj_beats_total = 0;
     longint inj_tlast_total = 0;
     logic [63:0] exp_nonce;
-    logic [7:0] raw_bytes [0:TARGET_PKTS*1232-1];
-    logic [7:0] inj_bytes [0:TARGET_PKTS*1240-1];
+    logic [7:0] raw_bytes [0:TARGET_PKTS*1376-1];
+    logic [7:0] inj_bytes [0:TARGET_PKTS*1384-1];
     integer raw_capture_bytes = 0;
     integer raw_capture_packets = 0;
     integer inj_capture_bytes = 0;
@@ -528,7 +529,7 @@ module tb_fullchain;
             inj_beats_in_pkt <= 0;
         end else if (ct_tvalid && ct_tready && raw_capture_packets < TARGET_PKTS) begin
             for (int j = 0; j < 16; j++) begin
-                if (ct_tkeep[j] && raw_capture_bytes < TARGET_PKTS*1232) begin
+                if (ct_tkeep[j] && raw_capture_bytes < TARGET_PKTS*1376) begin
                     raw_bytes[raw_capture_bytes] = ct_tdata[8*j +: 8];
                     raw_capture_bytes = raw_capture_bytes + 1;
                 end
@@ -541,7 +542,7 @@ module tb_fullchain;
     always @(posedge clk) begin
         if (rstn && inj_tvalid && inj_tready && inj_capture_packets < TARGET_PKTS) begin
             for (int j = 0; j < 16; j++) begin
-                if (inj_tkeep[j] && inj_capture_bytes < TARGET_PKTS*1240) begin
+                if (inj_tkeep[j] && inj_capture_bytes < TARGET_PKTS*1384) begin
                     inj_bytes[inj_capture_bytes] = inj_tdata[8*j +: 8];
                     inj_capture_bytes = inj_capture_bytes + 1;
                 end
@@ -598,7 +599,7 @@ module tb_fullchain;
             end
             inj_beats_in_pkt <= inj_beats_in_pkt + 1;
             if (inj_tlast) begin
-                if (inj_beats_in_pkt + 1 != 78) begin
+                if (inj_beats_in_pkt + 1 != 87) begin
                     inj_errors++;
                     if (inj_errors < 8)
                         $display("T%0t INJ packet beat count bad: %0d (pkt %0d)", $time, inj_beats_in_pkt + 1, inj_pkt_index);
@@ -646,7 +647,7 @@ module tb_fullchain;
         axi_write(8'h10, 32'h00000001);                    // REG_NONCE_DOMAIN
         axi_write(8'h14, 32'h00000000);                    // REG_NONCE_SEED_HI
         axi_write(8'h18, 32'h00000001);                    // REG_NONCE_SEED_LO
-        axi_write(8'h1C, 32'd1176);                        // REG_PAYLOAD_BYTES
+        axi_write(8'h1C, 32'd1320);                        // REG_PAYLOAD_BYTES
         axi_write(8'h00, 32'h00000000);                    // CTRL = 0 (configure-only)
         for (i = 0; i < 8; i = i + 1)
             axi_write(8'h20 + i*4, key_words[i]);          // REG_KEY0-7
@@ -668,8 +669,8 @@ module tb_fullchain;
                          beats_total, tlast_total, TARGET_PKTS, errors, first_stall);
                 $display("DONE inj_beats=%0d inj_tlasts=%0d (expect %0d) inj_errors=%0d",
                          inj_beats_total, inj_tlast_total, TARGET_PKTS, inj_errors);
-                if (raw_capture_bytes != TARGET_PKTS*1232 ||
-                    inj_capture_bytes != TARGET_PKTS*1240 ||
+                if (raw_capture_bytes != TARGET_PKTS*1376 ||
+                    inj_capture_bytes != TARGET_PKTS*1384 ||
                     raw_capture_packets != TARGET_PKTS ||
                     inj_capture_packets != TARGET_PKTS || inj_stall_cycles == 0) begin
                     inj_errors++;
@@ -680,19 +681,19 @@ module tb_fullchain;
                     for (int p = 0; p < TARGET_PKTS; p++) begin
                         exp_nonce = 64'd1 + p;
                         for (int j = 0; j < 8; j++) begin
-                            if (inj_bytes[p*1240+j] !== exp_nonce[(63-8*j) -: 8]) begin
+                            if (inj_bytes[p*1384+j] !== exp_nonce[(63-8*j) -: 8]) begin
                                 inj_errors++;
                                 if (inj_errors < 8)
                                     $display("B.1 byte mismatch nonce pkt=%0d byte=%0d got=%h want=%h",
-                                             p, j, inj_bytes[p*1240+j], exp_nonce[(63-8*j) -: 8]);
+                                             p, j, inj_bytes[p*1384+j], exp_nonce[(63-8*j) -: 8]);
                             end
                         end
-                        for (int j = 0; j < 1232; j++) begin
-                            if (inj_bytes[p*1240+8+j] !== raw_bytes[p*1232+j]) begin
+                        for (int j = 0; j < 1376; j++) begin
+                            if (inj_bytes[p*1384+8+j] !== raw_bytes[p*1376+j]) begin
                                 inj_errors++;
                                 if (inj_errors < 8)
                                     $display("B.1 byte mismatch CT pkt=%0d byte=%0d got=%h want=%h",
-                                             p, j, inj_bytes[p*1240+8+j], raw_bytes[p*1232+j]);
+                                             p, j, inj_bytes[p*1384+8+j], raw_bytes[p*1376+j]);
                             end
                         end
                     end
@@ -710,15 +711,15 @@ module tb_fullchain;
                 end
                 for (int slot = 0; slot < B2_RING_SLOTS; slot++) begin
                     if (ring_last_packet[slot] >= 0) begin
-                        for (int b = 0; b < 1280; b++) begin
+                        for (int b = 0; b < 1408; b++) begin
                             if (ring_mem[slot*B2_SLOT_STRIDE+b] !==
-                                ((b < 1240) ? inj_bytes[ring_last_packet[slot]*1240+b] : 8'h00)) begin
+                                ((b < 1384) ? inj_bytes[ring_last_packet[slot]*1384+b] : 8'h00)) begin
                                 inj_errors++;
                                 if (inj_errors < 8)
                                     $display("B.2 byte mismatch slot=%0d pkt=%0d byte=%0d got=%h want=%h",
                                              slot, ring_last_packet[slot], b,
                                              ring_mem[slot*B2_SLOT_STRIDE+b],
-                                             ((b < 1240) ? inj_bytes[ring_last_packet[slot]*1240+b] : 8'h00));
+                                             ((b < 1384) ? inj_bytes[ring_last_packet[slot]*1384+b] : 8'h00));
                             end
                         end
                     end
@@ -731,10 +732,10 @@ module tb_fullchain;
                     inj_errors++;
                     $display("B.2 slot geometry errors=%0d", ring_slot_geometry_errors);
                 end
-                if (ring_data_burst_count != TARGET_PKTS * 10) begin
+                if (ring_data_burst_count != TARGET_PKTS * B2_BURSTS_PER_SLOT) begin
                     inj_errors++;
                     $display("B.2 data burst count=%0d (want %0d)",
-                             ring_data_burst_count, TARGET_PKTS * 10);
+                             ring_data_burst_count, TARGET_PKTS * B2_BURSTS_PER_SLOT);
                 end
                 if (pkt_header_nonce_errors != 0) begin
                     inj_errors++;

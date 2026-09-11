@@ -247,7 +247,7 @@ module AXI_PingPong_Ctrl #(
 
     // Burst accumulation buffer: gathers up to 16 x 8-byte words (128 bytes)
     // from the AES ciphertext stream, then drains as one AXI burst write.
-    // For the fixed 1232-byte packet (77 x 16-byte beats) every stream beat
+    // For the fixed 1376-byte packet (86 x 16-byte beats) every stream beat
     // is full (TKEEP=0xFFFF), so every 64-bit word has full strobe 0xFF.
     reg [63:0]  burst_buf [0:15];
     reg [4:0]   burst_buf_cnt;

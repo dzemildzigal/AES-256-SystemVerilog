@@ -20,8 +20,8 @@ module DDRRingWriter #(
     parameter integer C_S_AXI_DATA_WIDTH = 32,
     parameter integer C_S_AXI_ADDR_WIDTH = 8,
     parameter [31:0] VERSION_VALUE = 32'h0002_0000,
-    parameter integer PACKET_BYTES = 1240,
-    parameter integer SLOT_STRIDE = 1280,
+    parameter integer PACKET_BYTES = 1384,
+    parameter integer SLOT_STRIDE = 1408,
     parameter integer RING_LOG2 = 11
 )(
     input  wire                                S_AXI_ACLK,
@@ -246,7 +246,7 @@ module DDRRingWriter #(
                          (ctrl_base_addr[63:32] != 0) ||
                          (ring_base_addr[31:0] == 0) ||
                          (ctrl_base_addr[31:0] == 0) ||
-                         // Ten full 128-byte bursts per 1280-byte slot.
+                         // Eleven full 128-byte bursts per 1408-byte slot.
                          // A 128-byte-aligned base keeps every burst inside
                          // one 4 KiB AXI boundary.
                          (ring_base_addr[6:0] != 0);
@@ -470,8 +470,8 @@ module DDRRingWriter #(
                                         error_count <= error_count + 1'b1;
                                         writer_state <= ST_ERROR;
                                     end else begin
-                                        // Convert the 1240-byte B.1 body into
-                                        // a complete 1280-byte slot. These
+                                        // Convert the 1384-byte B.1 body into
+                                        // a complete 1408-byte slot. These
                                         // five words are deliberately zero;
                                         // they are sent as transport padding
                                         // by B.3 and are not GCM data.
