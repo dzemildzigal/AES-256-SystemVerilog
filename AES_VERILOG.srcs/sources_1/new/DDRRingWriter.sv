@@ -47,10 +47,18 @@ module DDRRingWriter #(
     input  wire                                S_AXI_RREADY,
 
     // AXI4 master used for packet-slot writes and control-block accesses.
+    //
+    // The write channel carries the ACP coherence attributes: the snoop control
+    // unit only invalides the CPU's cached copies of a slot when AWUSER[0] and
+    // AWCACHE[1] are set (UG585, "ACP Requests"). Without them the PL writes go
+    // straight to DDR while the CPU keeps reading stale cache lines.
     output wire [31:0]                         M_AXI_AWADDR,
     output wire [7:0]                          M_AXI_AWLEN,
     output wire [2:0]                          M_AXI_AWSIZE,
     output wire [1:0]                          M_AXI_AWBURST,
+    output wire [3:0]                          M_AXI_AWCACHE,
+    output wire [2:0]                          M_AXI_AWPROT,
+    output wire [4:0]                          M_AXI_AWUSER,
     output wire                                M_AXI_AWVALID,
     input  wire                                M_AXI_AWREADY,
     output wire [63:0]                         M_AXI_WDATA,
@@ -62,7 +70,9 @@ module DDRRingWriter #(
     input  wire                                M_AXI_BVALID,
     output wire                                M_AXI_BREADY,
     output wire [31:0]                         M_AXI_ARADDR,
+    output wire [3:0]                          M_AXI_ARCACHE,
     output wire [2:0]                          M_AXI_ARPROT,
+    output wire [4:0]                          M_AXI_ARUSER,
     output wire [7:0]                          M_AXI_ARLEN,
     output wire [2:0]                          M_AXI_ARSIZE,
     output wire [1:0]                          M_AXI_ARBURST,
@@ -174,6 +184,14 @@ module DDRRingWriter #(
     assign M_AXI_AWLEN   = m_axi_awlen;
     assign M_AXI_AWSIZE  = 3'b011;
     assign M_AXI_AWBURST = 2'b01;
+    // ACP coherence: AWUSER[0] marks the write as coherent and AWCACHE[1]
+    // makes it cacheable; together they tell the snoop control unit to
+    // invalidate the CPU's cached copy of the slot. Bufferable without
+    // write-allocate (AWCACHE=0011): the PL writes each slot once and never
+    // reads it back, so caching it in the CPU would only add evictions.
+    assign M_AXI_AWCACHE = 4'b0011;
+    assign M_AXI_AWPROT  = 3'b000;
+    assign M_AXI_AWUSER  = 5'b00001;
     assign M_AXI_AWVALID = m_axi_awvalid;
     assign M_AXI_WDATA   = m_axi_wdata;
     assign M_AXI_WSTRB   = m_axi_wstrb;
@@ -185,7 +203,9 @@ module DDRRingWriter #(
     // AXI-Lite (register 0x48) instead of the writer reading it. The ports
     // stay for block-design interface compatibility and are tied off.
     assign M_AXI_ARADDR  = 32'd0;
+    assign M_AXI_ARCACHE = 4'b0011;
     assign M_AXI_ARPROT  = 3'b000;
+    assign M_AXI_ARUSER  = 5'b00001;
     assign M_AXI_ARLEN   = 8'd0;
     assign M_AXI_ARSIZE  = 3'b010;
     assign M_AXI_ARBURST = 2'b01;
