@@ -117,6 +117,18 @@ module DDRRingWriter #(
     localparam [31:0] FAULT_CTRL_R  = 32'd5;
     localparam [31:0] FAULT_CTRL_W  = 32'd6;
 
+    // AXI master cache attributes, taken from register 0x50.
+    //
+    // The ACP is coherent only when AWUSER[0] and AWCACHE[1] are set. The
+    // documented minimum is AWCACHE=0011 with AWUSER[0]=1, but measurement on
+    // hardware showed the CPU still read stale slots with that value, so the
+    // attributes live in a register and can be swept at run time instead of
+    // costing a rebuild each. Reset default is the "all bits set" setting that
+    // Intel/Xilinx users report as working: write-allocate, so a PL write
+    // reaches the CPU's own cached copy.
+    localparam [3:0] AXCACHE_DEFAULT = 4'b1111;
+    localparam [4:0] AXUSER_DEFAULT  = 5'b11111;
+
     // AXI-Lite slave registers.
     reg                            axi_awready;
     reg                            axi_wready;
@@ -167,6 +179,8 @@ module DDRRingWriter #(
     reg         writer_busy;
     reg [31:0]  irq_enable_reg;
     reg [31:0]  irq_status_reg;
+    reg [3:0]   master_axcache;
+    reg [4:0]   master_axuser;
 
     assign irq = irq_enable_reg[0] && irq_status_reg[0];
 
@@ -184,14 +198,13 @@ module DDRRingWriter #(
     assign M_AXI_AWLEN   = m_axi_awlen;
     assign M_AXI_AWSIZE  = 3'b011;
     assign M_AXI_AWBURST = 2'b01;
-    // ACP coherence: AWUSER[0] marks the write as coherent and AWCACHE[1]
-    // makes it cacheable; together they tell the snoop control unit to
-    // invalidate the CPU's cached copy of the slot. Bufferable without
-    // write-allocate (AWCACHE=0011): the PL writes each slot once and never
-    // reads it back, so caching it in the CPU would only add evictions.
-    assign M_AXI_AWCACHE = 4'b0011;
+    // ACP coherence attributes: AWUSER[0] marks the write as coherent and
+    // AWCACHE[1] makes it cacheable; together they tell the snoop control unit
+    // to invalidate or update the CPU's copy of the slot. The values come from
+    // register 0x50 so they can be swept without a rebuild.
+    assign M_AXI_AWCACHE = master_axcache;
     assign M_AXI_AWPROT  = 3'b000;
-    assign M_AXI_AWUSER  = 5'b00001;
+    assign M_AXI_AWUSER  = master_axuser;
     assign M_AXI_AWVALID = m_axi_awvalid;
     assign M_AXI_WDATA   = m_axi_wdata;
     assign M_AXI_WSTRB   = m_axi_wstrb;
@@ -203,9 +216,9 @@ module DDRRingWriter #(
     // AXI-Lite (register 0x48) instead of the writer reading it. The ports
     // stay for block-design interface compatibility and are tied off.
     assign M_AXI_ARADDR  = 32'd0;
-    assign M_AXI_ARCACHE = 4'b0011;
+    assign M_AXI_ARCACHE = master_axcache;
     assign M_AXI_ARPROT  = 3'b000;
-    assign M_AXI_ARUSER  = 5'b00001;
+    assign M_AXI_ARUSER  = master_axuser;
     assign M_AXI_ARLEN   = 8'd0;
     assign M_AXI_ARSIZE  = 3'b010;
     assign M_AXI_ARBURST = 2'b01;
@@ -283,6 +296,8 @@ module DDRRingWriter #(
             slot_stride_reg   <= SLOT_STRIDE;
             irq_enable_reg    <= 32'd0;
             irq_status_reg    <= 32'd0;
+            master_axcache    <= AXCACHE_DEFAULT;
+            master_axuser     <= AXUSER_DEFAULT;
             axi_arready       <= 1'b0;
             axi_rdata         <= 32'd0;
             axi_rresp         <= 2'b00;
@@ -309,6 +324,10 @@ module DDRRingWriter #(
                     6'd6: ctrl_base_addr[63:32] <= S_AXI_WDATA;
                     6'd9: irq_enable_reg <= S_AXI_WDATA;
                     6'd18: ps_consume_reg <= S_AXI_WDATA;
+                    6'd20: begin
+                        master_axcache <= S_AXI_WDATA[3:0];
+                        master_axuser  <= S_AXI_WDATA[12:8];
+                    end
                     default: begin end
                 endcase
             end
@@ -352,6 +371,7 @@ module DDRRingWriter #(
                     6'd15: axi_rdata <= fault_code;
                     6'd16: axi_rdata <= irq_enable_reg;
                     6'd17: axi_rdata <= irq_status_reg;
+                    6'd20: axi_rdata <= {19'd0, master_axuser, 3'd0, master_axcache};
                     // 6'd19: coherent-build flag. This writer reaches DDR
                     // through the PS ACP, so its writes snoop the CPU caches
                     // and software needs no invalidate before reading slots.
